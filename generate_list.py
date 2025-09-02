@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import List
 
 
@@ -27,7 +27,9 @@ def generate_list(folder: str = ".") -> None:
     entries.sort(key=lambda p: p.lower())
 
     # Write HTML
-    updated = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%SZ")
+    # Show time in India Standard Time (GMT+05:30)
+    ist_tz = timezone(timedelta(hours=5, minutes=30), name="IST")
+    updated = datetime.now(ist_tz).strftime("%Y-%m-%d %H:%M:%S IST (GMT+05:30)")
     total = len(entries)
     with open("list.html", "w", encoding="utf-8") as f:
         html_start = (
