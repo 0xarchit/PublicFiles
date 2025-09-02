@@ -1,0 +1,10 @@
+[build]
+  command = "python generate_list.py"
+  publish = "."
+
+[build.environment]
+  # Ensure Python 3 on Netlify build image
+  PYTHON_VERSION = "3.11"
+
+# Keep existing redirects file behavior
+# / -> https://0xarchit.is-a.dev is controlled by `_redirects` and does not affect /list.html
