@@ -40,7 +40,7 @@ def generate_list(folder: str = ".") -> None:
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Public Files</title>
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = { darkMode: 'class' };
             (function() {
