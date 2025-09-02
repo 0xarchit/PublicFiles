@@ -21,9 +21,13 @@ jobs:
       run: python generate_list.py
 
     - name: Commit updated list
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
       run: |
-        git config --global user.name "0xarchit"
-        git config --global user.email "0xarchit@gmail.com"
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
         git add list.html
         git commit -m "Update /list page [skip ci]" || echo "No changes to commit"
+        git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}
         git push
+
