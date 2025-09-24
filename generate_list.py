@@ -10,6 +10,7 @@ SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml"}
 def generate_list(folder: str = ".") -> None:
     entries: List[str] = []
     for root, dirs, files in os.walk(folder):
+        # prune unwanted dirs in-place for performance and correctness
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
 
         rel_root = os.path.relpath(root, folder)
@@ -25,11 +26,11 @@ def generate_list(folder: str = ".") -> None:
 
     entries.sort(key=lambda p: p.lower())
 
+    # Write HTML
     # Show time in India Standard Time (GMT+05:30)
     ist_tz = timezone(timedelta(hours=5, minutes=30), name="IST")
     updated = datetime.now(ist_tz).strftime("%Y-%m-%d %H:%M:%S IST (GMT+05:30)")
     total = len(entries)
-
     with open("list.html", "w", encoding="utf-8") as f:
         html_start = (
             """
@@ -39,8 +40,7 @@ def generate_list(folder: str = ".") -> None:
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Public Files</title>
-        <!-- Production TailwindCSS -->
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.13/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script>
             (function() {
                 try {
@@ -82,7 +82,7 @@ def generate_list(folder: str = ".") -> None:
         f.write(html_start.replace("__UPDATED__", updated).replace("__TOTAL__", str(total)))
 
         for entry in entries:
-            href = "/" + entry
+            href = "/" + entry  # absolute path from site root (Netlify)
             f.write(f"\n      <li><a href=\"{href}\">{entry}</a></li>")
 
         f.write(
