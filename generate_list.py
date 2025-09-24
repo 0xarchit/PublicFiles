@@ -42,7 +42,6 @@ def generate_list(folder: str = ".") -> None:
         <title>Public Files</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script>
-            tailwind.config = { darkMode: 'class' };
             (function() {
                 try {
                     const stored = localStorage.getItem('theme');
