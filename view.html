@@ -122,8 +122,8 @@
 		</div>
 
 		<template id="tableTemplate">
-			<div class="relative overflow-x-auto">
-				<table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+			<div class="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
+				<table class="relative min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
 					<thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">
 						<tr id="tableHead"></tr>
 					</thead>
@@ -663,7 +663,7 @@
 				headers.forEach((cell) => {
 					const th = document.createElement("th");
 					th.scope = "col";
-					th.className = "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide";
+					th.className = "sticky top-0 z-20 border-b border-slate-200 bg-slate-100/95 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80";
 					th.textContent = cell;
 					headRow.appendChild(th);
 				});
@@ -888,7 +888,15 @@
 				return ext === "csv" || type.includes("text/csv");
 			}
 			function isJson(ext, type) {
-				return ext === "json" || type.includes("application/json") || type.includes("text/json");
+				const jsonExtensions = ["json", "jsonl", "geojson", "topojson"];
+				const normalizedType = type.toLowerCase();
+				return (
+					jsonExtensions.includes(ext) ||
+					normalizedType.includes("application/json") ||
+					normalizedType.includes("application/geo+json") ||
+					normalizedType.includes("application/vnd.geo+json") ||
+					normalizedType.includes("text/json")
+				);
 			}
 			function looksLikeHtml(ext, type) {
 				return ["html", "htm"].includes(ext) || type.includes("text/html");
