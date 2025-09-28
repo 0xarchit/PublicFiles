@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>0xArchit File Viewer</title>
+			<script src="https://cdn.tailwindcss.com?plugins=typography,aspect-ratio"></script>
+			<script>
+				window.tailwind = window.tailwind || {};
+				window.tailwind.config = {
+				darkMode: "class",
+				theme: {
+					extend: {
+						fontFamily: {
+							sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+							mono: ["Fira Code", "Menlo", "Consolas", "monospace"],
+						},
+						colors: {
+							primary: {
+								50: "#eef2ff",
+								100: "#e0e7ff",
+								200: "#c7d2fe",
+								300: "#a5b4fc",
+								400: "#818cf8",
+								500: "#6366f1",
+								600: "#4f46e5",
+								700: "#4338ca",
+								800: "#3730a3",
+								900: "#312e81",
+								950: "#1e1b4b",
+							},
+						},
+					},
+				},
+			};
+		</script>
+		<link
+			rel="preconnect"
+			href="https://fonts.googleapis.com"
+		/>
+		<link
+			rel="preconnect"
+			href="https://fonts.gstatic.com"
+			crossorigin
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" crossorigin="anonymous"></script>
+		<style>
+			::-webkit-scrollbar {
+				width: 10px;
+				height: 10px;
+			}
+			::-webkit-scrollbar-thumb {
+				background-color: rgba(100, 116, 139, 0.4);
+				border-radius: 9999px;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background-color: rgba(99, 102, 241, 0.8);
+			}
+		</style>
+	</head>
+	<body class="min-h-screen bg-slate-100 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+		<div class="flex min-h-screen flex-col">
+			<header class="border-b border-slate-200/70 bg-white/80 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+				<div class="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-5 md:px-6">
+					<div>
+						<h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">0xArchit File Viewer</h1>
+						<p class="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+							Load local or external documents by appending
+							<span class="font-mono text-xs">?file=&lt;path-or-url&gt;</span> to the address bar.
+						</p>
+					</div>
+					<div class="flex items-center gap-3">
+						<a
+							id="downloadLink"
+							href="#"
+							class="hidden items-center gap-2 rounded-full border border-primary-200/60 bg-primary-50 px-4 py-2 text-sm font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200 dark:hover:bg-primary-800/60"
+							target="_blank"
+							rel="noopener"
+						>
+							<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0 4-4m-4 4-4-4m-2 6h12" />
+							</svg>
+							Open file
+						</a>
+						<button
+							id="themeToggle"
+							type="button"
+							class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600"
+						>
+							<span id="themeIcon" aria-hidden="true" class="h-4 w-4">🌞</span>
+							<span class="hidden sm:inline">Toggle theme</span>
+						</button>
+					</div>
+				</div>
+			</header>
+
+			<main class="flex-1">
+				<div class="container mx-auto px-4 py-6 sm:py-10 md:px-6">
+					<div
+						id="statusMessage"
+						class="rounded-2xl border border-slate-200/70 bg-white/80 p-6 text-sm text-slate-600 shadow-sm transition-all dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-300"
+					>
+						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+							<div class="space-y-1">
+								<p id="statusTitle" class="font-medium text-slate-800 dark:text-slate-50">Waiting for a file…</p>
+								<p id="statusBody" class="text-slate-500 dark:text-slate-400">
+									Provide a query parameter, for example
+									<span class="font-mono text-xs">view.html?file=Iris.csv</span> or
+									<span class="font-mono text-xs">view.html?file=https://example.com/report.pdf</span>.
+									For production deploys, bundle Tailwind locally via the CLI or PostCSS build—the console warning disappears once the CDN is removed.
+								</p>
+							</div>
+							<ul class="list-disc space-y-1 pl-5 text-xs text-slate-500 dark:text-slate-400">
+								<li>Supports text, CSV, PDF, Markdown, images, audio, and video.</li>
+								<li>Automatically adapts to mobile and desktop layouts.</li>
+								<li>Switch between light and dark themes anytime.</li>
+							</ul>
+						</div>
+					</div>
+
+					<div
+						id="viewerWrapper"
+						class="mt-6 min-h-[320px] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 shadow-sm transition dark:border-slate-800/70 dark:bg-slate-900/70"
+					>
+						<div id="viewer" class="prose prose-slate max-w-none p-6 dark:prose-invert">
+							<div class="flex h-full flex-col items-center justify-center gap-4 py-16 text-center text-slate-400">
+								<svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" d="m15 3 6 6m0 0-6-6m6 6h-6V3m0 3H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11m0 0a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v5" />
+								</svg>
+								<div class="space-y-2">
+									<h2 class="text-lg font-semibold">Awaiting selection</h2>
+									<p class="text-sm">Pass a file path or URL to begin previewing.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+
+			<footer class="border-t border-slate-200/70 bg-white/80 py-4 text-center text-xs text-slate-500 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400">
+				<div class="container mx-auto px-4 md:px-6">
+					Built for effortless previews. Works best when the requested files are publicly accessible.
+				</div>
+			</footer>
+		</div>
+
+		<template id="tableTemplate">
+			<div class="relative overflow-x-auto">
+				<table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+					<thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+						<tr id="tableHead"></tr>
+					</thead>
+					<tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+				</table>
+			</div>
+		</template>
+
+		<template id="fileInfoTemplate">
+			<div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-slate-50/80 px-5 py-4 text-xs uppercase tracking-wide text-slate-500 dark:border-slate-700/60 dark:bg-slate-800/40 dark:text-slate-300">
+				<span id="fileName" class="max-w-full truncate font-semibold text-primary-600 dark:text-primary-300"></span>
+				<span id="fileMeta" class="text-slate-400 dark:text-slate-400"></span>
+			</div>
+		</template>
+
+		<script>
+			const htmlElement = document.documentElement;
+			const themeToggle = document.getElementById("themeToggle");
+			const themeIcon = document.getElementById("themeIcon");
+			const statusMessage = document.getElementById("statusMessage");
+			const statusTitle = document.getElementById("statusTitle");
+			const statusBody = document.getElementById("statusBody");
+			const viewer = document.getElementById("viewer");
+			const viewerWrapper = document.getElementById("viewerWrapper");
+			const downloadLink = document.getElementById("downloadLink");
+			const tableTemplate = document.getElementById("tableTemplate");
+			const fileInfoTemplate = document.getElementById("fileInfoTemplate");
+			const PDF_JS_VERSION = "3.11.174";
+			const PDF_JS_BASE_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDF_JS_VERSION}`;
+			let pdfjsLoaderPromise = null;
+			const MERMAID_VERSION = "10.9.1";
+			const MERMAID_BASE_URL = `https://cdn.jsdelivr.net/npm/mermaid@${MERMAID_VERSION}/dist`;
+			let mermaidLoaderPromise = null;
+
+			function ensurePdfJs() {
+				if (window.pdfjsLib) {
+					return Promise.resolve(window.pdfjsLib);
+				}
+				if (!pdfjsLoaderPromise) {
+					pdfjsLoaderPromise = new Promise((resolve, reject) => {
+						const script = document.createElement("script");
+						script.src = `${PDF_JS_BASE_URL}/pdf.min.js`;
+						script.crossOrigin = "anonymous";
+						script.referrerPolicy = "no-referrer";
+						script.onload = () => {
+							if (window.pdfjsLib) {
+								window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDF_JS_BASE_URL}/pdf.worker.min.js`;
+								resolve(window.pdfjsLib);
+							} else {
+								reject(new Error("PDF.js loaded, but pdfjsLib is unavailable."));
+							}
+						};
+						script.onerror = () => {
+							reject(new Error("Failed to load PDF.js viewer library."));
+						};
+						document.head.appendChild(script);
+					});
+					pdfjsLoaderPromise.catch(() => {
+						pdfjsLoaderPromise = null;
+					});
+				}
+				return pdfjsLoaderPromise;
+			}
+
+			function ensureMermaid() {
+				if (window.mermaid) {
+					return Promise.resolve(window.mermaid);
+				}
+				if (!mermaidLoaderPromise) {
+					mermaidLoaderPromise = new Promise((resolve, reject) => {
+						const script = document.createElement("script");
+						script.src = `${MERMAID_BASE_URL}/mermaid.min.js`;
+						script.crossOrigin = "anonymous";
+						script.referrerPolicy = "no-referrer";
+						script.onload = () => {
+							if (window.mermaid) {
+								initializeMermaidTheme();
+								resolve(window.mermaid);
+							} else {
+								reject(new Error("Mermaid loaded, but library is unavailable."));
+							}
+						};
+						script.onerror = () => {
+							reject(new Error("Failed to load Mermaid renderer."));
+						};
+						document.head.appendChild(script);
+					});
+					mermaidLoaderPromise.catch(() => {
+						mermaidLoaderPromise = null;
+					});
+				}
+				return mermaidLoaderPromise;
+			}
+
+			function initializeMermaidTheme() {
+				if (!window.mermaid) return;
+				const theme = htmlElement.classList.contains("dark") ? "dark" : "default";
+				window.mermaid.initialize({
+					startOnLoad: false,
+					theme,
+					securityLevel: "loose",
+					themeVariables: { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" },
+				});
+			}
+
+			async function rerenderMermaidDiagrams(target = viewer) {
+				try {
+					if (!target) return;
+					const mermaid = await ensureMermaid();
+					initializeMermaidTheme();
+					const nodes = target.querySelectorAll?.(".mermaid");
+					if (nodes && nodes.length) {
+						await mermaid.run({ nodes });
+					}
+				} catch (error) {
+					console.error("Mermaid render failed", error);
+				}
+			}
+
+			const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+			const savedTheme = localStorage.getItem("uv-theme");
+			setTheme(savedTheme || (prefersDark ? "dark" : "light"), true);
+
+			themeToggle.addEventListener("click", () => {
+				const nextTheme = htmlElement.classList.contains("dark") ? "light" : "dark";
+				setTheme(nextTheme);
+			});
+
+			function setTheme(theme, skipPersist = false) {
+				if (theme === "dark") {
+					htmlElement.classList.add("dark");
+					themeIcon.textContent = "🌙";
+					if (!skipPersist) localStorage.setItem("uv-theme", "dark");
+				} else {
+					htmlElement.classList.remove("dark");
+					themeIcon.textContent = "🌞";
+					if (!skipPersist) localStorage.setItem("uv-theme", "light");
+				}
+				initializeMermaidTheme();
+				renderMermaidAfterThemeChange();
+			}
+
+			function renderMermaidAfterThemeChange() {
+				if (window.mermaid || mermaidLoaderPromise) {
+					rerenderMermaidDiagrams();
+				}
+			}
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const fileParam = urlParams.get("file");
+
+			if (fileParam) {
+				loadFile(decodeURIComponent(fileParam.trim()));
+			}
+
+			async function loadFile(requestedFile) {
+				updateStatus("loading", "Fetching file", `Attempting to retrieve \"${requestedFile}\"`);
+				showLoadingState(true);
+				try {
+					const { response, finalUrl } = await fetchWithFallback(requestedFile);
+					const resolvedUrl = new URL(finalUrl, window.location.href).href;
+					const fileName = extractFileName(resolvedUrl) || "download";
+					const extension = extractExtension(fileName);
+					const contentType = response.headers.get("content-type") || "";
+					const size = response.headers.get("content-length");
+
+					const fileInfo = document.importNode(fileInfoTemplate.content, true);
+					fileInfo.querySelector("#fileName").textContent = fileName;
+					fileInfo.querySelector("#fileMeta").textContent = buildMeta(extension, contentType, size);
+
+					const infoContainer = fileInfo;
+					viewer.innerHTML = "";
+					viewer.classList.remove("prose", "prose-slate", "dark:prose-invert");
+					viewer.appendChild(infoContainer);
+
+					const outcome = await renderByType({ response, extension, contentType, fileName, resolvedUrl });
+
+					if (outcome && outcome.statusMessage) {
+						const { level, title, body } = outcome.statusMessage;
+						updateStatus(level, title, body);
+					} else {
+						updateStatus("success", "File loaded successfully", resolvedUrl);
+					}
+					setDownloadLink(resolvedUrl);
+				} catch (error) {
+					console.error(error);
+					setDownloadLink(null);
+					showError(error instanceof Error ? error.message : "Unable to load file.");
+				} finally {
+					showLoadingState(false);
+				}
+			}
+
+			function buildMeta(extension, contentType, size) {
+				const parts = [];
+				if (extension) parts.push(extension.toUpperCase());
+				if (contentType) parts.push(contentType.split(";")[0]);
+				if (size) parts.push(formatBytes(Number(size)));
+				return parts.join(" • ") || "Preview";
+			}
+
+			function setDownloadLink(url) {
+				if (!url) {
+					downloadLink.classList.add("hidden");
+					downloadLink.removeAttribute("href");
+					return;
+				}
+				downloadLink.href = url;
+				downloadLink.classList.remove("hidden");
+			}
+
+			async function fetchWithFallback(requestedFile) {
+				const candidates = buildCandidateUrls(requestedFile);
+				let lastError = null;
+				for (const candidate of candidates) {
+					try {
+						const response = await fetch(candidate);
+						if (!response.ok) {
+							lastError = new Error(`Request failed with status ${response.status}`);
+							continue;
+						}
+						return { response, finalUrl: candidate };
+					} catch (error) {
+						lastError = error;
+					}
+				}
+				throw lastError || new Error("Unable to fetch the specified file.");
+			}
+
+			function buildCandidateUrls(requestedFile) {
+				const trimmed = requestedFile.trim();
+				const candidates = [];
+				if (looksExternal(trimmed)) {
+					candidates.push(trimmed);
+					return candidates;
+				}
+				const clean = trimmed.replace(/^\//, "");
+				candidates.push(clean);
+				if (!clean.includes("/")) {
+					candidates.push(`datasets/${clean}`);
+					candidates.push(`assets/${clean}`);
+				}
+				return candidates.map((candidate) => {
+					if (candidate.startsWith("http")) return candidate;
+					return new URL(candidate, window.location.href).href;
+				});
+			}
+
+			function looksExternal(file) {
+				try {
+					const url = new URL(file);
+					return url.protocol === "http:" || url.protocol === "https:";
+				} catch (error) {
+					return false;
+				}
+			}
+
+			async function renderByType({ response, extension, contentType, fileName, resolvedUrl }) {
+				const type = (extension || "").toLowerCase();
+				const lowerContentType = contentType.toLowerCase();
+
+				viewerWrapper.classList.remove("bg-slate-900/90", "dark:bg-black");
+
+				if (isPdf(type, lowerContentType)) {
+					const blob = await response.blob();
+					return await renderPdf(blob, fileName);
+				}
+
+				if (isImage(type, lowerContentType)) {
+					const blob = await response.blob();
+					renderImage(blob, fileName);
+					return null;
+				}
+
+				if (isVideo(type, lowerContentType)) {
+					const blob = await response.blob();
+					renderVideo(blob, lowerContentType || "video/mp4");
+					return null;
+				}
+
+				if (isAudio(type, lowerContentType)) {
+					const blob = await response.blob();
+					renderAudio(blob, lowerContentType || "audio/mpeg");
+					return null;
+				}
+
+				const text = await response.text();
+
+				if (isMermaid(type, lowerContentType)) {
+					return await renderMermaidDiagram(text, fileName);
+				}
+
+				if (isMarkdown(type, lowerContentType)) {
+					await renderMarkdown(text, fileName);
+					return null;
+				}
+
+				if (isCsv(type, lowerContentType)) {
+					renderCsv(text);
+					return null;
+				}
+
+				if (isJson(type, lowerContentType)) {
+					renderJson(text);
+					return null;
+				}
+
+				if (looksLikeHtml(type, lowerContentType)) {
+					renderHtml(text, resolvedUrl);
+					return null;
+				}
+
+				renderPlainText(text);
+				return null;
+			}
+
+			async function renderPdf(blob, fileName) {
+				viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
+				try {
+					const pdfjsLib = await ensurePdfJs();
+					const arrayBuffer = await blob.arrayBuffer();
+					const typedArray = new Uint8Array(arrayBuffer);
+					const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+
+					const pdfContainer = document.createElement("div");
+					pdfContainer.className = "space-y-6";
+					pdfContainer.setAttribute("role", "region");
+					pdfContainer.setAttribute("aria-label", `${fileName} PDF preview`);
+
+					const intro = document.createElement("p");
+					intro.className = "text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500";
+					intro.textContent = `${pdf.numPages} page${pdf.numPages > 1 ? "s" : ""} • Scroll to view`;
+					pdfContainer.appendChild(intro);
+
+					for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+						const pageWrapper = document.createElement("div");
+						pageWrapper.className = "overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-lg dark:border-slate-800/40 dark:bg-slate-950/60";
+						const canvas = document.createElement("canvas");
+						canvas.className = "w-full";
+						pageWrapper.appendChild(canvas);
+						pdfContainer.appendChild(pageWrapper);
+
+						const page = await pdf.getPage(pageNumber);
+						const baseViewport = page.getViewport({ scale: 1 });
+						const containerWidth = viewerWrapper.clientWidth - 32;
+						const maxScale = Math.min(containerWidth / baseViewport.width, 1.6);
+						const scale = Number.isFinite(maxScale) && maxScale > 0 ? maxScale : 1;
+						const viewport = page.getViewport({ scale });
+						const outputScale = window.devicePixelRatio || 1;
+
+						canvas.width = viewport.width * outputScale;
+						canvas.height = viewport.height * outputScale;
+						canvas.style.width = `${viewport.width}px`;
+						canvas.style.height = `${viewport.height}px`;
+
+						const context = canvas.getContext("2d", { alpha: false });
+						context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+
+						await page.render({ canvasContext: context, viewport }).promise;
+
+						const label = document.createElement("div");
+						label.className = "border-t border-slate-200/70 bg-slate-100 px-4 py-2 text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
+						label.textContent = `Page ${pageNumber} of ${pdf.numPages}`;
+						pageWrapper.appendChild(label);
+					}
+
+					viewer.appendChild(pdfContainer);
+					return null;
+				} catch (error) {
+					const reason = error instanceof Error ? error.message : String(error);
+					console.error("PDF render failed", error);
+					renderPdfFallback(blob, fileName, reason);
+					return {
+						statusMessage: {
+							level: "info",
+							title: "PDF preview unavailable",
+							body: reason ? `PDF.js couldn't render this file (${reason}). Use the download link instead.` : "PDF.js couldn't render this file. Use the download link instead.",
+						},
+					};
+				}
+			}
+
+			function renderPdfFallback(blob, fileName, reason = "") {
+				const blobUrl = URL.createObjectURL(blob);
+				const message = document.createElement("div");
+				message.className = "space-y-3 rounded-xl border border-slate-200/70 bg-white p-6 text-center text-sm text-slate-600 shadow-sm dark:border-slate-700/50 dark:bg-slate-900/60 dark:text-slate-300";
+				const primary = document.createElement("p");
+				primary.textContent = "Preview isn’t supported on this device. You can download the PDF instead.";
+				message.appendChild(primary);
+				if (reason) {
+					const details = document.createElement("p");
+					details.className = "text-xs text-slate-500 dark:text-slate-400";
+					details.textContent = reason;
+					message.appendChild(details);
+				}
+				const link = document.createElement("a");
+				link.href = blobUrl;
+				link.download = fileName;
+				link.rel = "noopener";
+				link.target = "_blank";
+				link.className = "inline-flex items-center gap-2 rounded-full bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-primary-600";
+				link.textContent = "Download PDF";
+				link.addEventListener("click", () => {
+					setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+				});
+				message.appendChild(link);
+				viewer.appendChild(message);
+			}
+
+			async function renderMermaidDiagram(definition, fileName) {
+				try {
+					const mermaid = await ensureMermaid();
+					const wrapper = document.createElement("section");
+					wrapper.className = "space-y-4";
+
+					const badge = document.createElement("div");
+					badge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
+					badge.textContent = fileName || "Mermaid diagram";
+					wrapper.appendChild(badge);
+
+					const diagram = document.createElement("div");
+					diagram.className = "mermaid overflow-x-auto rounded-xl border border-slate-200/70 bg-white px-4 py-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60";
+					diagram.textContent = definition.trim();
+					wrapper.appendChild(diagram);
+
+					viewer.appendChild(wrapper);
+					await rerenderMermaidDiagrams(wrapper);
+					return null;
+				} catch (error) {
+					const reason = error instanceof Error ? error.message : String(error);
+					console.error("Mermaid render failed", error);
+					renderCodeBlock(definition, "mermaid");
+					return {
+						statusMessage: {
+							level: "info",
+							title: "Mermaid preview unavailable",
+							body: reason ? `Mermaid.js couldn't render this diagram (${reason}). Use the raw definition instead.` : "Mermaid.js couldn't render this diagram. Showing raw definition instead.",
+						},
+					};
+				}
+			}
+
+			function renderImage(blob, fileName) {
+				const blobUrl = URL.createObjectURL(blob);
+				const figure = document.createElement("figure");
+				figure.className = "flex flex-col items-center gap-3 p-4";
+				const img = document.createElement("img");
+				img.src = blobUrl;
+				img.alt = fileName;
+				img.className = "max-h-[70vh] w-full rounded-xl border border-slate-200/60 object-contain shadow-sm dark:border-slate-800/60";
+				img.onload = () => URL.revokeObjectURL(blobUrl);
+				const figcaption = document.createElement("figcaption");
+				figcaption.className = "text-xs text-slate-500 dark:text-slate-400";
+				figcaption.textContent = `Previewing ${fileName}`;
+				figure.append(img, figcaption);
+				viewer.appendChild(figure);
+			}
+
+			function renderVideo(blob, mime) {
+				const blobUrl = URL.createObjectURL(blob);
+				const video = document.createElement("video");
+				video.controls = true;
+				video.className = "h-auto w-full max-h-[70vh] rounded-xl border border-slate-200/60 bg-black shadow-lg dark:border-slate-800/60";
+				const source = document.createElement("source");
+				source.src = blobUrl;
+				source.type = mime;
+				video.appendChild(source);
+				viewer.appendChild(video);
+				video.addEventListener("loadeddata", () => URL.revokeObjectURL(blobUrl), { once: true });
+			}
+
+			function renderAudio(blob, mime) {
+				const blobUrl = URL.createObjectURL(blob);
+				const audio = document.createElement("audio");
+				audio.controls = true;
+				audio.className = "w-full rounded-full border border-slate-200/60 bg-slate-50/80 p-3 shadow-sm dark:border-slate-800/60 dark:bg-slate-800/40";
+				const source = document.createElement("source");
+				source.src = blobUrl;
+				source.type = mime;
+				audio.appendChild(source);
+				viewer.appendChild(audio);
+				audio.addEventListener("loadeddata", () => URL.revokeObjectURL(blobUrl), { once: true });
+			}
+
+			async function renderMarkdown(text, fileName) {
+				marked.setOptions({ breaks: true, mangle: false, headerIds: true });
+				const rawHtml = marked.parse(text);
+				const safeHtml = DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } });
+				const article = document.createElement("article");
+				article.className = "prose prose-slate max-w-none dark:prose-invert";
+				article.innerHTML = safeHtml;
+				const title = article.querySelector("h1") || article.querySelector("h2");
+				if (!title) {
+					const heading = document.createElement("h1");
+					heading.textContent = fileName;
+					article.prepend(heading);
+				}
+				viewer.appendChild(article);
+				await embedMermaidInMarkdown(article);
+			}
+
+			async function embedMermaidInMarkdown(article) {
+				const codeBlocks = article.querySelectorAll("pre code");
+				const mermaidBlocks = Array.from(codeBlocks).filter((block) => {
+					const classes = block.className || "";
+					return /language-mermaid|lang-mermaid|language-mermaidjs|lang-mermaidjs/.test(classes);
+				});
+				if (!mermaidBlocks.length) return;
+				try {
+					const mermaid = await ensureMermaid();
+					mermaidBlocks.forEach((block) => {
+						const pre = block.closest("pre");
+						const code = block.textContent || "";
+						const diagram = document.createElement("div");
+						diagram.className = "mermaid my-6 overflow-x-auto rounded-xl border border-slate-200/70 bg-white px-4 py-4 text-left text-slate-800 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-100";
+						diagram.textContent = code.trim();
+						if (pre) pre.replaceWith(diagram);
+					});
+					await rerenderMermaidDiagrams(article);
+				} catch (error) {
+					console.error("Mermaid block render failed", error);
+				}
+			}
+
+			function renderCsv(text) {
+				const { data } = Papa.parse(text, { skipEmptyLines: "greedy" });
+				if (!data || data.length === 0) {
+					renderPlainText("No data rows detected in CSV file.");
+					return;
+				}
+				const template = document.importNode(tableTemplate.content, true);
+				const headRow = template.querySelector("#tableHead");
+				const body = template.querySelector("#tableBody");
+				const headers = data[0];
+				const rest = data.slice(1);
+
+				headers.forEach((cell) => {
+					const th = document.createElement("th");
+					th.scope = "col";
+					th.className = "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide";
+					th.textContent = cell;
+					headRow.appendChild(th);
+				});
+
+				rest.forEach((row) => {
+					const tr = document.createElement("tr");
+					tr.className = "bg-white/90 hover:bg-primary-50/60 dark:bg-slate-900/70 dark:hover:bg-slate-800/70";
+					row.forEach((cell) => {
+						const td = document.createElement("td");
+						td.className = "px-4 py-3 align-top text-xs text-slate-600 dark:text-slate-300";
+						td.textContent = cell;
+						tr.appendChild(td);
+					});
+					body.appendChild(tr);
+				});
+
+							template.querySelector("#tableHead").removeAttribute("id");
+							template.querySelector("#tableBody").removeAttribute("id");
+
+				viewer.appendChild(template);
+			}
+
+			function renderJson(text) {
+				try {
+					const parsed = JSON.parse(text);
+					const formatted = JSON.stringify(parsed, null, 2);
+					const section = document.createElement("section");
+					section.className = "space-y-4";
+
+					const header = document.createElement("div");
+					header.className = "flex flex-wrap items-center justify-between gap-3";
+					const title = document.createElement("h3");
+					title.className = "flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300";
+					title.textContent = "JSON preview";
+					header.appendChild(title);
+
+					const tabGroup = document.createElement("div");
+					tabGroup.className = "inline-flex overflow-hidden rounded-full border border-slate-200/80 bg-white text-xs font-medium text-slate-500 shadow-sm dark:border-slate-700/70 dark:bg-slate-800/60";
+
+					const rawButton = createJsonTabButton("Raw");
+					const treeButton = createJsonTabButton("Tree");
+					tabGroup.append(treeButton, rawButton);
+					header.appendChild(tabGroup);
+
+					const panels = document.createElement("div");
+					panels.className = "space-y-4";
+
+					const treePanel = document.createElement("div");
+					treePanel.dataset.panel = "tree";
+					treePanel.className = "space-y-2";
+					treePanel.appendChild(buildJsonTree(parsed, "root", 0));
+
+					const rawPanel = document.createElement("div");
+					rawPanel.dataset.panel = "raw";
+					rawPanel.appendChild(createCodeBlock(formatted, "json"));
+
+					panels.append(treePanel, rawPanel);
+					section.append(header, panels);
+					viewer.appendChild(section);
+
+					activateJsonTab("tree");
+
+					function createJsonTabButton(label) {
+						const button = document.createElement("button");
+						const value = label.toLowerCase();
+						button.type = "button";
+						button.dataset.panel = value;
+						button.className = "px-4 py-1.5 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 dark:focus-visible:ring-primary-500";
+						button.textContent = label;
+						button.addEventListener("click", () => activateJsonTab(value));
+						return button;
+					}
+
+					function activateJsonTab(panel) {
+						const buttons = tabGroup.querySelectorAll("button");
+						buttons.forEach((btn) => {
+							const isActive = btn.dataset.panel === panel;
+							btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+							btn.classList.toggle("bg-primary-500", isActive);
+							btn.classList.toggle("text-white", isActive);
+						});
+
+						const panelNodes = panels.querySelectorAll("[data-panel]");
+						panelNodes.forEach((node) => {
+							node.classList.toggle("hidden", node.dataset.panel !== panel);
+						});
+					}
+				} catch (error) {
+					renderPlainText(text);
+				}
+			}
+
+			function buildJsonTree(value, key = "root", depth = 0) {
+				const isObject = isPlainObject(value);
+				const isArray = Array.isArray(value);
+				if (isObject || isArray) {
+					const details = document.createElement("details");
+					details.open = depth <= 1;
+					details.className = "group rounded-xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60";
+
+					const summary = document.createElement("summary");
+					summary.className = "flex cursor-pointer items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-200";
+					summary.textContent = describeJsonCollection(key, value);
+					details.appendChild(summary);
+
+					const childrenContainer = document.createElement("div");
+					childrenContainer.className = "space-y-1 border-t border-slate-100/80 bg-slate-50/60 px-4 py-3 dark:border-slate-800/60 dark:bg-slate-900/50";
+					if (isArray) {
+						value.forEach((item, index) => {
+							childrenContainer.appendChild(buildJsonTree(item, `[${index}]`, depth + 1));
+						});
+					} else {
+						Object.entries(value).forEach(([childKey, childValue]) => {
+							childrenContainer.appendChild(buildJsonTree(childValue, childKey, depth + 1));
+						});
+					}
+					details.appendChild(childrenContainer);
+					return details;
+				}
+
+				const item = document.createElement("div");
+				item.className = "flex items-start gap-3 rounded-lg bg-slate-50/80 px-3 py-2 text-sm text-slate-600 shadow-sm dark:bg-slate-800/60 dark:text-slate-200";
+				const keySpan = document.createElement("span");
+				keySpan.className = "min-w-[72px] shrink-0 font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300";
+				keySpan.textContent = formatJsonKey(key);
+				const valueSpan = document.createElement("span");
+				valueSpan.className = "flex-1 break-words font-mono text-xs text-primary-700 dark:text-primary-300";
+				valueSpan.textContent = formatJsonValue(value);
+				item.append(keySpan, valueSpan);
+				return item;
+			}
+
+			function describeJsonCollection(key, value) {
+				const isArray = Array.isArray(value);
+				const size = isArray ? value.length : Object.keys(value).length;
+				const label = key === "root" ? (isArray ? "Array" : "Object") : key;
+				const suffix = isArray ? `[${size}]` : `{${size}}`;
+				return `${label} ${suffix}`;
+			}
+
+			function formatJsonKey(key) {
+				if (key === "root") return "value";
+				return String(key);
+			}
+
+			function formatJsonValue(value) {
+				if (value === null) return "null";
+				if (typeof value === "string") return `"${value}"`;
+				if (typeof value === "number" && Number.isNaN(value)) return "NaN";
+				if (typeof value === "object") return Array.isArray(value) ? `Array(${value.length})` : "Object";
+				return String(value);
+			}
+
+			function isPlainObject(value) {
+				return Object.prototype.toString.call(value) === "[object Object]";
+			}
+
+			function renderHtml(text, origin) {
+				const safeHtml = DOMPurify.sanitize(text, { ADD_ATTR: ["target", "rel"], ADD_TAGS: ["iframe"] });
+				const iframe = document.createElement("iframe");
+				iframe.className = "h-[75vh] w-full border-0";
+				const blob = new Blob([safeHtml], { type: "text/html" });
+				const blobUrl = URL.createObjectURL(blob);
+				iframe.src = blobUrl;
+				iframe.setAttribute("sandbox", "allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts");
+				iframe.title = `HTML preview from ${origin}`;
+				iframe.addEventListener("load", () => URL.revokeObjectURL(blobUrl), { once: true });
+				viewer.appendChild(iframe);
+			}
+
+			function renderPlainText(text) {
+				renderCodeBlock(text, "plain");
+			}
+
+			function renderCodeBlock(text, language) {
+				viewer.appendChild(createCodeBlock(text, language));
+			}
+
+			function createCodeBlock(text, language) {
+				const pre = document.createElement("pre");
+				pre.className = "whitespace-pre-wrap rounded-xl border border-slate-200/80 bg-slate-50/90 p-4 font-mono text-sm text-slate-700 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-200";
+				const code = document.createElement("code");
+				code.textContent = text;
+				code.setAttribute("data-language", language);
+				pre.appendChild(code);
+				return pre;
+			}
+
+			function formatBytes(bytes) {
+				if (!bytes || Number.isNaN(bytes)) return "";
+				const units = ["B", "KB", "MB", "GB", "TB"];
+				const exponent = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
+				const size = (bytes / Math.pow(1024, exponent)).toFixed(exponent === 0 ? 0 : 1);
+				return `${size} ${units[exponent]}`;
+			}
+
+			function extractFileName(url) {
+				try {
+					const { pathname } = new URL(url);
+					const segments = pathname.split("/").filter(Boolean);
+					return segments.pop() || "";
+				} catch (error) {
+					return url.split("/").pop() || "";
+				}
+			}
+
+			function extractExtension(fileName) {
+				const match = /(\.([^.?#]+))(?:[?#].*)?$/.exec(fileName);
+				return match && match[2] ? match[2] : "";
+			}
+
+			function isPdf(ext, type) {
+				return ext === "pdf" || type.includes("application/pdf");
+			}
+			function isMermaid(ext, type) {
+				return ["mmd", "mermaid"].includes(ext) || type.includes("text/vnd.mermaid") || type.includes("text/x-mermaid");
+			}
+			function isMarkdown(ext, type) {
+				return ["md", "markdown", "mdown"].includes(ext) || type.includes("text/markdown") || type.includes("text/x-markdown");
+			}
+			function isCsv(ext, type) {
+				return ext === "csv" || type.includes("text/csv");
+			}
+			function isJson(ext, type) {
+				return ext === "json" || type.includes("application/json") || type.includes("text/json");
+			}
+			function looksLikeHtml(ext, type) {
+				return ["html", "htm"].includes(ext) || type.includes("text/html");
+			}
+			function isImage(ext, type) {
+				return ["png", "jpg", "jpeg", "gif", "bmp", "webp", "svg", "avif", "ico"].includes(ext) || type.startsWith("image/");
+			}
+			function isVideo(ext, type) {
+				return ["mp4", "webm", "ogg", "ogv", "mov", "m4v"].includes(ext) || type.startsWith("video/");
+			}
+			function isAudio(ext, type) {
+				return ["mp3", "wav", "ogg", "oga", "flac", "aac", "m4a"].includes(ext) || type.startsWith("audio/");
+			}
+
+			function showLoadingState(isLoading) {
+				if (isLoading) {
+					viewerWrapper.classList.add("animate-pulse");
+				} else {
+					viewerWrapper.classList.remove("animate-pulse");
+				}
+			}
+
+			function updateStatus(level, title, message) {
+				const baseClasses = "rounded-2xl border px-6 py-5 text-sm shadow-sm transition-all";
+				const palettes = {
+					info: "border-slate-200/70 bg-white/80 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-300",
+					loading: "border-primary-200/70 bg-primary-50/80 text-primary-700 dark:border-primary-900/70 dark:bg-primary-950/40 dark:text-primary-200",
+					success: "border-emerald-200/70 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+					error: "border-rose-200/70 bg-rose-50/80 text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200",
+				};
+				statusMessage.className = `${baseClasses} ${palettes[level] || palettes.info}`;
+				statusTitle.textContent = title;
+				statusBody.textContent = message;
+			}
+
+			function showError(message) {
+				viewer.innerHTML = "";
+				const block = document.createElement("div");
+				block.className = "flex flex-col items-center gap-3 rounded-xl border border-rose-200/70 bg-rose-50/60 p-8 text-center text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200";
+				block.innerHTML = `
+					<svg class="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a1.1 1.1 0 0 0 .95 1.65h18.46a1.1 1.1 0 0 0 .95-1.65L13.71 3.86a1.1 1.1 0 0 0-1.9 0Z" />
+					</svg>
+					<p class="text-sm">${message}</p>
+					<p class="text-xs text-rose-500/80">Confirm the file exists, is publicly accessible, and supports cross-origin requests.</p>
+				`;
+				viewer.appendChild(block);
+				updateStatus("error", "Unable to load file", message);
+			}
+		</script>
+	</body>
+</html>
