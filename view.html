@@ -33,6 +33,307 @@
 			::-webkit-scrollbar-thumb:hover {
 				background-color: rgba(99, 102, 241, 0.8);
 			}
+			.pdf-zoom-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				padding: 1.5rem;
+				background: rgba(15, 23, 42, 0.75);
+				-webkit-backdrop-filter: blur(8px);
+				backdrop-filter: blur(8px);
+				z-index: 60;
+			}
+			.pdf-zoom-overlay.active {
+				display: flex;
+			}
+			.pdf-zoom-dialog {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+				width: min(960px, 92vw);
+				max-width: 100%;
+				height: min(90vh, 720px);
+				border-radius: 1rem;
+				border: 1px solid rgba(226, 232, 240, 0.35);
+				background: rgba(248, 250, 252, 0.98);
+				box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+				overflow: hidden;
+			}
+			.dark .pdf-zoom-dialog {
+				border-color: rgba(71, 85, 105, 0.6);
+				background: rgba(15, 23, 42, 0.92);
+				box-shadow: 0 30px 60px rgba(15, 23, 42, 0.65);
+			}
+			.pdf-zoom-toolbar {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+				padding: 1rem 1.25rem;
+				border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+				background: rgba(241, 245, 249, 0.9);
+			}
+			.dark .pdf-zoom-toolbar {
+				border-color: rgba(71, 85, 105, 0.6);
+				background: rgba(30, 41, 59, 0.9);
+			}
+			.pdf-zoom-info {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.85rem;
+			}
+			.pdf-zoom-text {
+				display: flex;
+				flex-direction: column;
+				gap: 0.2rem;
+				min-width: 0;
+			}
+			.pdf-zoom-indicator,
+			.pdf-zoom-info span[data-zoom-indicator] {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				min-width: 3.2rem;
+				padding: 0.28rem 0.7rem;
+				font-size: 0.72rem;
+				font-weight: 600;
+				font-variant-numeric: tabular-nums;
+				color: rgb(71, 85, 105);
+				background: rgba(148, 163, 184, 0.18);
+				border-radius: 9999px;
+			}
+			.dark .pdf-zoom-indicator,
+			.dark .pdf-zoom-info span[data-zoom-indicator] {
+				color: rgba(226, 232, 240, 0.92);
+				background: rgba(71, 85, 105, 0.35);
+			}
+			.pdf-zoom-controls {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: flex-end;
+				gap: 0.65rem;
+			}
+			.pdf-zoom-group {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.45rem;
+			}
+			.pdf-zoom-group button,
+			.pdf-zoom-controls > button {
+				flex: 0 0 auto;
+				min-width: 2.6rem;
+				box-sizing: border-box;
+			}
+			.pdf-zoom-controls > button[disabled] {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+			.pdf-zoom-toolbar button {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.35rem;
+				border-radius: 9999px;
+				border: 1px solid rgba(99, 102, 241, 0.3);
+				background: rgba(99, 102, 241, 0.08);
+				padding: 0.45rem 0.9rem;
+				font-size: 0.75rem;
+				font-weight: 600;
+				color: rgb(76, 81, 191);
+				transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+			}
+			.pdf-zoom-toolbar button .icon { font-size: 0.88rem; line-height: 1; }
+			.pdf-zoom-toolbar button .label { white-space: nowrap; }
+
+			@media (min-width: 900px) {
+				.pdf-zoom-toolbar {
+					flex-direction: row;
+					align-items: center;
+					justify-content: space-between;
+					gap: 1.25rem;
+				}
+				.pdf-zoom-info { flex: 1 1 auto; }
+				.pdf-zoom-controls { flex: 0 0 auto; }
+			}
+
+			/* Compact layout for small tablets and narrow screens */
+			@media (max-width: 820px) {
+				.pdf-zoom-overlay { padding: 0.9rem; }
+				.pdf-zoom-dialog { width: min(940px, 94vw); }
+				.pdf-zoom-toolbar { gap: 0.8rem; }
+				.pdf-zoom-info {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0.5rem;
+				}
+				.pdf-zoom-info .pdf-zoom-text { gap: 0.25rem; }
+				.pdf-zoom-indicator,
+				.pdf-zoom-info span[data-zoom-indicator] {
+					align-self: flex-start;
+					padding: 0.24rem 0.65rem;
+					font-size: 0.66rem;
+				}
+				.pdf-zoom-controls {
+					display: grid;
+					width: 100%;
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 0.55rem;
+				}
+				.pdf-zoom-group {
+					display: grid;
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 0.55rem;
+					width: 100%;
+				}
+				.pdf-zoom-group button,
+				.pdf-zoom-controls > button {
+					width: 100%;
+					min-width: 0;
+					padding: 0.34rem 0.6rem;
+					font-size: 0.7rem;
+					border-radius: 0.9rem;
+				}
+				.pdf-zoom-controls > button[data-action="close"] {
+					grid-column: span 2;
+				}
+				.pdf-zoom-toolbar button .label { display: none; }
+				.pdf-zoom-toolbar button .icon { font-size: 0.88rem; }
+			}
+			.pdf-zoom-toolbar button:hover {
+				transform: translateY(-1px);
+				background: rgba(99, 102, 241, 0.12);
+				border-color: rgba(99, 102, 241, 0.5);
+			}
+			.dark .pdf-zoom-toolbar button {
+				border-color: rgba(165, 180, 252, 0.4);
+				background: rgba(129, 140, 248, 0.14);
+				color: rgb(196, 203, 255);
+			}
+			.dark .pdf-zoom-toolbar button:hover {
+				background: rgba(129, 140, 248, 0.22);
+				border-color: rgba(165, 180, 252, 0.65);
+			}
+			.pdf-zoom-toolbar button[data-action="close"] {
+				border-color: rgba(248, 113, 113, 0.35);
+				background: rgba(254, 226, 226, 0.8);
+				color: rgb(225, 29, 72);
+			}
+			.pdf-zoom-toolbar button[data-action="close"]:hover {
+				background: rgba(254, 202, 202, 0.9);
+				border-color: rgba(248, 113, 113, 0.65);
+			}
+			.dark .pdf-zoom-toolbar button[data-action="close"] {
+				background: rgba(248, 113, 113, 0.16);
+				border-color: rgba(248, 113, 113, 0.45);
+				color: rgb(252, 165, 165);
+			}
+			.dark .pdf-zoom-toolbar button[data-action="close"]:hover {
+				background: rgba(248, 113, 113, 0.24);
+				border-color: rgba(248, 113, 113, 0.65);
+			}
+			.pdf-zoom-info strong {
+				font-size: 0.75rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: rgb(71, 85, 105);
+			}
+			.pdf-zoom-info span:not([data-zoom-indicator]) {
+				font-size: 0.7rem;
+				color: rgba(71, 85, 105, 0.85);
+			}
+			.dark .pdf-zoom-info strong,
+			.dark .pdf-zoom-info span:not([data-zoom-indicator]) {
+				color: rgba(226, 232, 240, 0.8);
+			}
+			.pdf-zoom-image-wrapper {
+				position: relative;
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				overflow: auto;
+				padding: 1rem;
+				background: rgba(248, 250, 252, 0.85);
+				cursor: default;
+				-webkit-user-select: none;
+				user-select: none;
+				transition: cursor 0.2s ease;
+			}
+			.dark .pdf-zoom-image-wrapper {
+				background: rgba(15, 23, 42, 0.85);
+			}
+			.pdf-zoom-image-wrapper.is-zoomed {
+				align-items: flex-start;
+				justify-content: flex-start;
+				cursor: grab;
+			}
+			.pdf-zoom-image-wrapper.is-zoomed.is-dragging {
+				cursor: grabbing;
+			}
+			.pdf-zoom-image {
+				max-width: none;
+				max-height: none;
+				width: 100%;
+				height: auto;
+				transform-origin: top left;
+				transition: transform 0.18s ease;
+				will-change: transform;
+				pointer-events: none;
+			}
+
+			@media (max-width: 640px) {
+				.pdf-zoom-overlay { padding: 0.75rem; }
+				.pdf-zoom-dialog {
+					height: 88vh;
+					border-radius: 1.25rem;
+					width: min(920px, 96vw);
+				}
+				.pdf-zoom-toolbar {
+					padding: 0.75rem 0.85rem;
+					gap: 0.6rem;
+				}
+				.pdf-zoom-controls {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 0.45rem;
+				}
+				.pdf-zoom-group {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 0.45rem;
+				}
+				.pdf-zoom-group button,
+				.pdf-zoom-controls > button {
+					padding: 0.28rem 0.5rem;
+					font-size: 0.64rem;
+				}
+				.pdf-zoom-indicator,
+				.pdf-zoom-info span[data-zoom-indicator] {
+					font-size: 0.62rem;
+				}
+			}
+			@media (max-width: 480px) {
+				.pdf-zoom-overlay { padding: 0.55rem; }
+				.pdf-zoom-toolbar { padding: 0.65rem 0.75rem; }
+				.pdf-zoom-controls { grid-template-columns: 1fr; }
+				.pdf-zoom-group { grid-template-columns: 1fr; }
+				.pdf-zoom-controls > button[data-action="close"] { grid-column: 1; }
+				.pdf-zoom-toolbar button .icon { font-size: 0.8rem; }
+			}
+			@media (max-width: 360px) {
+				.pdf-zoom-toolbar { padding: 0.55rem 0.65rem; }
+				.pdf-zoom-group button,
+				.pdf-zoom-controls > button { padding: 0.24rem 0.45rem; }
+				.pdf-zoom-indicator,
+				.pdf-zoom-info span[data-zoom-indicator] { padding: 0.18rem 0.42rem; font-size: 0.58rem; }
+			}
 		</style>
 	</head>
 	<body class="min-h-screen bg-slate-100 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
@@ -154,6 +455,24 @@
 			const PDF_JS_VERSION = "3.11.174";
 			const PDF_JS_BASE_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDF_JS_VERSION}`;
 			let pdfjsLoaderPromise = null;
+			let pdfZoomOverlay = null;
+			let pdfZoomWrapper = null;
+			let pdfZoomImage = null;
+			let pdfZoomTitle = null;
+			let pdfZoomCaption = null;
+			let pdfZoomIndicator = null;
+			let pdfZoomPrevButton = null;
+			let pdfZoomNextButton = null;
+			let pdfZoomScale = 1;
+			let previousDocumentOverflow = "";
+			let pdfIsDragging = false;
+			let pdfDragPointerId = null;
+			let pdfDragStartX = 0;
+			let pdfDragStartY = 0;
+			let pdfDragScrollLeft = 0;
+			let pdfDragScrollTop = 0;
+			let pdfZoomListenersAttached = false;
+			let pdfZoomContext = createInitialPdfZoomContext();
 			const MERMAID_VERSION = "10.9.1";
 			const MERMAID_BASE_URL = `https://cdn.jsdelivr.net/npm/mermaid@${MERMAID_VERSION}/dist`;
 			let mermaidLoaderPromise = null;
@@ -440,6 +759,399 @@
 				return null;
 			}
 
+			function createInitialPdfZoomContext() {
+				return {
+					canvases: [],
+					currentIndex: -1,
+					fileName: "",
+					totalPages: 0,
+				};
+			}
+
+			function setPdfZoomContextFromCanvas(canvas, meta = {}) {
+				const canvases = Array.from(viewer.querySelectorAll("canvas[data-page-number]"));
+				let index = canvases.indexOf(canvas);
+				if (index === -1) {
+					canvases.push(canvas);
+					index = canvases.length - 1;
+				}
+				const totalPages = Number(meta.totalPages) || Number(canvas?.dataset?.totalPages) || canvases.length;
+				const fileName = meta.fileName || canvas?.dataset?.fileName || "PDF page";
+				pdfZoomContext = {
+					canvases,
+					currentIndex: index,
+					fileName,
+					totalPages,
+				};
+				updatePdfNavigationState();
+			}
+
+			function getCanvasMeta(canvas, fallback = {}) {
+				const dataset = canvas?.dataset || {};
+				const fileName = dataset.fileName || fallback.fileName || pdfZoomContext.fileName || "PDF page";
+				const pageNumber = dataset.pageNumber ? Number(dataset.pageNumber) : fallback.pageNumber || null;
+				const totalPages = dataset.totalPages ? Number(dataset.totalPages) : fallback.totalPages || pdfZoomContext.totalPages || null;
+				return { fileName, pageNumber, totalPages };
+			}
+
+			function displayPdfCanvasInZoom(canvas, options = {}) {
+				if (!canvas || !pdfZoomImage) return;
+				const { resetScale = false } = options;
+				if (resetScale) {
+					setPdfZoomScale(1, { skipUpdateOverlay: true });
+				}
+				const meta = getCanvasMeta(canvas, options.fallbackMeta || {});
+				const indexWithinContext = pdfZoomContext.canvases.indexOf(canvas);
+				if (indexWithinContext !== -1) {
+					pdfZoomContext.currentIndex = indexWithinContext;
+				}
+				if (meta.fileName) {
+					pdfZoomContext.fileName = meta.fileName;
+				}
+				if (meta.totalPages) {
+					pdfZoomContext.totalPages = meta.totalPages;
+				}
+				const pageLabel = meta.pageNumber ? `Page ${meta.pageNumber}${meta.totalPages ? ` of ${meta.totalPages}` : ""}` : "";
+				if (pdfZoomTitle) {
+					pdfZoomTitle.textContent = meta.fileName;
+				}
+				if (pdfZoomCaption) {
+					pdfZoomCaption.textContent = pageLabel;
+				}
+				try {
+					pdfZoomImage.src = canvas.toDataURL("image/png", 1.0);
+				} catch (error) {
+					console.error("Failed to create zoom preview", error);
+					canvas.toBlob((blob) => {
+						if (!blob) return;
+						const blobUrl = URL.createObjectURL(blob);
+						pdfZoomImage.onload = () => {
+							URL.revokeObjectURL(blobUrl);
+							pdfZoomImage.onload = null;
+						};
+						pdfZoomImage.src = blobUrl;
+					}, "image/png");
+				}
+				pdfZoomImage.alt = pageLabel ? `${meta.fileName} — ${pageLabel}` : meta.fileName;
+				if (meta.pageNumber != null) {
+					pdfZoomImage.dataset.pageNumber = String(meta.pageNumber);
+				} else {
+					delete pdfZoomImage.dataset.pageNumber;
+				}
+				if (meta.totalPages) {
+					pdfZoomImage.dataset.totalPages = String(meta.totalPages);
+				} else {
+					delete pdfZoomImage.dataset.totalPages;
+				}
+				if (pdfZoomWrapper) {
+					if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
+						try {
+							pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
+						} catch (error) {
+							console.debug("Pointer capture release failed", error);
+						}
+					}
+					pdfZoomWrapper.scrollLeft = 0;
+					pdfZoomWrapper.scrollTop = 0;
+					pdfZoomWrapper.classList.remove("is-dragging");
+				}
+				pdfIsDragging = false;
+				pdfDragPointerId = null;
+				updatePdfZoomScale();
+				updatePdfNavigationState();
+			}
+
+			function updatePdfNavigationState() {
+				if (pdfZoomPrevButton) {
+					const hasPrev = pdfZoomContext.currentIndex > 0;
+					pdfZoomPrevButton.disabled = !hasPrev;
+					pdfZoomPrevButton.setAttribute("aria-disabled", hasPrev ? "false" : "true");
+				}
+				if (pdfZoomNextButton) {
+					const totalCandidates = pdfZoomContext.canvases.length || pdfZoomContext.totalPages || 0;
+					const hasNext = pdfZoomContext.currentIndex >= 0 && pdfZoomContext.currentIndex < totalCandidates - 1;
+					pdfZoomNextButton.disabled = !hasNext;
+					pdfZoomNextButton.setAttribute("aria-disabled", hasNext ? "false" : "true");
+				}
+			}
+
+			function navigatePdfZoom(direction) {
+				if (!pdfZoomContext.canvases.length) return;
+				const nextIndex = pdfZoomContext.currentIndex + direction;
+				if (nextIndex < 0 || nextIndex >= pdfZoomContext.canvases.length) return;
+				const nextCanvas = pdfZoomContext.canvases[nextIndex];
+				if (!nextCanvas) return;
+				pdfZoomContext.currentIndex = nextIndex;
+				displayPdfCanvasInZoom(nextCanvas);
+			}
+
+			function resetPdfZoomContext() {
+				pdfZoomContext = createInitialPdfZoomContext();
+				updatePdfNavigationState();
+			}
+
+			function ensurePdfZoomOverlay() {
+				if (pdfZoomOverlay) {
+					if (!pdfZoomWrapper) {
+						pdfZoomWrapper = pdfZoomOverlay.querySelector(".pdf-zoom-image-wrapper");
+					}
+					return pdfZoomOverlay;
+				}
+				const overlay = document.createElement("div");
+				overlay.id = "pdfZoomOverlay";
+				overlay.className = "pdf-zoom-overlay";
+				overlay.setAttribute("aria-hidden", "true");
+				overlay.innerHTML = `
+					<div class="pdf-zoom-dialog" role="dialog" aria-modal="true" aria-labelledby="pdfZoomTitle" aria-describedby="pdfZoomCaption">
+						<div class="pdf-zoom-toolbar">
+							<div class="pdf-zoom-info">
+								<div class="pdf-zoom-text">
+									<strong id="pdfZoomTitle">PDF preview</strong>
+									<span id="pdfZoomCaption"></span>
+								</div>
+								<span class="pdf-zoom-indicator" data-zoom-indicator>100%</span>
+							</div>
+							<div class="pdf-zoom-controls">
+								<div class="pdf-zoom-group" data-group="navigate">
+									<button type="button" data-action="prev-page" aria-label="Previous page"><span class="icon">⟵</span><span class="label">Prev</span></button>
+									<button type="button" data-action="next-page" aria-label="Next page"><span class="icon">⟶</span><span class="label">Next</span></button>
+								</div>
+								<div class="pdf-zoom-group" data-group="zoom">
+									<button type="button" data-action="zoom-out" aria-label="Zoom out"><span class="icon">−</span><span class="label">Zoom out</span></button>
+									<button type="button" data-action="zoom-in" aria-label="Zoom in"><span class="icon">＋</span><span class="label">Zoom in</span></button>
+									<button type="button" data-action="zoom-reset" aria-label="Reset zoom"><span class="icon">⟲</span><span class="label">Reset</span></button>
+								</div>
+								<button type="button" data-action="close" aria-label="Close preview" class="pdf-zoom-close"><span class="icon">✕</span><span class="label">Close</span></button>
+							</div>
+						</div>
+						<div class="pdf-zoom-image-wrapper">
+							<img class="pdf-zoom-image" alt="Zoomed PDF page preview" />
+						</div>
+					</div>
+				`;
+				document.body.appendChild(overlay);
+				pdfZoomOverlay = overlay;
+				pdfZoomWrapper = overlay.querySelector(".pdf-zoom-image-wrapper");
+				pdfZoomImage = overlay.querySelector(".pdf-zoom-image");
+				pdfZoomTitle = overlay.querySelector("#pdfZoomTitle");
+				pdfZoomCaption = overlay.querySelector("#pdfZoomCaption");
+				pdfZoomIndicator = overlay.querySelector("[data-zoom-indicator]");
+				pdfZoomPrevButton = overlay.querySelector('[data-action="prev-page"]');
+				pdfZoomNextButton = overlay.querySelector('[data-action="next-page"]');
+				updatePdfNavigationState();
+
+				const controls = overlay.querySelector(".pdf-zoom-controls");
+				if (controls) {
+					controls.addEventListener("click", (event) => {
+						const target = event.target instanceof Element ? event.target.closest("button[data-action]") : null;
+						if (!target) return;
+						const action = target.dataset.action;
+						switch (action) {
+							case "prev-page":
+								navigatePdfZoom(-1);
+								break;
+							case "next-page":
+								navigatePdfZoom(1);
+								break;
+							case "zoom-in":
+								changePdfZoomScale(0.2);
+								break;
+							case "zoom-out":
+								changePdfZoomScale(-0.2);
+								break;
+							case "zoom-reset":
+								setPdfZoomScale(1);
+								break;
+							case "close":
+								closePdfZoomOverlay();
+								break;
+							default:
+								break;
+						}
+					});
+				}
+
+				overlay.addEventListener("click", (event) => {
+					if (event.target === overlay) {
+						closePdfZoomOverlay();
+					}
+				});
+
+				document.addEventListener("keydown", (event) => {
+					if (!overlay.classList.contains("active")) return;
+					if (event.key === "Escape") {
+						event.preventDefault();
+						closePdfZoomOverlay();
+						return;
+					}
+					if (event.key === "ArrowRight") {
+						event.preventDefault();
+						navigatePdfZoom(1);
+						return;
+					}
+					if (event.key === "ArrowLeft") {
+						event.preventDefault();
+						navigatePdfZoom(-1);
+					}
+				});
+
+				if (pdfZoomWrapper) {
+					pdfZoomWrapper.addEventListener("wheel", (event) => {
+						if (!overlay.classList.contains("active")) return;
+						if (!event.ctrlKey && !event.altKey) return;
+						event.preventDefault();
+						changePdfZoomScale(event.deltaY < 0 ? 0.15 : -0.15);
+					});
+					if (!pdfZoomListenersAttached) {
+						const handlePointerDown = (event) => {
+							if (!overlay.classList.contains("active")) return;
+							if (pdfZoomScale <= 1 || !pdfZoomWrapper) return;
+							if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") return;
+							pdfIsDragging = true;
+							pdfDragPointerId = event.pointerId;
+							pdfDragStartX = event.clientX;
+							pdfDragStartY = event.clientY;
+							pdfDragScrollLeft = pdfZoomWrapper.scrollLeft;
+							pdfDragScrollTop = pdfZoomWrapper.scrollTop;
+							pdfZoomWrapper.classList.add("is-dragging");
+							if (typeof pdfZoomWrapper.setPointerCapture === "function") {
+								pdfZoomWrapper.setPointerCapture(event.pointerId);
+							}
+							event.preventDefault();
+						};
+
+						const handlePointerMove = (event) => {
+							if (!pdfIsDragging || event.pointerId !== pdfDragPointerId || !pdfZoomWrapper) return;
+							const deltaX = event.clientX - pdfDragStartX;
+							const deltaY = event.clientY - pdfDragStartY;
+							pdfZoomWrapper.scrollLeft = pdfDragScrollLeft - deltaX;
+							pdfZoomWrapper.scrollTop = pdfDragScrollTop - deltaY;
+						};
+
+						const endDrag = () => {
+							if (!pdfIsDragging) return;
+							pdfIsDragging = false;
+							if (pdfZoomWrapper) {
+								pdfZoomWrapper.classList.remove("is-dragging");
+								if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
+									try {
+										pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
+									} catch (error) {
+										console.debug("Pointer capture release failed", error);
+									}
+								}
+							}
+							pdfDragPointerId = null;
+						};
+
+						pdfZoomWrapper.addEventListener("pointerdown", handlePointerDown);
+						pdfZoomWrapper.addEventListener("pointermove", handlePointerMove);
+						pdfZoomWrapper.addEventListener("pointerup", endDrag);
+						pdfZoomWrapper.addEventListener("pointercancel", endDrag);
+						pdfZoomWrapper.addEventListener("pointerleave", (event) => {
+							if (event.pointerId !== pdfDragPointerId) return;
+							endDrag();
+						});
+						pdfZoomListenersAttached = true;
+					}
+				}
+
+				return overlay;
+			}
+
+			function openPdfZoomOverlay(canvas, meta = {}) {
+				const overlay = ensurePdfZoomOverlay();
+				if (!canvas || !overlay || !pdfZoomImage) return;
+				setPdfZoomContextFromCanvas(canvas, meta);
+				displayPdfCanvasInZoom(canvas, { resetScale: true, fallbackMeta: meta });
+				overlay.dataset.scale = String(pdfZoomScale);
+				overlay.classList.add("active");
+				overlay.setAttribute("aria-hidden", "false");
+				previousDocumentOverflow = document.documentElement.style.overflow;
+				document.documentElement.style.overflow = "hidden";
+			}
+
+			function closePdfZoomOverlay() {
+				if (!pdfZoomOverlay) return;
+				pdfZoomOverlay.classList.remove("active");
+				pdfZoomOverlay.setAttribute("aria-hidden", "true");
+				pdfZoomOverlay.dataset.scale = "1";
+				pdfZoomScale = 1;
+				if (pdfZoomWrapper) {
+					if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
+						try {
+							pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
+						} catch (error) {
+							console.debug("Pointer capture release failed", error);
+						}
+					}
+					pdfZoomWrapper.scrollLeft = 0;
+					pdfZoomWrapper.scrollTop = 0;
+					pdfZoomWrapper.classList.remove("is-dragging", "is-zoomed");
+				}
+				pdfIsDragging = false;
+				pdfDragPointerId = null;
+				if (pdfZoomImage) {
+					pdfZoomImage.style.transform = "scale(1)";
+					pdfZoomImage.removeAttribute("src");
+				}
+				if (pdfZoomIndicator) {
+					pdfZoomIndicator.textContent = "100%";
+				}
+				if (pdfZoomCaption) {
+					pdfZoomCaption.textContent = "";
+				}
+				if (pdfZoomTitle) {
+					pdfZoomTitle.textContent = "PDF preview";
+				}
+				resetPdfZoomContext();
+				document.documentElement.style.overflow = previousDocumentOverflow;
+			}
+
+			function setPdfZoomScale(value, options = {}) {
+				const { skipUpdateOverlay = false } = options;
+				const clamped = Math.min(Math.max(value, 0.5), 5);
+				pdfZoomScale = Number.isFinite(clamped) ? clamped : 1;
+				if (!skipUpdateOverlay) {
+					updatePdfZoomScale();
+				}
+			}
+
+			function changePdfZoomScale(delta) {
+				setPdfZoomScale(pdfZoomScale + delta);
+			}
+
+			function updatePdfZoomScale() {
+				if (pdfZoomImage) {
+					pdfZoomImage.style.transform = `scale(${pdfZoomScale})`;
+				}
+				if (pdfZoomIndicator) {
+					pdfZoomIndicator.textContent = `${Math.round(pdfZoomScale * 100)}%`;
+				}
+				if (pdfZoomOverlay) {
+					pdfZoomOverlay.dataset.scale = String(pdfZoomScale);
+				}
+				if (pdfZoomWrapper) {
+					const isZoomed = pdfZoomScale > 1.02;
+					pdfZoomWrapper.classList.toggle("is-zoomed", isZoomed);
+					if (!isZoomed) {
+						pdfZoomWrapper.classList.remove("is-dragging");
+						pdfIsDragging = false;
+					}
+				}
+			}
+
+			function attachPdfZoomBehavior(canvas, meta) {
+				if (!canvas) return;
+				canvas.addEventListener("click", () => openPdfZoomOverlay(canvas, meta));
+				canvas.addEventListener("keydown", (event) => {
+					if (event.key === "Enter" || event.key === " ") {
+						event.preventDefault();
+						openPdfZoomOverlay(canvas, meta);
+					}
+				});
+			}
+
 			async function renderPdf(blob, fileName) {
 				viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
 				try {
@@ -449,7 +1161,7 @@
 					const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
 
 					const pdfContainer = document.createElement("div");
-					pdfContainer.className = "space-y-6";
+					pdfContainer.className = "flex w-full flex-col items-center gap-8";
 					pdfContainer.setAttribute("role", "region");
 					pdfContainer.setAttribute("aria-label", `${fileName} PDF preview`);
 
@@ -460,15 +1172,15 @@
 
 					for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
 						const pageWrapper = document.createElement("div");
-						pageWrapper.className = "overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-lg dark:border-slate-800/40 dark:bg-slate-950/60";
+						pageWrapper.className = "relative flex w-full max-w-4xl flex-col items-center overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 shadow-lg dark:border-slate-800/40 dark:bg-slate-950/60";
 						const canvas = document.createElement("canvas");
-						canvas.className = "w-full";
+						canvas.className = "w-full cursor-zoom-in rounded-lg bg-white transition-transform duration-200 ease-out";
 						pageWrapper.appendChild(canvas);
 						pdfContainer.appendChild(pageWrapper);
 
 						const page = await pdf.getPage(pageNumber);
 						const baseViewport = page.getViewport({ scale: 1 });
-						const containerWidth = viewerWrapper.clientWidth - 32;
+						const containerWidth = Math.min(viewerWrapper.clientWidth - 32, 1024);
 						const maxScale = Math.min(containerWidth / baseViewport.width, 1.6);
 						const scale = Number.isFinite(maxScale) && maxScale > 0 ? maxScale : 1;
 						const viewport = page.getViewport({ scale });
@@ -483,9 +1195,16 @@
 						context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
 
 						await page.render({ canvasContext: context, viewport }).promise;
+						canvas.dataset.pageNumber = String(pageNumber);
+						canvas.dataset.totalPages = String(pdf.numPages);
+						canvas.dataset.fileName = fileName;
+						canvas.setAttribute("role", "button");
+						canvas.setAttribute("aria-label", `Zoom ${fileName}, page ${pageNumber} of ${pdf.numPages}`);
+						canvas.tabIndex = 0;
+						attachPdfZoomBehavior(canvas, { fileName, pageNumber, totalPages: pdf.numPages });
 
 						const label = document.createElement("div");
-						label.className = "border-t border-slate-200/70 bg-slate-100 px-4 py-2 text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
+						label.className = "mt-3 w-full rounded-lg border border-slate-200/70 bg-slate-100 px-4 py-2 text-center text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
 						label.textContent = `Page ${pageNumber} of ${pdf.numPages}`;
 						pageWrapper.appendChild(label);
 					}
