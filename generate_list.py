@@ -3,8 +3,8 @@ from datetime import datetime, timezone, timedelta
 from typing import List
 
 
-SKIP_DIRS = {".git", ".github", ".vscode", "node_modules", "__pycache__", ".netlify"}
-SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml", "view.html", "styles/tailwind.css"}
+SKIP_DIRS = {".git", ".github", ".vscode", "node_modules", "__pycache__", ".netlify", "styles"}
+SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml", "view.html"}
 
 
 def generate_list(folder: str = ".") -> None:
