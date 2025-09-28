@@ -4,7 +4,7 @@ from typing import List
 
 
 SKIP_DIRS = {".git", ".github", ".vscode", "node_modules", "__pycache__", ".netlify"}
-SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml"}
+SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml", "view.html", "styles/tailwind.css"}
 
 
 def generate_list(folder: str = ".") -> None:
