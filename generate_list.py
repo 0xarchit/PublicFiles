@@ -83,7 +83,9 @@ def generate_list(folder: str = ".") -> None:
 
         for entry in entries:
             href = "/" + entry  # absolute path from site root (Netlify)
-            f.write(f"\n      <li><a href=\"{href}\">{entry}</a></li>")
+            import urllib.parse as _up
+            file_q = _up.quote(entry, safe="")
+            f.write(f"\n      <li><a href=\"/baseurl/view?file={file_q}\">{entry}</a></li>")
 
         f.write(
             """
