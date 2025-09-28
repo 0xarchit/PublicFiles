@@ -389,7 +389,7 @@
 								</p>
 							</div>
 							<ul class="list-disc space-y-1 pl-5 text-xs text-slate-500 dark:text-slate-400">
-								<li>Supports text, CSV, PDF, Markdown, images, audio, and video.</li>
+								<li>Supports TXT, CSV, PDF, PPTX, DOCX, XLSX, Markdown, Images, Audio, and Video.</li>
 								<li>Automatically adapts to mobile and desktop layouts.</li>
 								<li>Switch between light and dark themes anytime.</li>
 							</ul>
@@ -476,6 +476,16 @@
 			const MERMAID_VERSION = "10.9.1";
 			const MERMAID_BASE_URL = `https://cdn.jsdelivr.net/npm/mermaid@${MERMAID_VERSION}/dist`;
 			let mermaidLoaderPromise = null;
+			const XLSX_VERSION = "0.18.5";
+			const XLSX_BASE_URL = `https://cdn.jsdelivr.net/npm/xlsx@${XLSX_VERSION}/dist`;
+			let xlsxLoaderPromise = null;
+			const MAMMOTH_VERSION = "1.6.0";
+			const MAMMOTH_BASE_URL = `https://cdn.jsdelivr.net/npm/mammoth@${MAMMOTH_VERSION}`;
+			let mammothLoaderPromise = null;
+			const JSZIP_VERSION = "3.10.1";
+			const JSZIP_BASE_URL = `https://cdn.jsdelivr.net/npm/jszip@${JSZIP_VERSION}/dist`;
+			let jszipLoaderPromise = null;
+			const MAX_SPREADSHEET_PREVIEW_ROWS = 200;
 
 			function ensurePdfJs() {
 				if (window.pdfjsLib) {
@@ -535,6 +545,87 @@
 					});
 				}
 				return mermaidLoaderPromise;
+			}
+
+			function ensureXlsx() {
+				if (window.XLSX) {
+					return Promise.resolve(window.XLSX);
+				}
+				if (!xlsxLoaderPromise) {
+					xlsxLoaderPromise = new Promise((resolve, reject) => {
+						const script = document.createElement("script");
+						script.src = `${XLSX_BASE_URL}/xlsx.full.min.js`;
+						script.crossOrigin = "anonymous";
+						script.referrerPolicy = "no-referrer";
+						script.onload = () => {
+							if (window.XLSX) {
+								resolve(window.XLSX);
+							} else {
+								reject(new Error("SheetJS loaded, but XLSX is unavailable."));
+							}
+						};
+						script.onerror = () => reject(new Error("Failed to load spreadsheet renderer."));
+						document.head.appendChild(script);
+					});
+					xlsxLoaderPromise.catch(() => {
+						xlsxLoaderPromise = null;
+					});
+				}
+				return xlsxLoaderPromise;
+			}
+
+			function ensureMammoth() {
+				if (window.mammoth) {
+					return Promise.resolve(window.mammoth);
+				}
+				if (!mammothLoaderPromise) {
+					mammothLoaderPromise = new Promise((resolve, reject) => {
+						const script = document.createElement("script");
+						script.src = `${MAMMOTH_BASE_URL}/mammoth.browser.min.js`;
+						script.crossOrigin = "anonymous";
+						script.referrerPolicy = "no-referrer";
+						script.onload = () => {
+							if (window.mammoth) {
+								resolve(window.mammoth);
+							} else {
+								reject(new Error("Mammoth loaded, but converter is unavailable."));
+							}
+						};
+						script.onerror = () => reject(new Error("Failed to load DOCX renderer."));
+						document.head.appendChild(script);
+					});
+					mammothLoaderPromise.catch(() => {
+						mammothLoaderPromise = null;
+					});
+				}
+				return mammothLoaderPromise;
+			}
+
+			function ensureJsZip() {
+				if (window.JSZip) {
+					return Promise.resolve(window.JSZip);
+				}
+				if (!jszipLoaderPromise) {
+					jszipLoaderPromise = new Promise((resolve, reject) => {
+						const script = document.createElement("script");
+						script.src = `${JSZIP_BASE_URL}/jszip.min.js`;
+						script.crossOrigin = "anonymous";
+						script.referrerPolicy = "no-referrer";
+						script.onload = () => {
+							if (window.JSZip) {
+								resolve(window.JSZip);
+							} else {
+								reject(new Error("JSZip loaded, but library is unavailable."));
+							}
+						};
+						script.onerror = () => reject(new Error("Failed to load JSZip."));
+						document.head.appendChild(script);
+					});
+					jszipLoaderPromise.catch(() => {
+						jszipLoaderPromise = null;
+					});
+				}
+				return jszipLoaderPromise;
 			}
 
 			function initializeMermaidTheme() {
@@ -727,6 +818,29 @@
 					const blob = await response.blob();
 					renderAudio(blob, lowerContentType || "audio/mpeg");
 					return null;
+				}
+
+				if (isOfficeSpreadsheet(type, lowerContentType)) {
+					const buffer = await response.arrayBuffer();
+					return await renderSpreadsheet(buffer, fileName, resolvedUrl);
+				}
+
+				if (isDocxDocument(type, lowerContentType)) {
+					const buffer = await response.arrayBuffer();
+					return await renderDocx(buffer, fileName, resolvedUrl);
+				}
+
+				if (isLegacyWordDocument(type, lowerContentType)) {
+					return renderOfficeEmbed(resolvedUrl, fileName, { kind: "document" });
+				}
+
+				if (isOpenXmlPowerPoint(type, lowerContentType)) {
+					const buffer = await response.arrayBuffer();
+					return await renderPowerPoint(buffer, fileName, resolvedUrl);
+				}
+
+				if (isPowerPointDeck(type, lowerContentType)) {
+					return renderOfficeEmbed(resolvedUrl, fileName, { kind: "presentation" });
 				}
 
 				const text = await response.text();
@@ -1373,36 +1487,450 @@
 					renderPlainText("No data rows detected in CSV file.");
 					return;
 				}
-				const template = document.importNode(tableTemplate.content, true);
-				const headRow = template.querySelector("#tableHead");
-				const body = template.querySelector("#tableBody");
-				const headers = data[0];
-				const rest = data.slice(1);
+				const tableNode = createTableFrom2DArray(data);
+				viewer.appendChild(tableNode);
+			}
 
-				headers.forEach((cell) => {
+			function createTableFrom2DArray(data, options = {}) {
+				const { caption = "", emptyMessage = "No rows to display." } = options;
+				if (!Array.isArray(data) || data.length === 0) {
+					return createEmptyTableMessage(emptyMessage);
+				}
+				const normalizedRows = data.map((row) => {
+					if (Array.isArray(row)) {
+						return row.map((value) => normalizeTableCellValue(value));
+					}
+					return [normalizeTableCellValue(row)];
+				});
+				const columnCount = normalizedRows.reduce((max, row) => Math.max(max, row.length), 0);
+				if (columnCount === 0) {
+					return createEmptyTableMessage(emptyMessage);
+				}
+				const headerRow = normalizedRows[0] || [];
+				const headers = Array.from({ length: columnCount }, (_, index) => {
+					const raw = headerRow[index] || "";
+					const label = typeof raw === "string" ? raw.trim() : String(raw).trim();
+					return label || `Column ${index + 1}`;
+				});
+				const bodyRows = normalizedRows.slice(1);
+				const fragment = document.importNode(tableTemplate.content, true);
+				const headRow = fragment.querySelector("#tableHead");
+				const body = fragment.querySelector("#tableBody");
+
+				headers.forEach((title) => {
 					const th = document.createElement("th");
 					th.scope = "col";
 					th.className = "sticky top-0 z-20 border-b border-slate-200 bg-slate-100/95 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80";
-					th.textContent = cell;
+					th.textContent = title;
 					headRow.appendChild(th);
 				});
 
-				rest.forEach((row) => {
+				bodyRows.forEach((row) => {
 					const tr = document.createElement("tr");
 					tr.className = "bg-white/90 hover:bg-primary-50/60 dark:bg-slate-900/70 dark:hover:bg-slate-800/70";
-					row.forEach((cell) => {
+					for (let col = 0; col < columnCount; col += 1) {
 						const td = document.createElement("td");
 						td.className = "px-4 py-3 align-top text-xs text-slate-600 dark:text-slate-300";
-						td.textContent = cell;
+						td.textContent = row[col] ?? "";
 						tr.appendChild(td);
-					});
+					}
 					body.appendChild(tr);
 				});
 
-							template.querySelector("#tableHead").removeAttribute("id");
-							template.querySelector("#tableBody").removeAttribute("id");
+				if (headRow) headRow.removeAttribute("id");
+				if (body) body.removeAttribute("id");
 
-				viewer.appendChild(template);
+				const container = document.createElement("div");
+				container.className = "space-y-2";
+				if (caption) {
+					const captionBadge = document.createElement("div");
+					captionBadge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
+					captionBadge.textContent = caption;
+					container.appendChild(captionBadge);
+				}
+				container.appendChild(fragment);
+
+				if (!bodyRows.length) {
+					const note = document.createElement("p");
+					note.className = "text-xs text-slate-500 dark:text-slate-400";
+					note.textContent = "No data rows detected.";
+					container.appendChild(note);
+				}
+
+				return container;
+			}
+
+			function normalizeTableCellValue(value) {
+				if (value == null) return "";
+				if (value instanceof Date) {
+					return value.toISOString().replace("T", " ").replace("Z", " UTC");
+				}
+				if (typeof value === "number") {
+					return Number.isFinite(value) ? String(value) : "";
+				}
+				if (typeof value === "boolean") {
+					return value ? "TRUE" : "FALSE";
+				}
+				if (typeof value === "object") {
+					try {
+						return JSON.stringify(value);
+					} catch (error) {
+						return String(value);
+					}
+				}
+				return String(value);
+			}
+
+			function createEmptyTableMessage(message) {
+				const wrapper = document.createElement("div");
+				wrapper.className = "rounded-xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-500 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-300";
+				wrapper.textContent = message;
+				return wrapper;
+			}
+
+			async function renderSpreadsheet(arrayBuffer, fileName, resolvedUrl) {
+				try {
+					const XLSX = await ensureXlsx();
+					const workbook = XLSX.read(arrayBuffer, { type: "array", cellDates: true, dateNF: "yyyy-mm-dd" });
+					if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+						return renderOfficeDownloadFallback(fileName, resolvedUrl, "No worksheets were found in this spreadsheet.");
+					}
+					const section = document.createElement("section");
+					section.className = "space-y-6";
+					workbook.SheetNames.forEach((sheetName) => {
+						const sheet = workbook.Sheets[sheetName];
+						const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false, raw: false });
+						const sheetBlock = document.createElement("div");
+						sheetBlock.className = "space-y-3";
+
+						const badge = document.createElement("div");
+						badge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
+						badge.textContent = sheetName || "Sheet";
+						sheetBlock.appendChild(badge);
+
+						const headerRow = rows[0] || [];
+						const dataRows = rows.length > 1 ? rows.slice(1) : [];
+						const truncated = dataRows.length > MAX_SPREADSHEET_PREVIEW_ROWS;
+						const limitedRows = truncated ? dataRows.slice(0, MAX_SPREADSHEET_PREVIEW_ROWS) : dataRows;
+						const tableData = [headerRow, ...limitedRows];
+						const hasVisibleCells = tableData.some((row) => Array.isArray(row) && row.some((cell) => normalizeTableCellValue(cell).trim() !== ""));
+
+						if (!hasVisibleCells) {
+							sheetBlock.appendChild(createEmptyTableMessage("No visible cells in this worksheet."));
+						} else {
+							sheetBlock.appendChild(createTableFrom2DArray(tableData));
+							if (truncated) {
+								const note = document.createElement("p");
+								note.className = "text-[11px] text-slate-500 dark:text-slate-400";
+								note.textContent = `Showing the first ${MAX_SPREADSHEET_PREVIEW_ROWS.toLocaleString()} rows. Download the workbook to view everything.`;
+								sheetBlock.appendChild(note);
+							}
+						}
+
+						section.appendChild(sheetBlock);
+					});
+
+					viewer.appendChild(section);
+					return null;
+				} catch (error) {
+					console.error("Spreadsheet render failed", error);
+					const reason = error instanceof Error ? error.message : String(error);
+					return renderOfficeEmbed(resolvedUrl, fileName, {
+						kind: "spreadsheet",
+						note: "Falling back to Microsoft Office web viewer.",
+						reason,
+					});
+				}
+			}
+
+			async function renderDocx(arrayBuffer, fileName, resolvedUrl) {
+				try {
+					const mammoth = await ensureMammoth();
+					const result = await mammoth.convertToHtml({ arrayBuffer });
+					const html = (result && result.value) || "";
+					const safeHtml = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+					const article = document.createElement("article");
+					article.className = "prose prose-slate max-w-none dark:prose-invert";
+					article.innerHTML = safeHtml && safeHtml.trim() ? safeHtml : "<p>No readable content detected in this document.</p>";
+					viewer.appendChild(article);
+					return null;
+				} catch (error) {
+					console.error("DOCX render failed", error);
+					const reason = error instanceof Error ? error.message : String(error);
+					return renderOfficeEmbed(resolvedUrl, fileName, {
+						kind: "document",
+						note: "Falling back to Microsoft Office web viewer.",
+						reason,
+					});
+				}
+			}
+
+			async function renderPowerPoint(arrayBuffer, fileName, resolvedUrl) {
+				try {
+					const JSZip = await ensureJsZip();
+					const zip = await JSZip.loadAsync(arrayBuffer);
+					const slideFiles = Object.keys(zip.files)
+						.filter((name) => /^ppt\/slides\/slide\d+\.xml$/i.test(name))
+						.sort((a, b) => extractSlideNumber(a) - extractSlideNumber(b));
+					if (!slideFiles.length) {
+						return renderOfficeDownloadFallback(fileName, resolvedUrl, "No slides found in this presentation.");
+					}
+					viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
+					const deck = document.createElement("section");
+					deck.className = "flex w-full flex-col items-center gap-8";
+					const intro = document.createElement("p");
+					intro.className = "text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500";
+					intro.textContent = `${slideFiles.length} slide${slideFiles.length > 1 ? "s" : ""} • Scroll to view`;
+					deck.appendChild(intro);
+					const parser = new DOMParser();
+					for (const slidePath of slideFiles) {
+						const xmlText = await zip.file(slidePath).async("string");
+						const doc = parser.parseFromString(xmlText, "application/xml");
+						const slideNumber = extractSlideNumber(slidePath);
+						const slideWrapper = document.createElement("article");
+						slideWrapper.className = "relative flex w-full max-w-4xl flex-col items-center gap-4";
+						const frame = document.createElement("div");
+						frame.className = "relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-100 shadow-2xl dark:border-slate-800/60 dark:from-slate-950/80 dark:via-slate-950/60 dark:to-slate-900";
+						const frameInner = document.createElement("div");
+						frameInner.className = "absolute inset-0 flex h-full w-full flex-col gap-5 overflow-hidden p-6 text-slate-700 dark:text-slate-100";
+						const cornerBadge = document.createElement("span");
+						cornerBadge.className = "pointer-events-none absolute left-6 top-5 inline-flex items-center gap-2 rounded-full border border-slate-300/60 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-300";
+						cornerBadge.textContent = `Slide ${slideNumber}`;
+						frame.appendChild(cornerBadge);
+						const bulletList = buildSlideBullets(doc);
+						if (bulletList) {
+							bulletList.classList.add("text-base", "leading-relaxed", "space-y-3");
+							frameInner.appendChild(bulletList);
+						}
+						const images = await extractSlideImages(zip, slidePath, doc, parser);
+						if (images.length) {
+							const gallery = document.createElement("div");
+							gallery.className = "mt-auto grid gap-3 sm:grid-cols-2";
+							images.forEach((figure) => {
+								figure.classList.add("overflow-hidden", "rounded-xl", "border", "border-slate-200/60", "bg-white/70", "p-3", "shadow-md", "dark:border-slate-800/70", "dark:bg-slate-900/60");
+								const picture = figure.querySelector("img");
+								if (picture) {
+									picture.classList.add("h-full", "w-full", "object-contain", "drop-shadow-sm");
+								}
+								gallery.appendChild(figure);
+							});
+							frameInner.appendChild(gallery);
+						}
+						if (!bulletList && !images.length) {
+							const placeholder = document.createElement("div");
+							placeholder.className = "flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-200/70 bg-white/70 text-sm text-slate-400 dark:border-slate-800/60 dark:bg-slate-900/50 dark:text-slate-500";
+							placeholder.textContent = "No readable content detected on this slide.";
+							frameInner.appendChild(placeholder);
+						}
+						frame.appendChild(frameInner);
+						slideWrapper.appendChild(frame);
+						const label = document.createElement("div");
+						label.className = "w-full rounded-lg border border-slate-200/70 bg-slate-100 px-4 py-2 text-center text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
+						label.textContent = `Slide ${slideNumber} of ${slideFiles.length}`;
+						slideWrapper.appendChild(label);
+						deck.appendChild(slideWrapper);
+					}
+					viewer.appendChild(deck);
+					return null;
+				} catch (error) {
+					console.error("PowerPoint render failed", error);
+					const reason = error instanceof Error ? error.message : String(error);
+					return renderOfficeEmbed(resolvedUrl, fileName, {
+						kind: "presentation",
+						note: "Falling back to Microsoft Office web viewer.",
+						reason,
+					});
+				}
+			}
+
+			function extractSlideNumber(path) {
+				const match = /slide(\d+)\.xml$/i.exec(path);
+				return match ? Number(match[1]) : 0;
+			}
+
+			function buildSlideBullets(slideDoc) {
+				const TEXT_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
+				const paragraphs = Array.from(slideDoc.getElementsByTagNameNS(TEXT_NS, "p"));
+				const bullets = [];
+				paragraphs.forEach((p) => {
+					const runs = Array.from(p.getElementsByTagNameNS(TEXT_NS, "t"));
+					const combined = runs.map((node) => (node.textContent || "").replace(/\s+/g, " ").trim()).join("").trim();
+					if (combined) {
+						bullets.push(combined);
+					}
+				});
+				if (!bullets.length) return null;
+				const list = document.createElement("ul");
+				list.className = "space-y-1 text-sm text-slate-600 dark:text-slate-200";
+				bullets.forEach((line) => {
+					const li = document.createElement("li");
+					li.className = "relative pl-4 before:absolute before:left-0 before:top-[0.55rem] before:h-[5px] before:w-[5px] before:-translate-y-1/2 before:rounded-full before:bg-primary-400 before:content-['']";
+					li.textContent = line;
+					list.appendChild(li);
+				});
+				return list;
+			}
+
+			async function extractSlideImages(zip, slidePath, slideDoc, parser) {
+				const REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+				const relationships = new Map();
+				const relsPath = slidePath.replace("slides/", "slides/_rels/") + ".rels";
+				if (zip.file(relsPath)) {
+					const relsXml = await zip.file(relsPath).async("string");
+					const relsDoc = parser.parseFromString(relsXml, "application/xml");
+					Array.from(relsDoc.getElementsByTagName("Relationship")).forEach((rel) => {
+						const id = rel.getAttribute("Id");
+						const target = rel.getAttribute("Target");
+						const type = rel.getAttribute("Type") || "";
+						if (id && target && type.includes("image")) {
+							relationships.set(id, normalizeZipPath(slidePath, target));
+						}
+					});
+				}
+				const IMAGE_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
+				const blips = Array.from(slideDoc.getElementsByTagNameNS(IMAGE_NS, "blip"));
+				const images = [];
+				for (const blip of blips) {
+					const embedId = blip.getAttributeNS(REL_NS, "embed") || blip.getAttribute("r:embed");
+					if (!embedId) continue;
+					const targetPath = relationships.get(embedId);
+					if (!targetPath) continue;
+					const file = zip.file(targetPath);
+					if (!file) continue;
+					try {
+						const buffer = await file.async("arraybuffer");
+						const mimeType = guessMimeFromExtension(targetPath) || "application/octet-stream";
+						const blob = new Blob([buffer], { type: mimeType });
+						const url = URL.createObjectURL(blob);
+						const figure = document.createElement("figure");
+						figure.className = "relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-transparent";
+						const img = document.createElement("img");
+						img.src = url;
+						img.alt = "Slide image";
+						img.className = "h-full w-full object-contain";
+						img.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
+						figure.appendChild(img);
+						images.push(figure);
+					} catch (error) {
+						console.debug("Failed to read slide image", error);
+					}
+				}
+				return images;
+			}
+
+			function normalizeZipPath(basePath, target) {
+				const baseDir = basePath.slice(0, basePath.lastIndexOf("/") + 1);
+				const url = new URL(target, `https://example.com/${baseDir}`);
+				return url.pathname.replace(/^\//, "");
+			}
+
+			function guessMimeFromExtension(name) {
+				const ext = (name.split(".").pop() || "").toLowerCase();
+				switch (ext) {
+					case "png":
+						return "image/png";
+					case "jpg":
+					case "jpeg":
+						return "image/jpeg";
+					case "gif":
+						return "image/gif";
+					case "bmp":
+						return "image/bmp";
+					case "svg":
+						return "image/svg+xml";
+					case "webp":
+						return "image/webp";
+					default:
+						return "application/octet-stream";
+				}
+			}
+
+			function renderOfficeEmbed(resolvedUrl, fileName, { kind = "document", note, reason } = {}) {
+				try {
+					const url = new URL(resolvedUrl, window.location.href);
+					if (!canEmbedViaOffice(url)) {
+						return renderOfficeDownloadFallback(fileName, resolvedUrl, "This preview requires a publicly accessible HTTPS URL.");
+					}
+					const embedUrl = buildOfficeViewerUrl(url.href);
+					const wrapper = document.createElement("section");
+					wrapper.className = "space-y-3";
+					const frame = document.createElement("div");
+					const ratioClass = kind === "presentation" ? "aspect-[16/9]" : "aspect-[4/3]";
+					frame.className = `${ratioClass} w-full overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60`;
+					const iframe = document.createElement("iframe");
+					iframe.src = embedUrl;
+					iframe.className = "h-full w-full border-0";
+					iframe.loading = "lazy";
+					iframe.referrerPolicy = "no-referrer";
+					iframe.title = `${fileName} preview`;
+					iframe.setAttribute("allowfullscreen", "true");
+					frame.appendChild(iframe);
+					wrapper.appendChild(frame);
+
+					const message = document.createElement("p");
+					message.className = "text-xs text-slate-500 dark:text-slate-400";
+					const baseNote = note || "Rendered via Microsoft Office web viewer. If the preview stays blank, use the download link.";
+					message.textContent = reason ? `${baseNote} (Fallback reason: ${reason})` : baseNote;
+					wrapper.appendChild(message);
+
+					viewer.appendChild(wrapper);
+					return {
+						statusMessage: {
+							level: "info",
+							title: "Previewing with Office web viewer",
+							body: "The file is embedded using Microsoft Office web viewer. Open the download link if the preview fails.",
+						},
+					};
+				} catch (error) {
+					return renderOfficeDownloadFallback(fileName, resolvedUrl, "Unable to construct a preview URL for this file.");
+				}
+			}
+
+			function renderOfficeDownloadFallback(fileName, resolvedUrl, reason = "") {
+				const message = document.createElement("div");
+				message.className = "space-y-3 rounded-xl border border-slate-200/70 bg-white/80 p-6 text-center text-sm text-slate-600 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-300";
+				const primary = document.createElement("p");
+				primary.textContent = "Browser preview isn’t available for this file. Use the download link instead.";
+				message.appendChild(primary);
+				if (reason) {
+					const details = document.createElement("p");
+					details.className = "text-xs text-slate-500 dark:text-slate-400";
+					details.textContent = reason;
+					message.appendChild(details);
+				}
+				if (resolvedUrl) {
+					const link = document.createElement("a");
+					link.href = resolvedUrl;
+					link.target = "_blank";
+					link.rel = "noopener";
+					link.className = "inline-flex items-center gap-2 rounded-full bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-primary-600";
+					link.textContent = `Open ${fileName}`;
+					message.appendChild(link);
+				}
+				viewer.appendChild(message);
+				return {
+					statusMessage: {
+						level: "info",
+						title: "Preview not available",
+						body: reason || "The file can be opened via the download link instead.",
+					},
+				};
+			}
+
+			function canEmbedViaOffice(url) {
+				if (!url) return false;
+				if (!url.protocol || (url.protocol !== "https:" && url.protocol !== "http:")) {
+					return false;
+				}
+				const forbiddenHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+				if (forbiddenHosts.has(url.hostname)) {
+					return false;
+				}
+				return url.protocol === "https:";
+			}
+
+			function buildOfficeViewerUrl(url) {
+				return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
 			}
 
 			function renderJson(text) {
@@ -1616,6 +2144,40 @@
 					normalizedType.includes("application/vnd.geo+json") ||
 					normalizedType.includes("text/json")
 				);
+			}
+			function isOfficeSpreadsheet(ext, type) {
+				const spreadsheetExtensions = ["xls", "xlsx", "xlsm", "xlt", "xltx", "xlsb", "ods"];
+				const spreadsheetMimeTokens = [
+					"application/vnd.ms-excel",
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					"application/vnd.ms-excel.sheet.macroenabled.12",
+					"application/vnd.ms-excel.sheet.binary.macroenabled.12",
+					"application/vnd.oasis.opendocument.spreadsheet",
+				];
+				return spreadsheetExtensions.includes(ext) || spreadsheetMimeTokens.some((token) => type.includes(token));
+			}
+			function isDocxDocument(ext, type) {
+				const modernWordExtensions = ["docx", "docm", "dotx", "dotm"];
+				const modernWordMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+				return modernWordExtensions.includes(ext) || type.includes(modernWordMime);
+			}
+			function isLegacyWordDocument(ext, type) {
+				const legacyWordExtensions = ["doc", "dot"];
+				return legacyWordExtensions.includes(ext) || type.includes("application/msword");
+			}
+			function isOpenXmlPowerPoint(ext, type) {
+				const openXmlExtensions = ["pptx", "pptm", "ppsx", "ppsm", "potx", "potm"];
+				const openXmlMime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+				return openXmlExtensions.includes(ext) || type.includes(openXmlMime);
+			}
+			function isPowerPointDeck(ext, type) {
+				const powerpointExtensions = ["ppt", "pptx", "pptm", "pps", "ppsx", "pot", "potx"];
+				const powerpointMimeTokens = [
+					"application/vnd.ms-powerpoint",
+					"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+					"application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+				];
+				return powerpointExtensions.includes(ext) || powerpointMimeTokens.some((token) => type.includes(token));
 			}
 			function looksLikeHtml(ext, type) {
 				return ["html", "htm"].includes(ext) || type.includes("text/html");
