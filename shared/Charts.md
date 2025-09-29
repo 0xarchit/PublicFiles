@@ -1282,3 +1282,349 @@ plt.show()
 | **FacetGrid**        | Multi-panel subplots             | `sns.FacetGrid()`                  |
 
 ---
+
+# Popular charts codes in seaborn and matplotlib
+
+**syntax generic**:
+
+* `df` → DataFrame
+* `x` → column name for x-axis
+* `y` → column name for y-axis
+* `hue` → column for categorical grouping (if needed)
+
+Each chart is given **separately** for clarity.
+
+---
+
+## **1. Bar Graph (Vertical & Horizontal)**
+
+```python
+import matplotlib.pyplot as plt
+
+# Vertical Bar Chart
+plt.bar(df['x'], df['y'])
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Vertical Bar Chart')
+plt.show()
+
+# Horizontal Bar Chart
+plt.barh(df['x'], df['y'])
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Horizontal Bar Chart')
+plt.show()
+```
+
+---
+
+## **2. Line Graph**
+
+```python
+plt.plot(df['x'], df['y'], marker='o')
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Line Graph')
+plt.grid(True)
+plt.show()
+```
+
+---
+
+## **3. Pie Chart**
+
+```python
+plt.pie(df['y'], labels=df['x'], autopct='%1.1f%%', startangle=90)
+plt.title('Pie Chart')
+plt.show()
+```
+
+---
+
+## **4. Scatter Plot**
+
+```python
+plt.scatter(df['x'], df['y'])
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Scatter Plot')
+plt.show()
+```
+
+---
+
+## **5. Area Chart**
+
+```python
+plt.fill_between(df['x'], df['y'], alpha=0.5)
+plt.plot(df['x'], df['y'], color='blue')  # line on top
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Area Chart')
+plt.show()
+```
+
+---
+
+## **6. Radar Chart (Spider Chart)**
+
+> Matplotlib doesn't have a direct API, we use `polar` projection.
+
+```python
+import numpy as np
+
+categories = df['x']
+values = df['y']
+
+# Angles for each axis
+angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
+values = np.concatenate((values, [values[0]]))  # Close the circle
+angles += angles[:1]
+
+fig, ax = plt.subplots(subplot_kw={'polar': True})
+ax.plot(angles, values, color='blue')
+ax.fill(angles, values, color='blue', alpha=0.25)
+ax.set_xticks(angles[:-1])
+ax.set_xticklabels(categories)
+plt.title('Radar Chart')
+plt.show()
+```
+
+---
+
+## **7. Histogram**
+
+```python
+plt.hist(df['x'], bins=10, edgecolor='black')
+plt.xlabel('X Label')
+plt.ylabel('Frequency')
+plt.title('Histogram')
+plt.show()
+```
+
+---
+
+## **8. Tree Map** (Requires `squarify` library)
+
+> Matplotlib doesn't have built-in support.
+
+```python
+import squarify
+
+sizes = df['y']
+labels = df['x']
+
+squarify.plot(sizes=sizes, label=labels, alpha=0.7)
+plt.axis('off')
+plt.title('Tree Map')
+plt.show()
+```
+
+---
+
+## **9. Pairplot (Seaborn)**
+
+> No direct Matplotlib equivalent, must use Seaborn.
+
+```python
+import seaborn as sns
+
+sns.pairplot(df)
+plt.show()
+```
+
+---
+
+## **10. Boxplot**
+
+```python
+plt.boxplot(df['y'])
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Boxplot')
+plt.show()
+
+# With categories
+plt.boxplot([df[df['x'] == category]['y'] for category in df['x'].unique()],
+            labels=df['x'].unique())
+plt.title('Boxplot by Category')
+plt.show()
+```
+
+---
+
+## **11. Bubble Chart**
+
+```python
+# Assuming 'size' column for bubble sizes
+plt.scatter(df['x'], df['y'], s=df['size'], alpha=0.5)
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Bubble Chart')
+plt.show()
+```
+
+---
+
+## **12. Heatmap (Seaborn for simplicity)**
+
+> Matplotlib can do with `imshow()`, but Seaborn is easier.
+
+```python
+import seaborn as sns
+
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+plt.title('Heatmap')
+plt.show()
+```
+
+---
+
+## **13. Catplot (Seaborn)**
+
+> Specialized for categorical data visualizations.
+
+```python
+sns.catplot(x='x', y='y', hue='hue', kind='bar', data=df)
+plt.title('Catplot - Bar')
+plt.show()
+```
+
+---
+
+## **14. FacetGrid (Seaborn)**
+
+```python
+g = sns.FacetGrid(df, col='hue')
+g.map_dataframe(sns.scatterplot, x='x', y='y')
+g.add_legend()
+plt.show()
+```
+
+---
+
+## **15. Stack Plot (Stacked Area Chart)**
+
+```python
+# Multiple series stacked
+plt.stackplot(df['x'], df['y1'], df['y2'], df['y3'], labels=['Y1', 'Y2', 'Y3'])
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Stacked Area Chart')
+plt.legend(loc='upper left')
+plt.show()
+```
+
+---
+
+## **16. Step Plot**
+
+```python
+plt.step(df['x'], df['y'], where='mid')
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Step Plot')
+plt.show()
+```
+
+---
+
+## **17. Violin Plot (Seaborn)**
+
+```python
+sns.violinplot(x='x', y='y', data=df)
+plt.title('Violin Plot')
+plt.show()
+```
+
+---
+
+## **18. KDE Plot (Seaborn or Matplotlib)**
+
+```python
+sns.kdeplot(df['x'], fill=True)
+plt.title('KDE Plot')
+plt.show()
+```
+
+---
+
+## **19. Donut Chart**
+
+> A Pie Chart variation.
+
+```python
+wedges, texts, autotexts = plt.pie(df['y'], labels=df['x'], autopct='%1.1f%%', startangle=90)
+# Create center circle for donut
+centre_circle = plt.Circle((0,0), 0.70, fc='white')
+fig = plt.gcf()
+fig.gca().add_artist(centre_circle)
+plt.title('Donut Chart')
+plt.show()
+```
+
+---
+
+## **20. Polar Plot**
+
+```python
+theta = np.linspace(0, 2*np.pi, len(df['x']))
+r = df['y']
+
+plt.subplot(projection='polar')
+plt.plot(theta, r)
+plt.title('Polar Plot')
+plt.show()
+```
+
+---
+
+## **21. Error Bar Plot**
+
+```python
+# Assuming 'error' column
+plt.errorbar(df['x'], df['y'], yerr=df['error'], fmt='o', ecolor='red', capsize=5)
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Error Bar Plot')
+plt.show()
+```
+
+---
+
+## **22. Horizontal Stacked Bar**
+
+```python
+plt.barh(df['x'], df['y1'], label='Y1')
+plt.barh(df['x'], df['y2'], left=df['y1'], label='Y2')
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Horizontal Stacked Bar Chart')
+plt.legend()
+plt.show()
+```
+
+---
+
+## **23. Hexbin Plot**
+
+```python
+plt.hexbin(df['x'], df['y'], gridsize=20, cmap='Blues')
+plt.colorbar(label='count')
+plt.xlabel('X Label')
+plt.ylabel('Y Label')
+plt.title('Hexbin Plot')
+plt.show()
+```
+
+---
+
+## **24. Density Contour Plot (Seaborn)**
+
+```python
+sns.kdeplot(x='x', y='y', data=df, fill=True, cmap='mako')
+plt.title('Density Contour Plot')
+plt.show()
+```
+
+---
