@@ -33,6 +33,15 @@
 			::-webkit-scrollbar-thumb:hover {
 				background-color: rgba(99, 102, 241, 0.8);
 			}
+			.markdown-table-scroll {
+				overflow-x: auto;
+				max-width: 100%;
+				margin: 0.75rem 0;
+			}
+			.markdown-table-scroll table {
+				min-width: 100%;
+				width: max-content;
+			}
 			.pdf-zoom-overlay {
 				position: fixed;
 				top: 0;
@@ -1448,6 +1457,7 @@
 				const article = document.createElement("article");
 				article.className = "prose prose-slate max-w-none dark:prose-invert";
 				article.innerHTML = safeHtml;
+				wrapMarkdownTables(article);
 				const title = article.querySelector("h1") || article.querySelector("h2");
 				if (!title) {
 					const heading = document.createElement("h1");
@@ -1479,6 +1489,21 @@
 				} catch (error) {
 					console.error("Mermaid block render failed", error);
 				}
+			}
+
+			function wrapMarkdownTables(root) {
+				if (!root) return;
+				const tables = root.querySelectorAll("table");
+				if (!tables.length) return;
+				tables.forEach((table) => {
+					if (table.closest(".markdown-table-scroll")) return;
+					const parent = table.parentNode;
+					if (!parent) return;
+					const wrapper = document.createElement("div");
+					wrapper.className = "markdown-table-scroll";
+					parent.insertBefore(wrapper, table);
+					wrapper.appendChild(table);
+				});
 			}
 
 			function renderCsv(text) {
