@@ -666,3 +666,619 @@ START
 * **Scalable charts** → Line, Area, Boxplot work across both depending on aggregation.
 
 ---
+
+**comprehensive set of scenario-based questions**
+
+We'll cover **all the charts** you studied:
+Bar, Line, Pie, Scatter, Area, Radar, Histogram, Treemap, Pairplot, Boxplot, Bubble, Heatmap, and others like Density plots.
+
+Each question will include:
+
+* **Scenario** *(realistic problem statement)*
+* **What you need to do** *(analysis goal)*
+* **Think Hint** *(to help you reason)*
+
+At the end, I'll give **answers with explanations**, but let's keep them hidden first so you can self-test.
+
+---
+
+# **Scenario-Based Chart Selection Questions**
+
+---
+
+## **1. Sales Trends Over Time**
+
+Your company has **monthly sales data for the past 5 years** across **four product categories**.
+You need to show **overall growth trends** and also **compare category performance**.
+
+* **Goal:** Show trend over time with comparisons.
+* **Hint:** Which chart type works best for continuous, time-based data?
+
+---
+
+## **2. Customer Age Distribution**
+
+You have **10,000 customer records** with their ages.
+The marketing team wants to understand **age group patterns** to design better promotions.
+
+* **Goal:** Display **frequency distribution** to see which age group dominates.
+* **Hint:** Bins and grouping are important here.
+
+---
+
+## **3. Department Budget Allocation**
+
+A company wants to present how its **annual budget (100%)** is distributed across **5 departments** to senior management.
+
+* **Goal:** Show **part-to-whole relationship** clearly.
+* **Hint:** It must be simple and visually appealing.
+
+---
+
+## **4. Comparing Employee Performance**
+
+You are comparing **5 employees** based on **6 performance metrics** like communication, technical skills, teamwork, etc.
+
+* **Goal:** Compare multiple attributes at once for each employee.
+* **Hint:** You need a compact, circular view.
+
+---
+
+## **5. Outlier Detection in Salaries**
+
+Your HR team wants to **detect unusual salary values** among different job roles.
+
+* **Goal:** Identify **spread of data and outliers**.
+* **Hint:** A chart that shows median, quartiles, and extremes.
+
+---
+
+## **6. Product Sales by Region**
+
+You need to visualize **sales data** across **20 regions** and **4 product categories**.
+The management wants to see which region contributes most and how categories differ within them.
+
+* **Goal:** Compare categories and groups together.
+* **Hint:** Consider both grouping and stacking techniques.
+
+---
+
+## **7. Detecting Correlations Between Variables**
+
+You have a dataset with **height, weight, exercise hours, and calorie intake** for 500 people.
+You want to **explore relationships** between all variables at once.
+
+* **Goal:** Show pairwise relationships and detect correlations.
+* **Hint:** Seaborn has a special plot for this.
+
+---
+
+## **8. Website Traffic by Day**
+
+The marketing team wants to **visualize website visits** for each day of the past 6 months to find **seasonal patterns** and **growth trends**.
+
+* **Goal:** Show **continuous time-series data**.
+* **Hint:** Smooth, continuous visualization needed.
+
+---
+
+## **9. Detecting Market Share Changes**
+
+You have data for **market share percentages** of 10 smartphone companies across **3 consecutive years**.
+The management wants to see how market share has changed over time.
+
+* **Goal:** Compare part-to-whole relationships over multiple time points.
+* **Hint:** Regular pie chart won’t be enough for three years.
+
+---
+
+## **10. Call Center Analysis**
+
+You have **500,000 call records** with variables like **call duration, wait time, and customer rating**.
+The task is to **find patterns and group behavior** without overwhelming the viewer.
+
+* **Goal:** Summarize large, complex data visually.
+* **Hint:** Which chart can show intensity using colors?
+
+---
+
+## **11. Comparing Product Revenues**
+
+You need to show **hierarchical revenue data**, where each **main product category** has **subcategories** and each subcategory has **products**.
+
+* **Goal:** Show hierarchy and proportions.
+* **Hint:** Nested structure visualization needed.
+
+---
+
+## **12. Comparing Three Variables**
+
+You want to visualize:
+
+* **Revenue (X-axis)**
+
+* **Profit (Y-axis)**
+
+* **Market size (bubble size)**
+  for 25 companies.
+
+* **Goal:** Show relationship among **three quantitative variables**.
+
+* **Hint:** Scatter plot isn't enough here.
+
+---
+
+## **13. Daily Sales with Emphasis on Total Volume**
+
+You want to show **daily sales numbers** for one year, highlighting **both the daily trend and the cumulative magnitude**.
+
+* **Goal:** Focus on both **individual data points and overall volume**.
+* **Hint:** Think of a filled version of a line chart.
+
+---
+
+## **14. Large Sensor Dataset Distribution**
+
+You have **1 million temperature readings** from IoT devices.
+You need to see **how the readings are distributed** without plotting every single point.
+
+* **Goal:** Summarize large data distribution clearly.
+* **Hint:** Which chart uses bins to group values?
+
+---
+
+## **15. Customer Segmentation Clusters**
+
+You are analyzing customer behavior using **income** and **spending score** to **find clusters** of similar customers.
+
+* **Goal:** Show clusters and relationships visually.
+* **Hint:** Which chart shows two-variable relationships clearly?
+
+---
+
+## **16. Finding Correlation Between 15 Variables**
+
+You have a financial dataset with 15 variables.
+You need to **see which variables are strongly correlated**.
+
+* **Goal:** Quickly identify positive and negative correlations.
+* **Hint:** Use colors to encode strength of relationships.
+
+---
+
+## **17. Comparing Many Categories**
+
+Your dataset contains **sales data for 500 products** in 30 different categories.
+You need to visualize which **categories are the biggest contributors**.
+
+* **Goal:** Show many part-to-whole relationships at once.
+* **Hint:** Normal bar chart will become unreadable.
+
+---
+
+## **18. Tracking Multiple Stocks**
+
+You have daily closing prices for **5 different stocks over the past year**.
+The goal is to **compare their performance trends**.
+
+* **Goal:** Show multiple trends clearly on one graph.
+* **Hint:** Avoid clutter but allow comparisons.
+
+---
+
+## **19. Employee Skill Improvement Over 6 Months**
+
+You want to show how each employee improved in **3 skill areas** over a 6-month training program.
+
+* **Goal:** Compare performance changes for individuals and overall.
+* **Hint:** Circular format may work, or small multiples.
+
+---
+
+## **20. Detecting Distribution Shape**
+
+You have exam scores for 1,000 students.
+The education team wants to know whether the distribution is **normal, skewed, or bimodal**.
+
+* **Goal:** Focus on **shape of data distribution**.
+* **Hint:** Histogram is good, but what about a smoother option?
+
+---
+
+# **Answer Key with Explanations**
+
+<details>
+<summary>Click to reveal answers</summary>
+
+| **Scenario**                          | **Best Chart(s)**              | **Reason**                                       |
+| ------------------------------------- | ------------------------------ | ------------------------------------------------ |
+| 1. Sales Trends Over Time             | Line Chart / Area Chart        | Time-series, clear trends over time              |
+| 2. Customer Age Distribution          | Histogram                      | Shows distribution using bins                    |
+| 3. Department Budget Allocation       | Pie Chart / Donut Chart        | Small, simple proportions                        |
+| 4. Comparing Employee Performance     | Radar Chart                    | Multi-attribute, compact view                    |
+| 5. Outlier Detection in Salaries      | Boxplot                        | Shows spread and outliers                        |
+| 6. Product Sales by Region            | Grouped Bar / Stacked Bar      | Compare regions + categories                     |
+| 7. Detecting Correlations             | Pairplot                       | Pairwise relationships visualized                |
+| 8. Website Traffic by Day             | Line Chart                     | Continuous data trend                            |
+| 9. Market Share Changes               | Stacked Area Chart             | Shows part-to-whole over time                    |
+| 10. Call Center Analysis              | Heatmap                        | Color-coded large dataset                        |
+| 11. Comparing Product Revenues        | Treemap                        | Hierarchical relationships                       |
+| 12. Comparing Three Variables         | Bubble Chart                   | Third variable shown by size                     |
+| 13. Daily Sales & Total Volume        | Area Chart                     | Emphasizes cumulative magnitude                  |
+| 14. Large Sensor Dataset Distribution | Histogram / Density Plot       | Efficient for large data                         |
+| 15. Customer Clusters                 | Scatter Plot                   | Two-variable relationships clearly               |
+| 16. Correlation Between Variables     | Heatmap                        | Correlation matrix visualization                 |
+| 17. Many Categories                   | Treemap                        | Summarizes hundreds of categories                |
+| 18. Multiple Stocks                   | Multi-line Chart               | Easy to compare multiple trends                  |
+| 19. Employee Skill Improvement        | Radar Chart or Small Multiples | Compare growth in skill areas                    |
+| 20. Exam Score Distribution Shape     | Histogram or Density Plot      | Histogram shows bins, density shows smooth shape |
+
+</details>
+
+---
+
+# **How to Use This for Exam Prep**
+
+1. **Try answering without looking at the key** to test understanding.
+2. Think about:
+
+   * Data type (categorical, numerical, mixed)
+   * Analysis goal (trend, comparison, proportion, distribution, relationship)
+   * Dataset size (small vs large)
+3. Cross-check your answers with the key to reinforce concepts.
+4. Redo questions where you struggled.
+
+
+---
+
+**advanced visualization tools and techniques**
+We'll cover:
+
+1. **Interactive Plots with Plotly**
+2. **Interactive Plots with Bokeh**
+3. **Advanced Seaborn Techniques**
+4. **Pairplot in Seaborn**
+5. **Catplot in Seaborn**
+6. **FacetGrid in Seaborn**
+
+For each topic, I’ll explain:
+
+* **Definition** – what it is
+* **Use Cases** – why and when to use it
+* **Simple Code Snippet** – so you can practice hands-on
+
+---
+
+# **1. Interactive Plots with Plotly**
+
+---
+
+### **Definition**
+
+[Plotly](https://plotly.com/python/) is a **Python visualization library** that creates **interactive, browser-based graphs**.
+Unlike static matplotlib charts, Plotly allows:
+
+* Zooming, panning
+* Hover tooltips
+* Exporting directly to HTML for sharing.
+
+Plotly has two main APIs:
+
+* **Plotly Express** → High-level, easy-to-use.
+* **Graph Objects** → Low-level, fully customizable.
+
+---
+
+### **Use Cases**
+
+| **Scenario**                      | **Why Plotly**                   |
+| --------------------------------- | -------------------------------- |
+| Presenting to stakeholders        | Interactive, user-friendly       |
+| Financial data exploration        | Zoom in/out of stock trends      |
+| Live dashboards (e.g., Dash apps) | Real-time visualization          |
+| Large datasets                    | Filter and hover to inspect data |
+
+---
+
+### **Simple Example: Interactive Line Chart**
+
+```python
+import plotly.express as px
+import pandas as pd
+
+# Sample dataset
+data = {
+    "Month": ["Jan", "Feb", "Mar", "Apr", "May"],
+    "Sales": [100, 120, 150, 170, 200]
+}
+df = pd.DataFrame(data)
+
+# Create interactive line chart
+fig = px.line(df, x="Month", y="Sales", title="Monthly Sales Trend")
+fig.show()
+```
+
+**Features:**
+
+* Hover to see exact values
+* Drag to zoom
+* Download plot as PNG directly
+
+---
+
+### **Other Plotly Chart Types**
+
+* `px.scatter()` → Interactive scatter plots
+* `px.bar()` → Interactive bar charts
+* `px.choropleth()` → Maps
+* `px.pie()` → Pie charts
+
+---
+
+# **2. Interactive Plots with Bokeh**
+
+---
+
+### **Definition**
+
+[Bokeh](https://docs.bokeh.org/) is another **interactive visualization library** that generates plots for web browsers.
+
+* Focused on **real-time streaming data** and **dashboards**.
+* Lightweight and faster than Plotly for certain use cases.
+
+---
+
+### **Use Cases**
+
+| **Use Case**              | **Why Bokeh**                   |
+| ------------------------- | ------------------------------- |
+| Real-time IoT monitoring  | Can stream live updates         |
+| Web dashboard integration | Embeds easily into web apps     |
+| Large dataset handling    | Better performance on huge data |
+| Custom interactivity      | Widgets like sliders, buttons   |
+
+---
+
+### **Simple Example: Interactive Line Chart**
+
+```python
+from bokeh.plotting import figure, show, output_notebook
+
+# To display in Jupyter Notebook
+output_notebook()
+
+# Create a figure
+p = figure(title="Sales Over Months",
+           x_axis_label='Month',
+           y_axis_label='Sales')
+
+months = [1, 2, 3, 4, 5]
+sales = [100, 120, 150, 170, 200]
+
+# Add line and points
+p.line(months, sales, line_width=2, color="green")
+p.circle(months, sales, size=8, color="blue")
+
+show(p)
+```
+
+**Features:**
+
+* Hover and zoom tools by default.
+* Can add sliders, dropdowns, and widgets.
+
+---
+
+# **3. Advanced Seaborn Techniques**
+
+---
+
+### **Definition**
+
+[Seaborn](https://seaborn.pydata.org/) is a **statistical data visualization library** built on top of Matplotlib.
+While basic Seaborn plots are straightforward, **advanced techniques** allow:
+
+* Complex, multi-variable plots
+* Statistical overlays (confidence intervals, regression lines)
+* Grid-based layouts like FacetGrid and Pairplot
+* Categorical plots like Catplot
+
+---
+
+### **Use Cases**
+
+| **Scenario**                    | **Advanced Feature to Use** |
+| ------------------------------- | --------------------------- |
+| Compare distributions           | Violin plots, Boxplots      |
+| Regression analysis             | `sns.lmplot()`              |
+| Comparing multiple categories   | `sns.catplot()`             |
+| Multiple plots in a grid layout | `FacetGrid`                 |
+| Explore pairwise relationships  | `Pairplot`                  |
+
+---
+
+### **Example: Advanced Scatter Plot with Regression**
+
+```python
+import seaborn as sns
+import pandas as pd
+
+# Load built-in dataset
+df = sns.load_dataset("tips")
+
+# Scatter plot with regression line
+sns.lmplot(x="total_bill", y="tip", data=df, hue="sex", height=5)
+```
+
+**Features:**
+
+* Automatically fits a regression line.
+* Separates data by gender (`hue="sex"`).
+* Perfect for statistical exploration.
+
+---
+
+### **Other Advanced Seaborn Features**
+
+* `sns.violinplot()` → Shows data distribution and density
+* `sns.swarmplot()` → Shows individual points
+* `sns.lmplot()` → Linear regression
+* `sns.jointplot()` → Combine scatter + histogram/density
+
+---
+
+# **4. Pairplot in Seaborn**
+
+---
+
+### **Definition**
+
+`Pairplot` is a **Seaborn function** that plots **pairwise relationships** between multiple numerical variables in a dataset.
+
+* Diagonal shows **distribution plots (histogram or KDE)**.
+* Off-diagonal shows **scatter plots**.
+
+---
+
+### **Use Cases**
+
+| **When to Use Pairplot**        | **Why**                                           |
+| ------------------------------- | ------------------------------------------------- |
+| Explore multi-variable datasets | See relationships between every pair of variables |
+| Detect correlations quickly     | Visual, pairwise correlation                      |
+| Identify clusters and outliers  | Easy to spot unusual patterns                     |
+
+---
+
+### **Example: Pairplot**
+
+```python
+import seaborn as sns
+
+# Load Iris dataset
+df = sns.load_dataset("iris")
+
+# Create pairplot
+sns.pairplot(df, hue="species")
+```
+
+**Features:**
+
+* Colors separate species (`hue="species"`).
+* Helps detect which flower features distinguish species best.
+
+---
+
+# **5. Catplot in Seaborn**
+
+---
+
+### **Definition**
+
+`Catplot` is a **high-level Seaborn function** for creating **categorical plots** like bar plots, box plots, strip plots, etc., **in a single function call**.
+
+---
+
+### **Use Cases**
+
+| **Goal**                              | **Best Catplot Kind**  |
+| ------------------------------------- | ---------------------- |
+| Compare category means                | Bar (`kind="bar"`)     |
+| Show distribution spread per category | Box (`kind="box"`)     |
+| Visualize individual points           | Strip (`kind="strip"`) |
+
+---
+
+### **Example: Catplot - Bar Chart**
+
+```python
+import seaborn as sns
+
+# Load dataset
+df = sns.load_dataset("tips")
+
+# Create bar chart for average tip per day
+sns.catplot(x="day", y="tip", data=df, kind="bar", hue="sex")
+```
+
+**Features:**
+
+* Aggregates automatically (default = mean).
+* Adds grouping via `hue`.
+
+---
+
+# **6. FacetGrid in Seaborn**
+
+---
+
+### **Definition**
+
+`FacetGrid` is a **Seaborn class** that allows you to **create multiple subplots** based on **category combinations**.
+It’s perfect for:
+
+* Comparing the same visualization across subsets of data.
+* Creating multi-panel plots efficiently.
+
+---
+
+### **Use Cases**
+
+| **Scenario**                             | **FacetGrid Benefit**     |
+| ---------------------------------------- | ------------------------- |
+| Compare male vs female tips per day      | Separate plots per gender |
+| Visualize trends across multiple regions | Grid layout by region     |
+| Multi-category comparisons               | Automated faceting        |
+
+---
+
+### **Example: FacetGrid**
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load dataset
+df = sns.load_dataset("tips")
+
+# Create a grid by 'sex' and 'time'
+g = sns.FacetGrid(df, col="sex", row="time")
+
+# Add scatter plot inside each facet
+g.map(sns.scatterplot, "total_bill", "tip")
+
+plt.show()
+```
+
+**Features:**
+
+* Rows = Time (`Lunch/Dinner`)
+* Columns = Gender (`Male/Female`)
+* Helps visualize differences clearly.
+
+---
+
+# **Comparison Table**
+
+| **Feature**        | **Plotly**                | **Bokeh**           | **Seaborn Advanced**  |
+| ------------------ | ------------------------- | ------------------- | --------------------- |
+| **Type**           | Interactive, Web          | Interactive, Web    | Static (High-quality) |
+| **Ease of Use**    | High (Plotly Express)     | Medium              | High                  |
+| **Real-time Data** | Yes                       | Yes (Better)        | No                    |
+| **Customization**  | High                      | Very High           | Moderate              |
+| **Best Use**       | Dashboards, Presentations | IoT, Live Data, Web | Statistical Analysis  |
+
+---
+
+# **Summary**
+
+| **Topic**            | **What It Solves**               | **Key Function**                   |
+| -------------------- | -------------------------------- | ---------------------------------- |
+| **Plotly**           | Interactive, browser-ready plots | `px.line()`, `px.scatter()`        |
+| **Bokeh**            | Live streaming dashboards        | `figure()`, `.line()`, `.circle()` |
+| **Advanced Seaborn** | Complex statistical plots        | `sns.lmplot()`, `sns.violinplot()` |
+| **Pairplot**         | Pairwise relationships           | `sns.pairplot()`                   |
+| **Catplot**          | Categorical plotting             | `sns.catplot(kind=...)`            |
+| **FacetGrid**        | Multi-panel subplots             | `sns.FacetGrid()`                  |
+
+---
