@@ -494,6 +494,9 @@
 			const JSZIP_VERSION = "3.10.1";
 			const JSZIP_BASE_URL = `https://cdn.jsdelivr.net/npm/jszip@${JSZIP_VERSION}/dist`;
 			let jszipLoaderPromise = null;
+			const KATEX_VERSION = "0.16.9";
+			const KATEX_BASE_URL = `https://cdn.jsdelivr.net/npm/katex@${KATEX_VERSION}/dist`;
+			let katexLoaderPromise = null;
 			const MAX_SPREADSHEET_PREVIEW_ROWS = 200;
 
 			function ensurePdfJs() {
@@ -635,6 +638,79 @@
 					});
 				}
 				return jszipLoaderPromise;
+			}
+
+			function ensureKatex() {
+				if (window.katex && window.renderMathInElement) {
+					return Promise.resolve(window.renderMathInElement);
+				}
+				if (!katexLoaderPromise) {
+					katexLoaderPromise = new Promise((resolve, reject) => {
+						const finish = () => {
+							if (window.katex && window.renderMathInElement) {
+								resolve(window.renderMathInElement);
+							} else {
+								reject(new Error("KaTeX assets loaded, but renderer is unavailable."));
+							}
+						};
+
+						const ensureStylesheet = () => {
+							if (document.querySelector('link[data-katex="stylesheet"]')) return;
+							const link = document.createElement("link");
+							link.rel = "stylesheet";
+							link.href = `${KATEX_BASE_URL}/katex.min.css`;
+							link.crossOrigin = "anonymous";
+							link.referrerPolicy = "no-referrer";
+							link.dataset.katex = "stylesheet";
+							document.head.appendChild(link);
+						};
+
+						const loadAutoRender = () => {
+							if (window.renderMathInElement) {
+								finish();
+								return;
+							}
+							if (document.querySelector('script[data-katex="auto-render"]')) {
+								document.querySelector('script[data-katex="auto-render"]').addEventListener("load", finish, { once: true });
+								return;
+							}
+							const autoScript = document.createElement("script");
+							autoScript.src = `${KATEX_BASE_URL}/contrib/auto-render.min.js`;
+							autoScript.crossOrigin = "anonymous";
+							autoScript.referrerPolicy = "no-referrer";
+							autoScript.dataset.katex = "auto-render";
+							autoScript.onload = finish;
+							autoScript.onerror = () => reject(new Error("Failed to load KaTeX auto-render."));
+							document.head.appendChild(autoScript);
+						};
+
+						const loadMainScript = () => {
+							if (window.katex) {
+								loadAutoRender();
+								return;
+							}
+							if (document.querySelector('script[data-katex="core"]')) {
+								document.querySelector('script[data-katex="core"]').addEventListener("load", loadAutoRender, { once: true });
+								return;
+							}
+							const script = document.createElement("script");
+							script.src = `${KATEX_BASE_URL}/katex.min.js`;
+							script.crossOrigin = "anonymous";
+							script.referrerPolicy = "no-referrer";
+							script.dataset.katex = "core";
+							script.onload = loadAutoRender;
+							script.onerror = () => reject(new Error("Failed to load KaTeX core library."));
+							document.head.appendChild(script);
+						};
+
+						ensureStylesheet();
+						loadMainScript();
+					});
+					katexLoaderPromise.catch(() => {
+						katexLoaderPromise = null;
+					});
+				}
+				return katexLoaderPromise;
 			}
 
 			function initializeMermaidTheme() {
@@ -1464,6 +1540,7 @@
 					heading.textContent = fileName;
 					article.prepend(heading);
 				}
+				await renderMathInMarkdown(article);
 				viewer.appendChild(article);
 				await embedMermaidInMarkdown(article);
 			}
@@ -1488,6 +1565,26 @@
 					await rerenderMermaidDiagrams(article);
 				} catch (error) {
 					console.error("Mermaid block render failed", error);
+				}
+			}
+
+			async function renderMathInMarkdown(article) {
+				if (!article) return;
+				try {
+					const renderMathInElement = await ensureKatex();
+					renderMathInElement(article, {
+						delimiters: [
+							{ left: "$$", right: "$$", display: true },
+							{ left: "\\[", right: "\\]", display: true },
+							{ left: "$", right: "$", display: false },
+							{ left: "\\(", right: "\\)", display: false },
+						],
+						ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+						ignoredClasses: ["no-katex"],
+						throwOnError: false,
+					});
+				} catch (error) {
+					console.error("KaTeX render failed", error);
 				}
 			}
 
