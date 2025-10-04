@@ -1,404 +1,405 @@
-### **I. Foundational Ethics & Terminology**
+### **Ethics Questions & Explanations**
 
-**Question 1:** What is the philosophical study of morality broadly understood as?
-**Answer:** Ethics.
-**Explanation:** Ethics is the branch of philosophy that explores moral principles. It's the systematic study of what is right and wrong, and how people should live their lives.
+**Question 1:** Ethics is primarily concerned with:
+**Answer:** Right and wrong conduct
+**Explanation:** Ethics is defined as the philosophical study of morality and the study of what is right or wrong in human conduct. It seeks to provide moral guidance and enable the evaluation of human actions.
 
-**Question 2:** What does the field of ethics aim to provide a systematic account of?
-**Answer:** Morality.
-**Explanation:** Morality refers to the set of principles and values that guide an individual's or society's sense of right and wrong. Ethics is the formal study of these moral principles.
+**Question 2:** Which branch of ethics studies standards for right conduct?
+**Answer:** Normative ethics
+**Explanation:** Normative ethics is the branch of philosophy that is specifically concerned with creating standards for right conduct and moral evaluation. It aims to provide moral guidance and addresses what actions are right and what we "ought to do"[cite: 541, 623].
 
-**Question 3:** What are the rules and principles regulating the behaviour of individuals called?
-**Answer:** Morals.
-**Explanation:** Morals are the specific, established rules of conduct that people live by. For example, "do not steal" is a moral rule.
+**Question 3:** Which of the following is an intrinsic value? [cite: 50, 58]
+**Answer:** Pleasure
+**Explanation:** Something has intrinsic value if it has value in and of itself, without needing an external explanation for its goodness. Pleasure is given as an example of something some philosophers consider to have intrinsic value.
 
-**Question 4:** Normative ethics is concerned with standards for what?
-**Answer:** Right and wrong behavior.
-**Explanation:** Normative ethics is the branch of ethics that focuses on establishing norms or standards for moral conduct. It asks questions like "What should I do?" or "What makes an action right?"
+**Question 4:** Consequentialism judges actions based on: [cite: 60, 67]
+**Answer:** Consequences
+**Explanation:** Consequentialism, also known as a teleological theory, judges an action as right based on its consequences. The theory states that the right action is the one that produces the most good among the available options.
 
-**Question 5:** In a restrictive sense, what are Right Actions synonymous with?
-**Answer:** Obligatory actions.
-**Explanation:** An obligatory action is something you are morally required to do; it is your duty. In this strict sense, the only truly "right" actions are the ones you *must* perform.
+**Question 5:** The principle of utility is best described as:
+**Answer:** Greatest good for the greatest number
+**Explanation:** The fundamental principle of utilitarianism is often articulated as bringing about the "greatest good for the greatest number". This means an action or law is right if it produces the best outcome for all sentient beings affected by it[cite: 871, 874].
 
-**Question 6:** What type of actions are morally required and not optional?
-**Answer:** Obligatory actions.
-**Explanation:** These are actions that are a moral duty. Failing to do an obligatory action is considered morally wrong.
+**Question 6:** Act utilitarianism requires:
+**Answer:** Judging each action separately
+**Explanation:** Act Utilitarianism, also called Direct Utilitarianism, requires the agent to strive for the greatest overall happiness in every specific action they take[cite: 887, 888].
 
-**Question 7:** What type of actions are impermissible, meaning one is morally required not to do them?
-**Answer:** Forbidden actions.
-**Explanation:** These are actions that are morally wrong and must not be performed.
+**Question 7:** Rule utilitarianism suggests:
+**Answer:** Rules matter if they maximize utility
+**Explanation:** Rule Utilitarianism, or Indirect Utilitarianism, maintains that good consequences are achieved when agents follow general rules that, if universally adopted, lead to the greatest good. This is true even if a particular act that follows the rule might not maximize utility in that specific instance.
 
-**Question 8:** What type of actions are good and admirable but not obligatory?
-**Answer:** Supererogatory actions.
-**Explanation:** These actions go "above and beyond" the call of moral duty. For example, risking your life to save a stranger is admirable but not morally required.
+**Question 8:** Mill's qualitative hedonism prioritizes:
+**Answer:** Higher pleasures
+**Explanation:** John Stuart Mill's view of qualitative hedonism posits that some pleasures, such as intellectual, moral, and aesthetic ones, are inherently higher in quality than others, irrespective of their quantity[cite: 902, 903]. He famously stated it is "better to be a human being dissatisfied than a pig satisfied".
 
-**Question 9:** Actions that are "not forbidden" fall under what category?
-**Answer:** Permissible actions.
-**Explanation:** A permissible action is any action that is not morally wrong. This includes actions that are obligatory (you must do them) and those that are morally neutral.
+**Question 9:** Kant's categorical imperative demands:
+**Answer:** Act only on universalizable maxims
+**Explanation:** The Categorical Imperative, as articulated in its "universal law" formulation, requires an agent to act only on maxims (rules for action) that they could rationally will to become a universal law for everyone.
 
-**Question 10:** What kind of actions are neither obligatory, forbidden, nor supererogatory?
-**Answer:** Morally neutral actions.
-**Explanation:** These are actions that have no moral significance. For example, choosing what color shirt to wear is morally neutral.
+**Question 10:** For Kant, persons must be treated as:
+**Answer:** Ends in themselves
+**Explanation:** According to Kant, a core principle is that persons must be treated as ends in themselves, and not merely as a means to an end. This principle highlights a respect for the rational nature of other persons.
 
-**Question 11:** Moral norms are commonly held to be what, meaning they apply to and bind everyone in similar circumstances?
-**Answer:** Universal.
-**Explanation:** Universality is the idea that moral principles should apply to everyone, in all relevantly similar situations, without exception.
+**Question 11:** Ross's prima facie duties include:
+**Answer:** Justice and fidelity [cite: 91, 116]
+**Explanation:** W. D. Ross's deontological theory is pluralist, recognizing multiple, distinct moral principles. These principles are called prima facie duties and include duties of fidelity (like keeping promises), justice, and gratitude[cite: 602, 761].
 
-**Question 12:** Moral norms are what, meaning they are formulated without the use of proper names?
-**Answer:** General.
-**Explanation:** This means that moral rules are stated in general terms (e.g., "All people should be treated with respect") rather than referring to specific individuals.
+**Question 12:** According to Scanlon, an act is wrong if:
+**Answer:** It cannot be reasonably accepted by all rational persons
+**Explanation:** T. M. Scanlon's contractualism states that an action is morally wrong if it would be forbidden by principles that rational persons, who are motivated to find rules for general behavior, could not reasonably reject[cite: 603, 764, 765].
 
-**Question 13:** What source of authority posits that moral authority stems from God's commands?
-**Answer:** Divine Command Theory.
-**Explanation:** This is the belief that morality is determined by the commands of God. An action is right because God commands it.
+**Question 13:** Virtue ethics primarily evaluates:
+**Answer:** Character [cite: 100, 102, 104]
+**Explanation:** Virtue ethics primarily focuses on character evaluation over the evaluation of individual actions[cite: 605, 922]. It asks questions like "What sort of person should I be?"[cite: 539, 952].
 
-**Question 14:** What source of authority links morality to inherent facts about human beings?
-**Answer:** Natural Law Theory.
-**Explanation:** This theory suggests that morality is based on the natural order of the world and human nature. Reason allows us to discover these natural moral laws.
+**Question 14:** Eudaimonia refers to:
+**Answer:** Flourishing
+**Explanation:** The Greek term *Eudaimonia* is often translated as "flourishing," "well-being," or "living well". It represents the ultimate good that a human being aims for.
 
-**Question 15:** What source of authority grounds moral principles in practical reason, independent of desires?
-**Answer:** Rationalism.
-**Explanation:** Ethical rationalism is the view that moral truths can be known through reason alone, not through emotion, tradition, or divine revelation.
+**Question 15:** Aristotle defined virtue as:
+**Answer:** A state involving choice lying in a mean [cite: 113, 188, 189]
+**Explanation:** For Aristotle, a Virtue of Character is a state that involves choice (*election*), lies in a mean relative to the individual, and is defined by reason or prudence[cite: 945, 956]. The "mean" refers to the appropriate response in a situation, not mediocrity.
 
-**Question 16:** What source of authority links morality to human feelings such as sympathy or compassion?
-**Answer:** Sentimentalism.
-**Explanation:** This theory claims that moral judgments are founded on our feelings and emotional responses. We know something is wrong because it feels wrong.
+**Question 16:** Socrates believed virtue is:
+**Answer:** Sufficient for happiness
+**Explanation:** Socrates made the controversial claims that knowledge is sufficient for virtue and that virtue is sufficient for happiness. He argued that a virtuous life is necessary for happiness.
 
-**Question 17:** What type of value requires no external explanation for its goodness?
-**Answer:** Intrinsic value.
-**Explanation:** Something has intrinsic value if it is valuable in itself, not for what it can get you. Happiness is often considered to have intrinsic value.
+**Question 17:** Professional ethics are often codified in: [cite: 197, 198]
+**Answer:** Codes of conduct
+**Explanation:** Professional ethics are a set of standards adopted by a professional community. These standards are often referred to as codes of ethics or codes of conduct, which provide boundaries for professional careers[cite: 801, 802].
 
-**Question 18:** What type of value depends on some factor external to it?
-**Answer:** Extrinsic value.
-**Explanation:** Something has extrinsic value if its worth comes from its relationship to something else that is valuable. Money has extrinsic value because of what it can buy.
+**Question 18:** Integrity in professional ethics refers to:
+**Answer:** Consistency of actions and values
+**Explanation:** Integrity is defined as a concept of consistency between one's actions, values, methods, principles, and outcomes. In ethics, it is regarded as the honesty and truthfulness of one's actions.
 
-**Question 19:** What type of value is derived from what it brings about or its consequences?
-**Answer:** Instrumental value.
-**Explanation:** This is a form of extrinsic value. Something has instrumental value if it is useful as a tool or "instrument" to achieve a desired outcome.
+**Question 19:** Transparency means:
+**Answer:** Openness and accountability
+**Explanation:** Transparency implies openness, communication, and accountability. It means operating in a way that makes it easy for others to see what actions are being performed.
 
-**Question 20:** Which conception of "The Good" consists of an individual's subjective states, such as pleasure or desire satisfaction?
-**Answer:** Subjective conception.
-**Explanation:** This view holds that what is "good" is based on personal, internal states like pleasure or happiness. It varies from person to person.
+**Question 20:** Accountability in ethics refers to:
+**Answer:** Answerability and responsibility [cite: 179, 182, 183]
+**Explanation:** In ethics and governance, accountability is defined as answerability, blameworthiness, liability, and the expectation of giving an account for one's actions. It includes the acknowledgment and assumption of responsibility.
 
-**Question 21:** Which conception of "The Good" requires meeting a further standard beyond subjective states, such as acquiring genuine virtues?
-**Answer:** Objective conception.
-**Explanation:** This view argues that what is "good" is based on objective standards that exist independently of our personal feelings, such as knowledge, virtue, or excellence.
+**Question 21:** Confidentiality means:
+**Answer:** Respecting privacy of information [cite: 174, 187]
+**Explanation:** Confidentiality is a set of rules or a promise that limits access to certain types of information. It means ensuring that information is accessible only to those who are authorized to have access.
 
-### **II. Ethical Lenses**
+**Question 22:** Social ethics emphasizes:
+**Answer:** Justice and fairness [cite: 166, 177]
+**Explanation:** Social ethics involves making choices that prioritize the common good and respect for human dignity. It emphasizes the importance of fairness, justice, and compassion in social structures and shapes laws and policies to maintain them[cite: 846, 847].
 
-**Question 22:** What are rights defined as?
-**Answer:** Justified claims or entitlements.
-**Explanation:** A right is a principle that entitles a person to a certain freedom or protection. For example, the "right to life" is a claim to be protected from being killed.
+**Question 23:** Universality in ethics means:
+**Answer:** Same principles apply to all
+**Explanation:** Universality means that moral norms apply to and bind everyone in similar circumstances. In social ethics, it means that principles of justice and equity apply to all people, regardless of their origin, gender, or other characteristics.
 
-**Question 23:** What two concepts does the Rights perspective focus on respecting?
-**Answer:** Dignity and autonomy.
-**Explanation:** This perspective emphasizes that every person has inherent dignity and the autonomy (self-rule) to make their own choices, which must be respected.
+**Question 24:** Solidarity means:
+**Answer:** Mutual support and cooperation [cite: 295, 298]
+**Explanation:** Solidarity is a fundamental value in social ethics that promotes collaboration and mutual support between members of society. It involves being willing to help others and work together to achieve common goals.
 
-**Question 24:** Which perspective focuses on the distribution of benefits and burdens among stakeholders?
-**Answer:** The Justice perspective.
-**Explanation:** The Justice lens is concerned with fairness and ensuring that resources, opportunities, and punishments are distributed in an equitable way.
+**Question 25:** Empathy is defined as:
+**Answer:** Understanding others' feelings
+**Explanation:** Empathy is the ability to put yourself in the shoes of others and understand their feelings and perspectives. It plays a crucial role in developing healthy relationships and a climate of mutual understanding.
 
-**Question 25:** According to the Justice perspective, why might treating people equally still be unfair?
-**Answer:** Because it may ignore their different needs or circumstances.
-**Explanation:** Sometimes, fairness requires treating people differently to account for disadvantages or special needs. For example, providing extra support to a student with a disability is fair, even if it's not "equal."
+**Question 26:** The rights perspective in ethics focuses on:
+**Answer:** Dignity and autonomy
+**Explanation:** The rights perspective focuses on respect for the dignity and autonomy of individuals. Rights are considered entitlements or liberties that reflect what is owed to people.
 
-**Question 26:** Which ethical lens focuses on the conditions required in order for all members of a society to flourish?
-**Answer:** The Common Good lens.
-**Explanation:** This perspective asks us to consider policies and actions that benefit society as a whole, such as public education, healthcare, and safety.
+**Question 27:** The justice perspective emphasizes: [cite: 237, 238, 243]
+**Answer:** Equal and fair treatment [cite: 244, 245]
+**Explanation:** The justice perspective focuses on the fair distribution of benefits and burdens among all stakeholders. It seeks to guarantee that all people have equal access to opportunities and resources.
 
-**Question 27:** Which ethical lens focuses on the character traits (reflected in habits) that we deem good?
-**Answer:** The Virtue lens.
-**Explanation:** Virtue ethics is less about rules and more about the kind of person we should be. It focuses on developing virtuous character traits like honesty, courage, and compassion.
+**Question 28:** The utilitarian perspective emphasizes:
+**Answer:** Maximizing happiness [cite: 252, 304]
+**Explanation:** The utilitarian perspective aims to produce the most overall well-being in the long term. A right action is one that maximizes the balance of pleasure over pain (happiness) for everyone affected.
 
-**Question 28:** Which ethical lens asks how we might excel in fulfilling a particular role or relationship?
-**Answer:** The Virtue lens.
-**Explanation:** Virtue ethics also considers the virtues associated with specific roles, like being a good doctor, a loyal friend, or a responsible parent.
+**Question 29:** The common good approach emphasizes:
+**Answer:** Flourishing of all members of society [cite: 254, 259, 310]
+**Explanation:** The common good approach focuses on creating the conditions that are required for all members of a society to flourish. It involves making choices that prioritize the well-being of the entire community.
 
-**Question 29:** Which ethical lens is rooted in relationships and in the need to listen and respond to individuals in their specific circumstances?
-**Answer:** The Care Ethics lens.
-**Explanation:** This perspective prioritizes empathy, compassion, and the responsibilities that arise from our relationships with others. It emphasizes caring for the vulnerable.
+**Question 30:** Care ethics emphasizes: [cite: 260, 262]
+**Answer:** Relationships and specific context [cite: 320, 323]
+**Explanation:** Care ethics is rooted in relationships and the need to listen and respond to individuals in their specific circumstances. It considers the feelings, concerns, and relationships of all stakeholders involved.
 
-**Question 30:** What three elements of stakeholders does Care ethics consider?
-**Answer:** Their needs, vulnerabilities, and relationships.
-**Explanation:** Instead of applying abstract rules, care ethics looks at the concrete situation of individuals, focusing on who needs care and what our relationships require of us.
+**Question 31:** Morally obligatory actions are:
+**Answer:** Required
+**Explanation:** Obligatory actions are those that are morally required and are not optional. It is considered wrong to fail to perform an obligatory action.
 
-**Question 31:** The question, "How can we create the conditions required in order for all members of a society to flourish?" aligns with which lens? [cite: 33, 34]
-**Answer:** The Common Good lens.
+**Question 32:** Supererogatory actions are:
+**Answer:** Admirable but not required [cite: 330, 347]
+**Explanation:** Supererogatory actions are actions that are good and admirable but are not obligatory. A person is not blamed for failing to perform them (e.g., saving someone from a burning building).
 
-**Question 32:** The question, "How can we best protect and respect the moral rights of those affected?" aligns with which lens?
-**Answer:** The Rights lens.
+**Question 33:** Forbidden actions are:
+**Answer:** Morally required not to do
+**Explanation:** Forbidden actions are those that one is morally required not to do. They are considered impermissible.
 
-**Question 33:** The question, "How might our personal relationships, social practices, and political institutions be more caring?" aligns with which lens?
-**Answer:** The Care Ethics lens.
+**Question 34:** Permissible actions are:
+**Answer:** Not forbidden
+**Explanation:** Permissible actions are defined as actions that are "not forbidden". This broad category includes actions that are obligatory, supererogatory, and morally neutral[cite: 563, 570].
 
-### **III. Utilitarianism and Consequentialism**
+**Question 35:** Meta-ethics deals with:
+**Answer:** Nature of moral judgments [cite: 368, 370]
+**Explanation:** Meta-ethics is an area of inquiry within ethics that examines the nature of moral judgments, whether they can be objective, and how we acquire moral knowledge.
 
-**Question 34:** Utilitarianism is a prominent example of which kind of moral theory?
-**Answer:** Consequentialism.
-**Explanation:** Consequentialist theories judge the morality of an action based on its outcomes or consequences. Utilitarianism is the most famous example.
+**Question 36:** Which is an example of deontological ethics?
+**Answer:** Kantian Ethics
+**Explanation:** Deontological theories judge actions based on duty and adherence to rules, independent of consequences. Kantian Deontology is a primary example, where actions are judged based on the Categorical Imperative.
 
-**Question 35:** Teleological theories define what first?
-**Answer:** The good.
-**Explanation:** Teleological (from Greek *telos*, meaning 'end' or 'goal') theories first determine what is good (e.g., happiness) and then define right actions as those that maximize that good.
+**Question 37:** Which philosopher said 'better to be a human dissatisfied than a pig satisfied'? [cite: 383, 384]
+**Answer:** Mill
+**Explanation:** John Stuart Mill made this statement to illustrate his theory of qualitative hedonism. He argued that intellectual and moral pleasures are of a superior quality to mere sensual ones, linking this idea to human dignity[cite: 903, 904].
 
-**Question 36:** What is the Core Principle of utilitarianism articulated as bringing about?
-**Answer:** The greatest good for the greatest number.
-**Explanation:** This is the central idea of utilitarianism: a moral action is one that maximizes overall happiness or well-being for the largest number of people.
+**Question 38:** Which philosopher is associated with contractualism?
+**Answer:** Scanlon
+**Explanation:** T. M. Scanlon is a modern philosopher associated with contractualism. His theory states that wrong actions are those forbidden by principles that rational people could not reasonably reject.
 
-**Question 37:** What is the "good" to be maximised in classical utilitarianism generally defined as?
-**Answer:** Happiness or pleasure.
-**Explanation:** Classical utilitarians like Bentham and Mill identified the ultimate "good" as happiness, defined as pleasure and the absence of pain.
+**Question 39:** Which philosopher introduced the concept of higher and lower pleasures?
+**Answer:** Mill
+**Explanation:** John Stuart Mill proposed the theory of qualitative hedonism, which posits that some pleasures (like intellectual and aesthetic ones) are inherently higher in quality than other, more sensual pleasures[cite: 902, 903].
 
-**Question 38:** What key aspect of utilitarian calculation ensures everyone counts equally?
-**Answer:** Impartiality.
-**Explanation:** Utilitarianism requires that in calculating the greatest good, everyone's happiness counts equally. No one's happiness is considered more important than anyone else's.
+**Question 40:** Which philosopher emphasized the harmony between morality and self-interest?
+**Answer:** Plato and Aristotle
+**Explanation:** Ancient and medieval philosophers, including Plato and Aristotle, generally argued for a harmony between morality and self-interest. They believed that living a moral or virtuous life was essential for achieving one's own happiness and flourishing (*eudaimonia*).
 
-**Question 39:** Which early figure defended the utilitarian doctrine based on sentimentalist meta-ethics, alongside David Hume?
-**Answer:** Francis Hutcheson.
-**Explanation:** Hutcheson was an early philosopher who proposed that the best action is one that "procures the greatest happiness for the greatest numbers."
+**Question 41:** Who introduced the concept of prima facie duties?
+**Answer:** *(Note: Answer not provided in source file 'Important_MCQs_Ethics-Copy.pdf', but can be determined from other provided files.)* W. D. Ross.
+**Explanation:** W. D. Ross is the deontological philosopher who developed the theory of prima facie duties[cite: 602, 757, 758]. These are duties like keeping promises or telling the truth that are obligatory unless they are overridden by a more compelling duty in a specific situation[cite: 566, 759, 760].
 
-**Question 40:** What type of utilitarianism requires the agent to strive for the greatest overall happiness in every specific action?
-**Answer:** Act Utilitarianism.
-**Explanation:** This version says you should assess each individual act based on its consequences to see if it produces the most good.
+**Question 42:** Which theory holds that moral claims arise from God's command? [cite: 437, 438]
+**Answer:** Divine command theory
+**Explanation:** Some theories posit that moral authority stems from an external source, such as God's commands or will[cite: 583, 584].
 
-**Question 41:** What is Direct Utilitarianism also known as?
-**Answer:** Act Utilitarianism.
-**Explanation:** It's called "direct" because the principle of utility is applied directly to the action itself.
+**Question 43:** Which ethical lens focuses on character traits?
+**Answer:** Virtue ethics
+**Explanation:** Virtue ethics is the ethical approach that primarily focuses on character evaluation[cite: 605, 922]. It centers on the stable dispositions and traits that define a person's moral identity.
 
-**Question 42:** What type of utilitarianism achieves desirable consequences by following general rules?
-**Answer:** Rule Utilitarianism.
-**Explanation:** This version says we should follow general rules that, if everyone followed them, would lead to the greatest overall good, even if a specific action might break the rule.
+**Question 44:** Which ethical lens is rooted in relationships and responding to individuals?
+**Answer:** Care ethics
+**Explanation:** Care ethics is rooted in relationships and the need to listen and respond to individuals in their specific circumstances. It considers the feelings and concerns of all stakeholders.
 
-**Question 43:** What is Indirect Utilitarianism also known as?
-**Answer:** Rule Utilitarianism.
-**Explanation:** It's called "indirect" because the principle of utility is applied to rules of conduct, not directly to individual acts.
+**Question 45:** The principle of universality is central to which philosopher?
+**Answer:** Kant
+**Explanation:** The "universal law" formulation is a key articulation of Immanuel Kant's Categorical Imperative. It demands that one act only on maxims that could rationally be willed to be a universal law.
 
-**Question 44:** Which philosopher believed that overall utility is maximised when society relies on non-utilitarian "secondary principles"?
-**Answer:** John Stuart Mill.
-**Explanation:** Mill argued that we should generally follow common-sense moral rules (like "don't steal") because they tend to promote happiness, rather than calculating the consequences of every single act.
+**Question 46:** Which philosopher defined happiness as 'flourishing'? [cite: 515, 516]
+**Answer:** Aristotle
+**Explanation:** Aristotelian ethics focuses on achieving *eudaimonia* (flourishing). Aristotle defined happiness (*eudaimonia*) as an activity that exercises practical reason well, in accordance with complete virtue over a full life.
 
-**Question 45:** What type of hedonism focuses solely on the amount or duration of pleasure?
-**Answer:** Quantitative Hedonism.
-**Explanation:** This view, held by Jeremy Bentham, argues that the value of a pleasure is determined only by its quantity (how long it lasts, how intense it is). All pleasures are of equal quality.
+**Question 47:** According to Aristotle, virtues lie:
+**Answer:** In a mean
+**Explanation:** Aristotle's Virtue of Character is described as a state that lies in a mean, which is relative to the individual and defined by reason[cite: 945, 956]. This "mean" is the appropriate response in a situation, not an average or mediocrity.
 
-**Question 46:** Which philosopher explicitly advocated for quantitative hedonism as the only sound basis for moral rightness?
-**Answer:** Jeremy Bentham.
+**Question 48:** Which philosopher argued knowledge is sufficient for virtue? [cite: 489, 510, 518]
+**Answer:** Socrates
+**Explanation:** Socrates made the controversial claim that knowledge is sufficient for virtue. He believed that moral error was the result of intellectual error, such as deception or ignorance.
 
-**Question 47:** What type of hedonism posits that some pleasures are inherently higher in quality than others?
-**Answer:** Qualitative Hedonism.
-**Explanation:** This view, held by John Stuart Mill, argues that intellectual and moral pleasures (like reading poetry) are superior in quality to purely physical pleasures (like eating).
+**Question 49:** Which ethical theory asks 'What sort of person should I be?'
+**Answer:** Virtue ethics
+**Explanation:** The central question of virtue ethics is "What sort of person should I be?" or "How ought we to live?"[cite: 539, 952]. It prioritizes the evaluation of character over simply evaluating actions.
 
-**Question 48:** Which philosopher proposed qualitative hedonism?
-**Answer:** John Stuart Mill.
-
-**Question 49:** What concept did Henry Sidgwick famously articulate regarding the potential conflict between rational egoism and utilitarianism?
-**Answer:** The Dualism of Practical Reason.
-**Explanation:** Sidgwick noted a conflict between what is rational for an individual to do for their own happiness (egoism) and what is rational to do for the happiness of all (utilitarianism).
-
-**Question 50:** What does the utilitarian perspective seek to maximize besides overall well-being?
-**Answer:** Utility.
-**Explanation:** "Utility" is the technical term for the good that is being maximized, which can be defined as happiness, well-being, or the satisfaction of preferences.
-
-### **IV. Deontological Ethics**
+**Question 50:** Which ethical perspective emphasizes fairness in distribution of burdens?
+**Answer:** Justice
+**Explanation:** The justice perspective focuses on the distribution of benefits and burdens among stakeholders. It seeks to guarantee that all people have equal access to opportunities and resources.
 
 **Question 51:** Deontological theories define the right independently of what?
 **Answer:** The good (or consequences).
-**Explanation:** Deontology (from Greek *deon*, meaning 'duty') argues that certain actions are inherently right or wrong, regardless of their outcomes. The focus is on duties and rules.
+**Explanation:** Deontological theories define "the right" independently of "the good"[cite: 73, 217]. This is in contrast to teleological theories like Utilitarianism, which first define what is good and then define the right as whatever promotes that good. Deontology judges actions based on their adherence to rules or duties, rather than their consequences.
 
 **Question 52:** Deontology focuses on what two concepts as central to determining the rightness of actions?
-**Answer:** Duties and rules.
-**Explanation:** Deontologists believe that morality is about following a set of moral rules and fulfilling one's duties.
+**Answer:** Duty and moral obligation.
+**Explanation:** Deontology places duty and moral obligation at the center of determining the rightness of actions. The concepts of 'duty' and 'virtue' are paramount to the analysis within these theories.
 
 **Question 53:** What kind of 'ought' do deontological theories often posit?
 **Answer:** A categorical 'ought'.
-**Explanation:** A categorical ought, or imperative, is an unconditional command. It tells you what you must do, no matter what your personal goals or desires are (e.g., "You ought not to lie," period).
+**Explanation:** Deontological theories often put forward a categorical 'ought'. This means that the reasons for a moral action are good regardless of an agent's personal desires or preferences[cite: 222, 231].
 
 **Question 54:** What is the Core Principle of Kant's ethics, which a morally worthy action must align with?
 **Answer:** The Categorical Imperative.
-**Explanation:** This is Immanuel Kant's supreme principle of morality. It's a test for determining whether an action is morally permissible.
+**Explanation:** The core principle of Immanuel Kant's deontology is that a morally worthy action is one performed in accordance with the Categorical Imperative. This principle requires an agent to act in a way that respects the rational nature of other people.
 
 **Question 55:** What is Kant's "universal law" formulation associated with?
 **Answer:** The Categorical Imperative.
-**Explanation:** One version of the Categorical Imperative states: "Act only according to that maxim whereby you can at the same time will that it should become a universal law." In short: could your rule for action be a rule for everyone?
+**Explanation:** The Categorical Imperative is often expressed through the "universal law" formulation. This requires acting only on maxims (rules for action) that one could rationally will to become a universal law for everyone to follow.
 
 **Question 56:** According to Kant, persons are to be treated as what, not merely as means to an end?
 **Answer:** Ends in themselves.
-**Explanation:** This is another formulation of the Categorical Imperative. It means we must respect the inherent dignity of every person and not use them simply as tools to achieve our own goals.
+**Explanation:** A key principle in Kant's ethics is that all persons are to be treated as "ends in themselves" and not simply as a means to achieve another goal. This idea of respecting persons' rational nature is a core part of his deontology[cite: 76, 227].
 
 **Question 57:** What term describes the will when it is driven by external factors like inclinations?
 **Answer:** Heteronomous will.
-**Explanation:** A will is heteronomous when its choices are determined by something outside of reason, such as desire, emotion, or external authority.
+**Explanation:** Kant used the term heteronomy to describe a will that is driven by external factors, such as one's inclinations or desires.
 
 **Question 58:** What term describes the will when it is guided by morality and gives the law to itself?
 **Answer:** Autonomous will.
-**Explanation:** An autonomous will is self-governing. It chooses to act based on moral laws that it gives to itself through reason. For Kant, this is the basis of human dignity.
+**Explanation:** An autonomous will is one that, when guided by morality, gives the law to itself. Kant believed that this capacity for autonomy is the basis of human dignity.
 
 **Question 59:** What is the core principle of W. D. Ross's deontology?
-**Answer:** There are multiple, distinct prima facie duties.
-**Explanation:** Ross argued against Kant's single principle, suggesting instead that we have several fundamental moral duties (like fidelity, justice, and beneficence) that are self-evident.
+**Answer:** The right action is the one that best accords with one's prima facie duties.
+**Explanation:** The core principle of Ross's deontology is that the right action is the one that best fulfills, and avoids violating, one's prima facie duties. His theory recognizes multiple, distinct moral principles rather than a single one like utility.
 
 **Question 60:** What are duties that are obligatory "unless there is some countervailing consideration" called?
 **Answer:** Prima facie duties.
-**Explanation:** A prima facie duty is a duty that is binding unless it is overridden by a more important duty in a specific situation. For example, the duty to keep a promise might be overridden by the duty to prevent harm.
+**Explanation:** W. D. Ross called these duties *prima facie* duties. They are obligatory on the surface, but can be overridden in specific circumstances by a more compelling duty[cite: 234, 235]. Examples include the duty to keep promises or tell the truth.
 
 **Question 61:** Ross's approach is what, recognizing multiple, distinct ultimate moral principles?
-**Answer:** Pluralistic.
-**Explanation:** Ethical pluralism is the view that there are several moral values or principles that cannot be reduced to a single master principle (like utility or the Categorical Imperative).
+**Answer:** Pluralist.
+**Explanation:** Ross's approach is described as pluralist because it recognizes multiple, distinct, and ultimate moral principles (e.g., duties of fidelity, gratitude, justice).
 
 **Question 62:** Contractualism, as defined by T. M. Scanlon, concerns actions forbidden by principles that rational persons could not reasonably do what to?
 **Answer:** Reject.
-**Explanation:** Contractualism holds that an act is wrong if it would be forbidden by a set of rules for general behavior that no one could reasonably reject as a basis for informed, unforced agreement.
+**Explanation:** T. M. Scanlon's contractualism states that an action is morally wrong if it would be forbidden by principles that rational persons could not reasonably reject[cite: 78, 239].
 
 **Question 63:** Contractualism emphasizes a mutual recognition of what we owe to each other as what kind of beings?
 **Answer:** Rational beings.
-**Explanation:** The theory is grounded in the idea of mutual respect among rational beings who are trying to find principles they can all agree to live by.
+**Explanation:** Contractualism's framework emphasizes a mutual recognition of what we owe to each other as rational beings.
 
 **Question 64:** What type of theory requires value to be honoured or respected (e.g., respect for rational nature)?
 **Answer:** Deontological theory.
-**Explanation:** Deontological theories are about honoring values like justice, rights, and respect for persons, rather than promoting good consequences.
+**Explanation:** In deontological theories, value is something to be honoured or respected. A key example is the Kantian idea of showing respect for the rational nature of persons.
 
 ### **V. Virtue Ethics**
 
 **Question 65:** Virtue Ethics primarily focuses on what type of evaluation?
-**Answer:** Agent-centered evaluation (character).
-**Explanation:** Instead of focusing on actions ("What should I do?"), virtue ethics focuses on the agent ("What kind of person should I be?"). It evaluates the character of the moral actor.
+**Answer:** Character evaluation.
+**Explanation:** Unlike theories that focus only on actions, virtue ethics primarily focuses on character evaluation. It prioritizes this over the evaluation of individual actions, asking what kind of person one ought to be.
 
 **Question 66:** What is the central question asked by Virtue Ethics?
-**Answer:** "What kind of person should I be?"
+**Answer:** "What sort of person should I be?"
+**Explanation:** The central question in virtue ethics is often framed as "What sort of person should I be?" or "How ought we to live?"[cite: 14, 24, 80, 313]. This focus on character is what distinguishes it from other ethical theories.
 
 **Question 67:** What Greek term meaning "goodness" or "excellence" refers to qualities that make someone admirable?
-**Answer:** Aretē.
-**Explanation:** *Aretē* is often translated as 'virtue'. It signifies any kind of excellence, whether it's the excellence of a person, an animal, or an object.
+**Answer:** Aretê.
+**Explanation:** *Aretê* is a Greek term that means "goodness" or "excellence". It refers to the qualities, like bravery or wisdom, that make someone a good and admirable person[cite: 316, 317].
 
 **Question 68:** What Greek term is often translated as "flourishing," representing the ultimate good a human being aims for?
 **Answer:** Eudaimonia.
-**Explanation:** *Eudaimonia* is the goal of life in ancient Greek ethics. It's a state of living well and doing well, a kind of deep, fulfilling happiness that comes from living a virtuous life.
+**Explanation:** *Eudaimonia* is often translated as "flourishing," "well-being," or "living well". It represents the ultimate good a human being aims for and is a central concept in Aristotelian ethics[cite: 82, 318].
 
 **Question 69:** What intellectual virtue enables a person to deliberate well about "living well as a whole"?
-**Answer:** Phronesis (practical wisdom).
-**Explanation:** This is the virtue of knowing how to apply general moral principles to particular situations. It's the ability to see what is the right thing to do in complex circumstances.
+**Answer:** Phronêsis (Practical Reason).
+**Explanation:** *Phronêsis*, or practical reason, is the intellectual virtue that allows a person to deliberate well about how to live well as a whole. It is essential for discerning the appropriate actions in specific situations[cite: 320, 338].
 
 **Question 70:** Who argued that knowledge is sufficient for virtue and virtue is sufficient for happiness?
 **Answer:** Socrates.
-**Explanation:** Socrates believed that if you truly know what is good, you will automatically do what is good, and that living a virtuous life is all that is needed for happiness.
+**Explanation:** Socrates made the controversial claims that knowledge is sufficient for virtue, and that virtue is sufficient for happiness. He believed moral error stemmed from intellectual error or ignorance.
 
 **Question 71:** Plato argued that virtue requires the cooperation of which parts of the soul?
-**Answer:** Reason, spirit, and appetite.
-**Explanation:** For Plato, virtue is a state of harmony in the soul, where the rational part guides the spirited (emotional) and appetitive (desirous) parts.
+**Answer:** The rational and non-rational parts (reason, spirit, appetite).
+**Explanation:** Plato rejected the idea that knowledge alone is sufficient for virtue. Instead, he argued that virtue requires the cooperation of the different parts of the soul: the rational, the spirited, and the appetitive.
 
 **Question 72:** What state involves a well-ordered soul with reason controlling non-rational desires, according to Plato?
-**Answer:** Justice (in the soul).
-**Explanation:** Plato saw justice not just as a social concept, but as an internal state where each part of the soul performs its proper function in harmony.
+**Answer:** A virtuous soul.
+**Explanation:** According to Plato, virtue is beneficial for one's own happiness because it involves a well-ordered soul, where the rational part is in control of the non-rational desires.
 
 **Question 73:** Aristotle defined Happiness (Eudaimonia) as activity that exercises what well?
-**Answer:** Reason (or virtue).
-**Explanation:** For Aristotle, happiness is not a feeling but an activity—the activity of living virtuously and exercising one's rational capacities excellently.
+**Answer:** Practical reason (in accordance with complete virtue).
+**Explanation:** Aristotle defined *Eudaimonia* (happiness or flourishing) as an activity that exercises practical reason well, in accordance with complete virtue, over the course of a full life.
 
 **Question 74:** Aristotle's Virtue of Character is a state involving election, lying in a mean, and defined by what?
-**Answer:** Practical wisdom (phronesis).
-**Explanation:** Aristotle's famous "Doctrine of the Mean" states that virtue is a midpoint between two extremes (vices). For example, courage is the mean between cowardice and rashness. Practical wisdom helps find that mean.
+**Answer:** Reason (prudence).
+**Explanation:** Aristotle defined a virtue of character as "a state involving election, lying in a mean that is relative to us, defined by reason, as the prudent person would define it". This mean is not mediocrity but the appropriate response in a situation.
 
 **Question 75:** According to Aristotle, for whose sake are virtuous actions chosen?
-**Answer:** For their own sake.
-**Explanation:** A truly virtuous person does the right thing not for some external reward, but because it is the right thing to do.
+**Answer:** For the sake of the fine (kalon).
+**Explanation:** Aristotle stated that virtuous actions are chosen "for the sake of the fine (*kalon*)". This concept suggests promoting a common good, not just the agent's own self-interest.
 
 **Question 76:** What is a right action understood as, according to virtue ethics?
-**Answer:** What a virtuous agent would characteristically do in the circumstances.
-**Explanation:** Virtue ethics defines a right action by referencing a virtuous person. The right thing to do is whatever a person with courage, compassion, and wisdom would do.
+**Answer:** The action that a virtuous person would characteristically perform.
+**Explanation:** In virtue ethics, a right action is understood as what a virtuous person would characteristically perform in the given circumstances[cite: 81, 342].
 
 **Question 77:** Which school of thought identified happiness with virtue, viewing it as the only good?
-**Answer:** Stoicism.
-**Explanation:** The Stoics believed that virtue is the only true good, and that external things like health, wealth, or pleasure cannot make a person truly happy or unhappy.
+**Answer:** The Stoics.
+**Explanation:** The Stoics identified happiness with virtue, believing that virtue was the only good and was sufficient for happiness.
 
 **Question 78:** Who integrated Aristotelian ethics and held that moral virtues partially constitute happiness?
-**Answer:** Thomas Aquinas.
-**Explanation:** Aquinas, a medieval philosopher and theologian, combined Aristotelian virtue ethics with Christian theology, arguing that virtues are essential for earthly happiness.
+**Answer:** Aquinas.
+**Explanation:** Thomas Aquinas integrated Aristotelian ethics into his own philosophy, holding that moral virtues are a partial component of happiness.
 
 **Question 79:** What are the stable dispositions and traits that define a person's moral identity?
 **Answer:** Character.
-**Explanation:** Character refers to the collection of virtues and vices that make up who you are. It is the focus of virtue ethics.
+**Explanation:** Character is defined as the stable dispositions and traits that make up a person's moral identity. Virtues are considered central to the development of a good character.
 
 ### **VI. Personal, Professional, and Social Ethics**
 
 **Question 80:** What type of ethics involves individual values, workplace conduct, and societal norms, respectively?
-**Answer:** Personal, professional, and social ethics.
+**Answer:** Personal, Professional, and Social ethics.
+**Explanation:** These three categories of ethics are defined as involving individual values (Personal), workplace conduct (Professional), and societal norms (Social), all of which influence decision-making.
 
 **Question 81:** Which type of ethics is self-driven and internalized rather than coming from external codes of conduct?
 **Answer:** Personal ethics.
-**Explanation:** These are the moral principles that an individual uses to guide their own behavior, derived from their personal beliefs and values.
+**Explanation:** Unlike professional ethics that come from external codes, personal ethics are self-driven and internalized. They are principles a person uses to make decisions in both personal and professional settings.
 
 **Question 82:** Where are personal ethics typically learned from?
-**Answer:** Family, culture, religion, and personal experiences.
-**Explanation:** Our individual moral compass is shaped by our upbringing, the society we live in, and our own life experiences.
+**Answer:** Experiences, upbringing, and cultural influences.
+**Explanation:** A person's code of ethics evolves through their experiences, upbringing, cultural influences, and personal reflections. They are often learned from family and friends since childhood.
 
 **Question 83:** Which type of ethics relates to the strict code of conduct and guidelines imposed on employees?
 **Answer:** Professional ethics.
-**Explanation:** These are the moral rules and standards of conduct that apply to people in a specific profession (e.g., medical ethics for doctors, legal ethics for lawyers).
+**Explanation:** Professional ethics refers to the strict code of conduct and guidelines that are imposed on employees within a professional or industrial setting.
 
 **Question 84:** Who exercises specialist knowledge and skill in a professional setting?
 **Answer:** A professional.
-**Explanation:** A professional is expected not only to be skilled but also to adhere to the ethical standards of their field.
+**Explanation:** Professional people, and those in acknowledged professions, are defined as those who exercise specialist knowledge and skill.
 
 **Question 85:** What is one of the earliest examples of professional ethics mentioned?
-**Answer:** The Hippocratic Oath.
-**Explanation:** This is an ancient oath for physicians that outlines principles of medical ethics, such as "do no harm."
+**Answer:** The Hippocratic oath.
+**Explanation:** The Hippocratic oath, which medical doctors still adhere to, is cited as one of the earliest examples of professional ethics.
 
 **Question 86:** Professional ethics are regulated by standards often referred to as what?
-**Answer:** Codes of conduct or codes of ethics.
-**Explanation:** Many professional organizations publish these documents to guide the behavior of their members and maintain public trust.
+**Answer:** Codes of ethics.
+**Explanation:** Professional ethics are regulated by standards which are often referred to as codes of ethics. These codes provide boundaries for people in their professional careers.
 
 **Question 87:** What is integrity regarded as in ethics?
-**Answer:** The quality of being honest and having strong moral principles.
-**Explanation:** Integrity means acting in accordance with your values, even when no one is watching. It is a consistency between your beliefs and your actions.
+**Answer:** The honesty and truthfulness of one's actions.
+**Explanation:** In ethics, integrity is regarded as the honesty, truthfulness, or accuracy of one's actions. It is a concept of consistency between actions, values, principles, and outcomes.
 
 **Question 88:** What is integrity regarded as the opposite of?
 **Answer:** Hypocrisy.
-**Explanation:** Hypocrisy is the act of claiming to have moral standards or beliefs to which one's own behavior does not conform.
+**Explanation:** Integrity can be seen as the opposite of hypocrisy because it values internal consistency, while hypocrisy involves a discrepancy between one's stated values and one's actions.
 
 **Question 89:** What concept implies openness, communication, and accountability?
 **Answer:** Transparency.
-**Explanation:** Transparency means operating in such a way that it is easy for others to see what actions are being performed. It is considered a key to preventing corruption.
+**Explanation:** Transparency is a concept used in business, science, and social contexts that implies openness, communication, and accountability.
 
 **Question 90:** In governance, what concept is defined as answerability, blameworthiness, and liability?
 **Answer:** Accountability.
-**Explanation:** Accountability means being responsible for one's actions and decisions, and being prepared to justify them to others.
+**Explanation:** In ethics and governance, accountability is defined as answerability, blameworthiness, liability, and the expectation of giving an account for one's actions.
 
 **Question 91:** What is defined as ensuring that information is accessible only to those authorized to have access?
 **Answer:** Confidentiality.
-**Explanation:** This is a key ethical principle in many professions, requiring professionals to protect the private information of their clients or patients.
+**Explanation:** Confidentiality is defined as ensuring that information is accessible only to those who are authorized to have access. It is a set of rules or a promise that places restrictions on certain types of information.
 
 **Question 92:** What famous statement refers to truthfulness and straightforwardness?
-**Answer:** "Honesty is the best policy."
-**Explanation:** This proverb encapsulates the ethical value of honesty—the quality of being truthful and sincere.
+**Answer:** "Honesty is the best policy".
+**Explanation:** This famous statement is used to describe honesty , which refers to a facet of moral character that includes integrity, truthfulness, and straightforwardness.
 
 **Question 93:** Which type of ethics are employees working in an organization bound to obey?
 **Answer:** Professional ethics.
-**Explanation:** Employees are expected to follow the code of conduct set by their organization and profession.
+**Explanation:** Employees in an organization are bound to obey the laws and regulations of that organization, which falls under professional ethics. Non-compliance can risk one's professional reputation.
 
 **Question 94:** Who is the accountability solely on regarding personal ethics?
 **Answer:** The individual.
-**Explanation:** While you might be held accountable by your employer for professional ethics, you are accountable to yourself for your personal ethics.
+**Explanation:** In personal ethics, the accountability is on the individual alone.
 
 **Question 95:** Non-compliance with professional ethics may risk what?
-**Answer:** One's professional reputation or license.
-**Explanation:** Violating professional ethics can have serious consequences, including being fired, losing a professional license, or damaging one's career.
+**Answer:** Your professional reputation.
+**Explanation:** Non-compliance with the rules of professional ethics may risk your reputation, as your behavior could be reported as unprofessional.
 
 **Question 96:** What type of ethics involves making ethical choices that prioritize the common good and respect for human dignity?
 **Answer:** Social ethics.
-**Explanation:** Social ethics is concerned with the moral principles that should guide societies and social institutions, addressing issues like justice, rights, and the common good.
+**Explanation:** Social ethics involves making ethical choices that prioritize the common good and respect for human dignity, while considering the impact of these choices on society as a whole.
 
 **Question 97:** What component of social ethics promotes collaboration and mutual support between members of society?
 **Answer:** Solidarity.
-**Explanation:** Solidarity is the idea that we are all part of a single human family and have a responsibility to support one another, especially the poor and vulnerable.
+**Explanation:** Solidarity is a fundamental value in social ethics that promotes collaboration and mutual support between members of society.
 
 **Question 98:** What pillar of social ethics seeks to guarantee that all people have equal access to opportunities and resources?
-**Answer:** Justice or equality.
-**Explanation:** Social justice is a core principle of social ethics, focused on creating a fair and equitable society where everyone has the chance to succeed.
+**Answer:** Social Justice.
+**Explanation:** Social justice is one of the pillars of social ethics and seeks to guarantee that all people have equal access to opportunities and resources.
 
 **Question 99:** What is the ability to put yourself in the shoes of others and understand their feelings and perspectives?
 **Answer:** Empathy.
-**Explanation:** Empathy is a crucial component of social ethics because it allows us to understand the impact of our actions on others and motivates compassionate behavior.
+**Explanation:** Empathy is the ability to put yourself in the shoes of others and understand their feelings and perspectives. It plays a crucial role in social ethics by helping to develop healthy relationships and mutual understanding.
 
 **Question 100:** What characteristic ensures social ethics apply to all people regardless of their origin or gender?
 **Answer:** Universality.
-**Explanation:** Just like personal moral norms, social ethics are meant to be universal, applying to all human beings equally and respecting the inherent dignity of every person.
+**Explanation:** The principle of universality in social ethics means that principles of justice and equity apply to all people, regardless of their origin, gender, sexual orientation, religion, or any other characteristic. This ensures that all individuals are treated with equality and respect.
