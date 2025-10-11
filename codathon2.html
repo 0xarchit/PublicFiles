@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codeathon 2 Categorized Checklist</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-gray-100 to-blue-100 min-h-screen py-8">
+  <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
+    <h1 class="text-3xl font-bold mb-4 text-blue-700">Codeathon 2 Practice Checklist</h1>
+    <div id="checklist-container"></div>
+    <hr class="my-6" />
+    <div>
+      <h2 class="text-xl font-semibold mb-3 text-green-700">✅ Completed (Untick to revert)</h2>
+      <ul id="completed-list" class="space-y-2"></ul>
+    </div>
+  </div>
+  <script>
+    const topics = [
+      {
+        name: "Strings",
+        color: "border-pink-400",
+        questions: [
+          { label: "Palindrome Check (GeeksforGeeks)", url: "https://www.geeksforgeeks.org/problems/palindrome-string0817/1" },
+          { label: "Valid Palindrome (LeetCode)", url: "https://leetcode.com/problems/valid-palindrome/" },
+          { label: "String Anagram (LeetCode)", url: "https://leetcode.com/problems/valid-anagram/" },
+          { label: "Group Anagrams (LeetCode)", url: "https://leetcode.com/problems/group-anagrams/" },
+          { label: "Reverse Words in a String", url: "https://practice.geeksforgeeks.org/problems/reverse-words-in-a-given-string5459/1" },
+          { label: "String Vowels/Consonants Count", url: "https://practice.geeksforgeeks.org/problems/count-vowels-consonants/1" }
+        ]
+      },
+      {
+        name: "Arrays",
+        color: "border-blue-400",
+        questions: [
+          { label: "Missing Number (LeetCode)", url: "https://leetcode.com/problems/missing-number/" },
+          { label: "Find Duplicate (LeetCode)", url: "https://leetcode.com/problems/find-the-duplicate-number/" },
+          { label: "Contains Duplicate (LeetCode)", url: "https://leetcode.com/problems/contains-duplicate/" },
+          { label: "Linear Search in Array", url: "https://practice.geeksforgeeks.org/problems/searching-a-number0324/1" },
+          { label: "Binary Search (GeeksforGeeks)", url: "https://www.geeksforgeeks.org/problems/binary-search-1587115620/1" },
+          { label: "Prefix Sums (GFG Guide)", url: "https://www.geeksforgeeks.org/prefix-sum-array-implementation-applications-competitive-programming/" },
+          { label: "Merge Two Sorted Arrays", url: "https://leetcode.com/problems/merge-sorted-array/" },
+          { label: "Maximum Subarray Sum (Kadane’s)", url: "https://leetcode.com/problems/maximum-subarray/" },
+          { label: "Rotate Array", url: "https://leetcode.com/problems/rotate-array/" },
+          { label: "Search in Rotated Sorted Array", url: "https://leetcode.com/problems/search-in-rotated-sorted-array/" },
+          { label: "Sort Colors (Dutch National Flag)", url: "https://leetcode.com/problems/sort-colors/" },
+          { label: "Find First and Last Position", url: "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/" }
+        ]
+      },
+      {
+        name: "2D Arrays & Matrix",
+        color: "border-teal-400",
+        questions: [
+          { label: "Matrix Sum: Row & Column", url: "https://www.educative.io/courses/beginner-to-advanced-computing-and-logic-building/problem-solving-matrices-with-2-d-arrays" },
+          { label: "Matrix Transpose", url: "https://byjus.com/maths/transpose-of-a-matrix/" },
+          { label: "Set Matrix Zeroes", url: "https://leetcode.com/problems/set-matrix-zeroes/" },
+          { label: "Count 1s in Matrix Row", url: "https://leetcode.com/problems/row-with-maximum-ones/" }
+        ]
+      },
+      {
+        name: "Techniques",
+        color: "border-gray-400",
+        questions: [
+          { label: "Two Pointer: Reverse Array", url: "https://algodaily.com/lessons/using-the-two-pointer-technique" },
+          { label: "Sliding Window: Substring Search", url: "https://leetcode.com/problems/sliding-window-maximum/" },
+          { label: "Sliding Window: Minimum Size Subarray Sum", url: "https://leetcode.com/problems/minimum-size-subarray-sum/" }
+        ]
+      }
+    ];
+
+    const storageKey = "codeathon2AdvancedChecklist";
+    let checked = JSON.parse(localStorage.getItem(storageKey)) || {};
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(checked));
+    }
+
+    function render() {
+      const checklistContainer = document.getElementById('checklist-container');
+      const completedList = document.getElementById('completed-list');
+      checklistContainer.innerHTML = "";
+      completedList.innerHTML = "";
+
+      topics.forEach((topic, i) => {
+        let items = topic.questions.map((q, j) => ({ ...q, idx: `${i}-${j}` }));
+        let pending = items.filter(q => !checked[q.idx]);
+        if (pending.length === 0) return; // Don't show empty categories
+
+        // Category header
+        const section = document.createElement('section');
+        section.className = `mb-5 border-l-4 ${topic.color} pl-3 bg-blue-50 rounded-lg`;
+        section.innerHTML = `<h2 class="text-lg font-semibold text-indigo-700 mb-1">${topic.name}</h2>`;
+        const ul = document.createElement('ul');
+        ul.className = "divide-y divide-gray-200";
+        pending.forEach(q => {
+          const li = document.createElement('li');
+          li.className = "flex items-center p-2 hover:bg-blue-100 transition";
+          const cb = document.createElement('input');
+          cb.type = "checkbox";
+          cb.checked = checked[q.idx] || false;
+          cb.className = "mr-3 w-4 h-4 accent-indigo-600 cursor-pointer";
+          cb.onchange = () => {
+            checked[q.idx] = cb.checked;
+            save();
+            render();
+          };
+          const link = document.createElement('a');
+          link.textContent = q.label;
+          link.href = q.url;
+          link.target = "_blank";
+          link.className = "text-gray-700 hover:text-blue-600 underline underline-offset-2";
+          li.appendChild(cb); li.appendChild(link);
+          ul.appendChild(li);
+        });
+        section.appendChild(ul);
+        checklistContainer.appendChild(section);
+      });
+
+      // Completed section
+      topics.forEach((topic, i) => {
+        let items = topic.questions.map((q, j) => ({ ...q, idx: `${i}-${j}` }));
+        let done = items.filter(q => checked[q.idx]);
+        done.forEach(q => {
+          const li = document.createElement('li');
+          li.className = "flex items-center bg-green-50 rounded p-2";
+          const cb = document.createElement('input');
+          cb.type = "checkbox";
+          cb.checked = true;
+          cb.className = "mr-3 w-4 h-4 accent-green-600 cursor-pointer";
+          cb.title = "Untick to move back to category";
+          cb.onchange = () => {
+            checked[q.idx] = false;
+            save();
+            render();
+          };
+          const link = document.createElement('a');
+          link.textContent = `${topic.name}: ${q.label}`;
+          link.href = q.url;
+          link.target = "_blank";
+          link.className = "text-gray-500 line-through";
+          li.appendChild(cb); li.appendChild(link);
+          completedList.appendChild(li);
+        });
+      });
+    }
+    window.onload = render;
+  </script>
+</body>
+
+</html>
