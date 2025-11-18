@@ -4,7 +4,7 @@ from typing import Dict, List, Any
 
 
 SKIP_DIRS = {".git", ".github", ".vscode", "node_modules", "__pycache__", ".netlify", "styles"}
-SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml", "view.html", "codathon2.html", "package-lock.json", "package.json", "tailwind.config.js"}
+SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml", "view.html", "codathon2.html", "package-lock.json", "package.json", "tailwind.config.js", "README.md"}
 
 
 Tree = Dict[str, Any]
@@ -71,11 +71,11 @@ def generate_list(folder: str = ".") -> None:
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Public Files</title>
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="stylesheet" href="styles/tailwind.css" />
         <script>
             (function() {
                 try {
-                    const stored = localStorage.getItem('theme');
+                    const stored = localStorage.getItem('uv-theme');
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                     if (stored === 'dark' || (!stored && prefersDark)) {
                         document.documentElement.classList.add('dark');
@@ -253,7 +253,7 @@ def generate_list(folder: str = ".") -> None:
                     const root = document.documentElement;
                     function setTheme(dark) {
                         if (dark) root.classList.add('dark'); else root.classList.remove('dark');
-                        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
+                        try { localStorage.setItem('uv-theme', dark ? 'dark' : 'light'); } catch (e) {}
                     }
                     toggle.addEventListener('click', () => {
                         const darkNow = !root.classList.contains('dark');
