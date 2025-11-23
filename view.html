@@ -1,1112 +1,1285 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>0xArchit File Viewer</title>
-			<link rel="stylesheet" href="styles/tailwind.css" />
-		<link
-			rel="preconnect"
-			href="https://fonts.googleapis.com"
-		/>
-		<link
-			rel="preconnect"
-			href="https://fonts.gstatic.com"
-			crossorigin
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" crossorigin="anonymous"></script>
-		<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" crossorigin="anonymous"></script>
-		<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" crossorigin="anonymous"></script>
-		<style>
-			::-webkit-scrollbar {
-				width: 10px;
-				height: 10px;
-			}
-			::-webkit-scrollbar-thumb {
-				background-color: rgba(100, 116, 139, 0.4);
-				border-radius: 9999px;
-			}
-			::-webkit-scrollbar-thumb:hover {
-				background-color: rgba(99, 102, 241, 0.8);
-			}
-			.markdown-table-scroll {
-				overflow-x: auto;
-				max-width: 100%;
-				margin: 0.75rem 0;
-			}
-			.markdown-table-scroll table {
-				min-width: 100%;
-				width: max-content;
-			}
-			.pdf-zoom-overlay {
-				position: fixed;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				display: none;
-				align-items: center;
-				justify-content: center;
-				padding: 1.5rem;
-				background: rgba(15, 23, 42, 0.75);
-				-webkit-backdrop-filter: blur(8px);
-				backdrop-filter: blur(8px);
-				z-index: 60;
-			}
-			.pdf-zoom-overlay.active {
-				display: flex;
-			}
-			.pdf-zoom-dialog {
-				position: relative;
-				display: flex;
-				flex-direction: column;
-				gap: 1rem;
-				width: min(960px, 92vw);
-				max-width: 100%;
-				height: min(90vh, 720px);
-				border-radius: 1rem;
-				border: 1px solid rgba(226, 232, 240, 0.35);
-				background: rgba(248, 250, 252, 0.98);
-				box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
-				overflow: hidden;
-			}
-			.dark .pdf-zoom-dialog {
-				border-color: rgba(71, 85, 105, 0.6);
-				background: rgba(15, 23, 42, 0.92);
-				box-shadow: 0 30px 60px rgba(15, 23, 42, 0.65);
-			}
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>0xArchit File Viewer</title>
+	<link rel="stylesheet" href="styles/tailwind.css" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+		rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" crossorigin="anonymous"></script>
+	<style>
+		::-webkit-scrollbar {
+			width: 10px;
+			height: 10px;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background-color: rgba(100, 116, 139, 0.4);
+			border-radius: 9999px;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background-color: rgba(99, 102, 241, 0.8);
+		}
+
+		.markdown-table-scroll {
+			overflow-x: auto;
+			max-width: 100%;
+			margin: 0.75rem 0;
+		}
+
+		.markdown-table-scroll table {
+			min-width: 100%;
+			width: max-content;
+		}
+
+		.pdf-zoom-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 1.5rem;
+			background: rgba(15, 23, 42, 0.75);
+			-webkit-backdrop-filter: blur(8px);
+			backdrop-filter: blur(8px);
+			z-index: 60;
+		}
+
+		.pdf-zoom-overlay.active {
+			display: flex;
+		}
+
+		.pdf-zoom-dialog {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			width: min(960px, 92vw);
+			max-width: 100%;
+			height: min(90vh, 720px);
+			border-radius: 1rem;
+			border: 1px solid rgba(226, 232, 240, 0.35);
+			background: rgba(248, 250, 252, 0.98);
+			box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+			overflow: hidden;
+		}
+
+		.dark .pdf-zoom-dialog {
+			border-color: rgba(71, 85, 105, 0.6);
+			background: rgba(15, 23, 42, 0.92);
+			box-shadow: 0 30px 60px rgba(15, 23, 42, 0.65);
+		}
+
+		.pdf-zoom-toolbar {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			padding: 1rem 1.25rem;
+			border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+			background: rgba(241, 245, 249, 0.9);
+		}
+
+		.dark .pdf-zoom-toolbar {
+			border-color: rgba(71, 85, 105, 0.6);
+			background: rgba(30, 41, 59, 0.9);
+		}
+
+		.pdf-zoom-info {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.85rem;
+		}
+
+		.pdf-zoom-text {
+			display: flex;
+			flex-direction: column;
+			gap: 0.2rem;
+			min-width: 0;
+		}
+
+		.pdf-zoom-indicator,
+		.pdf-zoom-info span[data-zoom-indicator] {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 3.2rem;
+			padding: 0.28rem 0.7rem;
+			font-size: 0.72rem;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			color: rgb(71, 85, 105);
+			background: rgba(148, 163, 184, 0.18);
+			border-radius: 9999px;
+		}
+
+		.dark .pdf-zoom-indicator,
+		.dark .pdf-zoom-info span[data-zoom-indicator] {
+			color: rgba(226, 232, 240, 0.92);
+			background: rgba(71, 85, 105, 0.35);
+		}
+
+		.pdf-zoom-controls {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 0.65rem;
+		}
+
+		.pdf-zoom-group {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.45rem;
+		}
+
+		.pdf-zoom-group button,
+		.pdf-zoom-controls>button {
+			flex: 0 0 auto;
+			min-width: 2.6rem;
+			box-sizing: border-box;
+		}
+
+		.pdf-zoom-controls>button[disabled] {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+
+		.pdf-zoom-toolbar button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.35rem;
+			border-radius: 9999px;
+			border: 1px solid rgba(99, 102, 241, 0.3);
+			background: rgba(99, 102, 241, 0.08);
+			padding: 0.45rem 0.9rem;
+			font-size: 0.75rem;
+			font-weight: 600;
+			color: rgb(76, 81, 191);
+			transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+		}
+
+		.pdf-zoom-toolbar button .icon {
+			font-size: 0.88rem;
+			line-height: 1;
+		}
+
+		.pdf-zoom-toolbar button .label {
+			white-space: nowrap;
+		}
+
+		@media (min-width: 900px) {
 			.pdf-zoom-toolbar {
-				display: flex;
-				flex-direction: column;
-				gap: 1rem;
-				padding: 1rem 1.25rem;
-				border-bottom: 1px solid rgba(226, 232, 240, 0.6);
-				background: rgba(241, 245, 249, 0.9);
-			}
-			.dark .pdf-zoom-toolbar {
-				border-color: rgba(71, 85, 105, 0.6);
-				background: rgba(30, 41, 59, 0.9);
-			}
-			.pdf-zoom-info {
-				display: flex;
-				flex-wrap: wrap;
+				flex-direction: row;
 				align-items: center;
 				justify-content: space-between;
-				gap: 0.85rem;
+				gap: 1.25rem;
 			}
-			.pdf-zoom-text {
-				display: flex;
+
+			.pdf-zoom-info {
+				flex: 1 1 auto;
+			}
+
+			.pdf-zoom-controls {
+				flex: 0 0 auto;
+			}
+		}
+
+		/* Compact layout for small tablets and narrow screens */
+		@media (max-width: 820px) {
+			.pdf-zoom-overlay {
+				padding: 0.9rem;
+			}
+
+			.pdf-zoom-dialog {
+				width: min(940px, 94vw);
+			}
+
+			.pdf-zoom-toolbar {
+				gap: 0.8rem;
+			}
+
+			.pdf-zoom-info {
 				flex-direction: column;
-				gap: 0.2rem;
-				min-width: 0;
+				align-items: flex-start;
+				gap: 0.5rem;
 			}
+
+			.pdf-zoom-info .pdf-zoom-text {
+				gap: 0.25rem;
+			}
+
 			.pdf-zoom-indicator,
 			.pdf-zoom-info span[data-zoom-indicator] {
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-				min-width: 3.2rem;
-				padding: 0.28rem 0.7rem;
-				font-size: 0.72rem;
-				font-weight: 600;
-				font-variant-numeric: tabular-nums;
-				color: rgb(71, 85, 105);
-				background: rgba(148, 163, 184, 0.18);
-				border-radius: 9999px;
+				align-self: flex-start;
+				padding: 0.24rem 0.65rem;
+				font-size: 0.66rem;
 			}
-			.dark .pdf-zoom-indicator,
-			.dark .pdf-zoom-info span[data-zoom-indicator] {
-				color: rgba(226, 232, 240, 0.92);
-				background: rgba(71, 85, 105, 0.35);
-			}
+
 			.pdf-zoom-controls {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				justify-content: flex-end;
-				gap: 0.65rem;
+				display: grid;
+				width: 100%;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 0.55rem;
 			}
+
 			.pdf-zoom-group {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 0.55rem;
+				width: 100%;
+			}
+
+			.pdf-zoom-group button,
+			.pdf-zoom-controls>button {
+				width: 100%;
+				min-width: 0;
+				padding: 0.34rem 0.6rem;
+				font-size: 0.7rem;
+				border-radius: 0.9rem;
+			}
+
+			.pdf-zoom-controls>button[data-action="close"] {
+				grid-column: span 2;
+			}
+
+			.pdf-zoom-toolbar button .label {
+				display: none;
+			}
+
+			.pdf-zoom-toolbar button .icon {
+				font-size: 0.88rem;
+			}
+		}
+
+		.pdf-zoom-toolbar button:hover {
+			transform: translateY(-1px);
+			background: rgba(99, 102, 241, 0.12);
+			border-color: rgba(99, 102, 241, 0.5);
+		}
+
+		.dark .pdf-zoom-toolbar button {
+			border-color: rgba(165, 180, 252, 0.4);
+			background: rgba(129, 140, 248, 0.14);
+			color: rgb(196, 203, 255);
+		}
+
+		.dark .pdf-zoom-toolbar button:hover {
+			background: rgba(129, 140, 248, 0.22);
+			border-color: rgba(165, 180, 252, 0.65);
+		}
+
+		.pdf-zoom-toolbar button[data-action="close"] {
+			border-color: rgba(248, 113, 113, 0.35);
+			background: rgba(254, 226, 226, 0.8);
+			color: rgb(225, 29, 72);
+		}
+
+		.pdf-zoom-toolbar button[data-action="close"]:hover {
+			background: rgba(254, 202, 202, 0.9);
+			border-color: rgba(248, 113, 113, 0.65);
+		}
+
+		.dark .pdf-zoom-toolbar button[data-action="close"] {
+			background: rgba(248, 113, 113, 0.16);
+			border-color: rgba(248, 113, 113, 0.45);
+			color: rgb(252, 165, 165);
+		}
+
+		.dark .pdf-zoom-toolbar button[data-action="close"]:hover {
+			background: rgba(248, 113, 113, 0.24);
+			border-color: rgba(248, 113, 113, 0.65);
+		}
+
+		.pdf-zoom-info strong {
+			font-size: 0.75rem;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: rgb(71, 85, 105);
+		}
+
+		.pdf-zoom-info span:not([data-zoom-indicator]) {
+			font-size: 0.7rem;
+			color: rgba(71, 85, 105, 0.85);
+		}
+
+		.dark .pdf-zoom-info strong,
+		.dark .pdf-zoom-info span:not([data-zoom-indicator]) {
+			color: rgba(226, 232, 240, 0.8);
+		}
+
+		.pdf-zoom-image-wrapper {
+			position: relative;
+			flex: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: auto;
+			background: rgba(248, 250, 252, 0.85);
+			cursor: default;
+			-webkit-user-select: none;
+			user-select: none;
+			transition: cursor 0.2s ease;
+		}
+
+		.dark .pdf-zoom-image-wrapper {
+			background: rgba(15, 23, 42, 0.85);
+		}
+
+		.pdf-zoom-image-wrapper.is-zoomed {
+			align-items: flex-start;
+			justify-content: flex-start;
+			cursor: grab;
+		}
+
+		.pdf-zoom-image-wrapper.is-zoomed.is-dragging {
+			cursor: grabbing;
+		}
+
+		.pdf-zoom-image {
+			display: block;
+			max-width: 100%;
+			max-height: 100%;
+			width: auto;
+			height: auto;
+			margin: auto;
+			transform-origin: top left;
+			transition: transform 0.18s ease;
+			will-change: transform;
+			pointer-events: none;
+		}
+
+		.pdf-zoom-image-wrapper.is-zoomed .pdf-zoom-image {
+			max-width: none;
+			max-height: none;
+			margin: 0;
+		}
+
+		@media (max-width: 640px) {
+			.pdf-zoom-overlay {
+				padding: 0.75rem;
+			}
+
+			.pdf-zoom-dialog {
+				height: 88vh;
+				border-radius: 1.25rem;
+				width: min(920px, 96vw);
+			}
+
+			.pdf-zoom-toolbar {
+				padding: 0.75rem 0.85rem;
+				gap: 0.6rem;
+			}
+
+			.pdf-zoom-controls {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
 				gap: 0.45rem;
 			}
+
+			.pdf-zoom-group {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 0.45rem;
+			}
+
 			.pdf-zoom-group button,
-			.pdf-zoom-controls > button {
-				flex: 0 0 auto;
-				min-width: 2.6rem;
-				box-sizing: border-box;
-			}
-			.pdf-zoom-controls > button[disabled] {
-				opacity: 0.6;
-				cursor: not-allowed;
-			}
-			.pdf-zoom-toolbar button {
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-				gap: 0.35rem;
-				border-radius: 9999px;
-				border: 1px solid rgba(99, 102, 241, 0.3);
-				background: rgba(99, 102, 241, 0.08);
-				padding: 0.45rem 0.9rem;
-				font-size: 0.75rem;
-				font-weight: 600;
-				color: rgb(76, 81, 191);
-				transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
-			}
-			.pdf-zoom-toolbar button .icon { font-size: 0.88rem; line-height: 1; }
-			.pdf-zoom-toolbar button .label { white-space: nowrap; }
-
-			@media (min-width: 900px) {
-				.pdf-zoom-toolbar {
-					flex-direction: row;
-					align-items: center;
-					justify-content: space-between;
-					gap: 1.25rem;
-				}
-				.pdf-zoom-info { flex: 1 1 auto; }
-				.pdf-zoom-controls { flex: 0 0 auto; }
+			.pdf-zoom-controls>button {
+				padding: 0.28rem 0.5rem;
+				font-size: 0.64rem;
 			}
 
-			/* Compact layout for small tablets and narrow screens */
-			@media (max-width: 820px) {
-				.pdf-zoom-overlay { padding: 0.9rem; }
-				.pdf-zoom-dialog { width: min(940px, 94vw); }
-				.pdf-zoom-toolbar { gap: 0.8rem; }
-				.pdf-zoom-info {
-					flex-direction: column;
-					align-items: flex-start;
-					gap: 0.5rem;
-				}
-				.pdf-zoom-info .pdf-zoom-text { gap: 0.25rem; }
-				.pdf-zoom-indicator,
-				.pdf-zoom-info span[data-zoom-indicator] {
-					align-self: flex-start;
-					padding: 0.24rem 0.65rem;
-					font-size: 0.66rem;
-				}
-				.pdf-zoom-controls {
-					display: grid;
-					width: 100%;
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-					gap: 0.55rem;
-				}
-				.pdf-zoom-group {
-					display: grid;
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-					gap: 0.55rem;
-					width: 100%;
-				}
-				.pdf-zoom-group button,
-				.pdf-zoom-controls > button {
-					width: 100%;
-					min-width: 0;
-					padding: 0.34rem 0.6rem;
-					font-size: 0.7rem;
-					border-radius: 0.9rem;
-				}
-				.pdf-zoom-controls > button[data-action="close"] {
-					grid-column: span 2;
-				}
-				.pdf-zoom-toolbar button .label { display: none; }
-				.pdf-zoom-toolbar button .icon { font-size: 0.88rem; }
+			.pdf-zoom-indicator,
+			.pdf-zoom-info span[data-zoom-indicator] {
+				font-size: 0.62rem;
 			}
-			.pdf-zoom-toolbar button:hover {
-				transform: translateY(-1px);
-				background: rgba(99, 102, 241, 0.12);
-				border-color: rgba(99, 102, 241, 0.5);
-			}
-			.dark .pdf-zoom-toolbar button {
-				border-color: rgba(165, 180, 252, 0.4);
-				background: rgba(129, 140, 248, 0.14);
-				color: rgb(196, 203, 255);
-			}
-			.dark .pdf-zoom-toolbar button:hover {
-				background: rgba(129, 140, 248, 0.22);
-				border-color: rgba(165, 180, 252, 0.65);
-			}
-			.pdf-zoom-toolbar button[data-action="close"] {
-				border-color: rgba(248, 113, 113, 0.35);
-				background: rgba(254, 226, 226, 0.8);
-				color: rgb(225, 29, 72);
-			}
-			.pdf-zoom-toolbar button[data-action="close"]:hover {
-				background: rgba(254, 202, 202, 0.9);
-				border-color: rgba(248, 113, 113, 0.65);
-			}
-			.dark .pdf-zoom-toolbar button[data-action="close"] {
-				background: rgba(248, 113, 113, 0.16);
-				border-color: rgba(248, 113, 113, 0.45);
-				color: rgb(252, 165, 165);
-			}
-			.dark .pdf-zoom-toolbar button[data-action="close"]:hover {
-				background: rgba(248, 113, 113, 0.24);
-				border-color: rgba(248, 113, 113, 0.65);
-			}
-			.pdf-zoom-info strong {
-				font-size: 0.75rem;
-				text-transform: uppercase;
-				letter-spacing: 0.08em;
-				color: rgb(71, 85, 105);
-			}
-			.pdf-zoom-info span:not([data-zoom-indicator]) {
-				font-size: 0.7rem;
-				color: rgba(71, 85, 105, 0.85);
-			}
-			.dark .pdf-zoom-info strong,
-			.dark .pdf-zoom-info span:not([data-zoom-indicator]) {
-				color: rgba(226, 232, 240, 0.8);
-			}
-			.pdf-zoom-image-wrapper {
-				position: relative;
-				flex: 1;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				overflow: auto;
-				background: rgba(248, 250, 252, 0.85);
-				cursor: default;
-				-webkit-user-select: none;
-				user-select: none;
-				transition: cursor 0.2s ease;
-			}
-			.dark .pdf-zoom-image-wrapper {
-				background: rgba(15, 23, 42, 0.85);
-			}
-			.pdf-zoom-image-wrapper.is-zoomed {
-				align-items: flex-start;
-				justify-content: flex-start;
-				cursor: grab;
-			}
-			.pdf-zoom-image-wrapper.is-zoomed.is-dragging {
-				cursor: grabbing;
-			}
-			.pdf-zoom-image {
-				display: block;
-				max-width: 100%;
-				max-height: 100%;
-				width: auto;
-				height: auto;
-				margin: auto;
-				transform-origin: top left;
-				transition: transform 0.18s ease;
-				will-change: transform;
-				pointer-events: none;
-			}
-			.pdf-zoom-image-wrapper.is-zoomed .pdf-zoom-image {
-				max-width: none;
-				max-height: none;
-				margin: 0;
+		}
+
+		@media (max-width: 480px) {
+			.pdf-zoom-overlay {
+				padding: 0.55rem;
 			}
 
-			@media (max-width: 640px) {
-				.pdf-zoom-overlay { padding: 0.75rem; }
-				.pdf-zoom-dialog {
-					height: 88vh;
-					border-radius: 1.25rem;
-					width: min(920px, 96vw);
-				}
-				.pdf-zoom-toolbar {
-					padding: 0.75rem 0.85rem;
-					gap: 0.6rem;
-				}
-				.pdf-zoom-controls {
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-					gap: 0.45rem;
-				}
-				.pdf-zoom-group {
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-					gap: 0.45rem;
-				}
-				.pdf-zoom-group button,
-				.pdf-zoom-controls > button {
-					padding: 0.28rem 0.5rem;
-					font-size: 0.64rem;
-				}
-				.pdf-zoom-indicator,
-				.pdf-zoom-info span[data-zoom-indicator] {
-					font-size: 0.62rem;
-				}
+			.pdf-zoom-toolbar {
+				padding: 0.65rem 0.75rem;
 			}
-			@media (max-width: 480px) {
-				.pdf-zoom-overlay { padding: 0.55rem; }
-				.pdf-zoom-toolbar { padding: 0.65rem 0.75rem; }
-				.pdf-zoom-controls { grid-template-columns: 1fr; }
-				.pdf-zoom-group { grid-template-columns: 1fr; }
-				.pdf-zoom-controls > button[data-action="close"] { grid-column: 1; }
-				.pdf-zoom-toolbar button .icon { font-size: 0.8rem; }
+
+			.pdf-zoom-controls {
+				grid-template-columns: 1fr;
 			}
-			@media (max-width: 360px) {
-				.pdf-zoom-toolbar { padding: 0.55rem 0.65rem; }
-				.pdf-zoom-group button,
-				.pdf-zoom-controls > button { padding: 0.24rem 0.45rem; }
-				.pdf-zoom-indicator,
-				.pdf-zoom-info span[data-zoom-indicator] { padding: 0.18rem 0.42rem; font-size: 0.58rem; }
+
+			.pdf-zoom-group {
+				grid-template-columns: 1fr;
 			}
-		</style>
-	</head>
-	<body class="min-h-screen bg-slate-100 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
-		<div class="flex min-h-screen flex-col">
-			<header class="border-b border-slate-200/70 bg-white/80 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
-				<div class="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-5 md:px-6">
-					<div>
-						<h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">0xArchit File Viewer</h1>
-						<p class="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-							Load local or external documents by appending
-							<span class="font-mono text-xs">?file=&lt;path-or-url&gt;</span> to the address bar.
-						</p>
+
+			.pdf-zoom-controls>button[data-action="close"] {
+				grid-column: 1;
+			}
+
+			.pdf-zoom-toolbar button .icon {
+				font-size: 0.8rem;
+			}
+		}
+
+		@media (max-width: 360px) {
+			.pdf-zoom-toolbar {
+				padding: 0.55rem 0.65rem;
+			}
+
+			.pdf-zoom-group button,
+			.pdf-zoom-controls>button {
+				padding: 0.24rem 0.45rem;
+			}
+
+			.pdf-zoom-indicator,
+			.pdf-zoom-info span[data-zoom-indicator] {
+				padding: 0.18rem 0.42rem;
+				font-size: 0.58rem;
+			}
+		}
+
+		/* Back to Top Button */
+		#backToTop {
+			position: fixed;
+			bottom: 2rem;
+			right: 2rem;
+			width: 3rem;
+			height: 3rem;
+			background: rgba(99, 102, 241, 0.9);
+			border: 2px solid rgba(99, 102, 241, 0.3);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease, background 0.2s ease;
+			z-index: 50;
+			box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		}
+
+		#backToTop.show {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		#backToTop:hover {
+			background: rgba(79, 70, 229, 1);
+			transform: translateY(-4px);
+			box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+		}
+
+		#backToTop:active {
+			transform: translateY(-2px);
+		}
+
+		#backToTop svg {
+			width: 1.5rem;
+			height: 1.5rem;
+			fill: white;
+		}
+
+		.dark #backToTop {
+			background: rgba(129, 140, 248, 0.9);
+			border-color: rgba(129, 140, 248, 0.3);
+			box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+		}
+
+		.dark #backToTop:hover {
+			background: rgba(99, 102, 241, 1);
+			box-shadow: 0 6px 16px rgba(129, 140, 248, 0.4);
+		}
+
+		@media (max-width: 640px) {
+			#backToTop {
+				bottom: 1.5rem;
+				right: 1.5rem;
+				width: 2.75rem;
+				height: 2.75rem;
+			}
+
+			#backToTop svg {
+				width: 1.25rem;
+				height: 1.25rem;
+			}
+		}
+	</style>
+</head>
+
+<body
+	class="min-h-screen bg-slate-100 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+	<div class="flex min-h-screen flex-col">
+		<header
+			class="border-b border-slate-200/70 bg-white/80 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70">
+			<div class="container mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-5 md:px-6">
+				<div>
+					<h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">0xArchit File Viewer</h1>
+					<p class="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+						Load local or external documents by appending
+						<span class="font-mono text-xs">?file=&lt;path-or-url&gt;</span> to the address bar.
+					</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<a id="downloadLink" href="#"
+						class="hidden items-center gap-2 rounded-full border border-primary-200/60 bg-primary-50 px-4 py-2 text-sm font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200 dark:hover:bg-primary-800/60"
+						target="_blank" rel="noopener">
+						<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"
+							aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0 4-4m-4 4-4-4m-2 6h12" />
+						</svg>
+						Open file
+					</a>
+					<button id="themeToggle" type="button"
+						class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600">
+						<span id="themeIcon" aria-hidden="true" class="h-4 w-4">🌞</span>
+						<span class="hidden sm:inline">Toggle theme</span>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<main class="flex-1">
+			<div class="container mx-auto px-4 py-6 sm:py-10 md:px-6">
+				<div id="statusMessage"
+					class="rounded-2xl border border-slate-200/70 bg-white/80 p-6 text-sm text-slate-600 shadow-sm transition-all dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-300">
+					<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+						<div class="space-y-1">
+							<p id="statusTitle" class="font-medium text-slate-800 dark:text-slate-50">Waiting for a file…</p>
+							<p id="statusBody" class="text-slate-500 dark:text-slate-400">
+								Provide a query parameter, for example
+								<span class="font-mono text-xs">view.html?file=Iris.csv</span> or
+								<span class="font-mono text-xs">view.html?file=https://example.com/report.pdf</span>.
+								For production deploys, bundle Tailwind locally via the CLI or PostCSS build—the console warning
+								disappears once the CDN is removed.
+							</p>
+						</div>
+						<ul class="list-disc space-y-1 pl-5 text-xs text-slate-500 dark:text-slate-400">
+							<li>Supports TXT, CSV, PDF, PPTX, DOCX, XLSX, Markdown, Images, Audio, and Video.</li>
+							<li>Automatically adapts to mobile and desktop layouts.</li>
+							<li>Switch between light and dark themes anytime.</li>
+						</ul>
 					</div>
-					<div class="flex items-center gap-3">
-						<a
-							id="downloadLink"
-							href="#"
-							class="hidden items-center gap-2 rounded-full border border-primary-200/60 bg-primary-50 px-4 py-2 text-sm font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200 dark:hover:bg-primary-800/60"
-							target="_blank"
-							rel="noopener"
-						>
-							<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0 4-4m-4 4-4-4m-2 6h12" />
+				</div>
+
+				<div id="viewerWrapper"
+					class="mt-6 min-h-[320px] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 shadow-sm transition dark:border-slate-800/70 dark:bg-slate-900/70">
+					<div id="viewer" class="prose prose-slate max-w-none p-6 dark:prose-invert">
+						<div class="flex h-full flex-col items-center justify-center gap-4 py-16 text-center text-slate-400">
+							<svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+								aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round"
+									d="m15 3 6 6m0 0-6-6m6 6h-6V3m0 3H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11m0 0a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v5" />
 							</svg>
-							Open file
-						</a>
-						<button
-							id="themeToggle"
-							type="button"
-							class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600"
-						>
-							<span id="themeIcon" aria-hidden="true" class="h-4 w-4">🌞</span>
-							<span class="hidden sm:inline">Toggle theme</span>
-						</button>
-					</div>
-				</div>
-			</header>
-
-			<main class="flex-1">
-				<div class="container mx-auto px-4 py-6 sm:py-10 md:px-6">
-					<div
-						id="statusMessage"
-						class="rounded-2xl border border-slate-200/70 bg-white/80 p-6 text-sm text-slate-600 shadow-sm transition-all dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-300"
-					>
-						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-							<div class="space-y-1">
-								<p id="statusTitle" class="font-medium text-slate-800 dark:text-slate-50">Waiting for a file…</p>
-								<p id="statusBody" class="text-slate-500 dark:text-slate-400">
-									Provide a query parameter, for example
-									<span class="font-mono text-xs">view.html?file=Iris.csv</span> or
-									<span class="font-mono text-xs">view.html?file=https://example.com/report.pdf</span>.
-									For production deploys, bundle Tailwind locally via the CLI or PostCSS build—the console warning disappears once the CDN is removed.
-								</p>
-							</div>
-							<ul class="list-disc space-y-1 pl-5 text-xs text-slate-500 dark:text-slate-400">
-								<li>Supports TXT, CSV, PDF, PPTX, DOCX, XLSX, Markdown, Images, Audio, and Video.</li>
-								<li>Automatically adapts to mobile and desktop layouts.</li>
-								<li>Switch between light and dark themes anytime.</li>
-							</ul>
-						</div>
-					</div>
-
-					<div
-						id="viewerWrapper"
-						class="mt-6 min-h-[320px] overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 shadow-sm transition dark:border-slate-800/70 dark:bg-slate-900/70"
-					>
-						<div id="viewer" class="prose prose-slate max-w-none p-6 dark:prose-invert">
-							<div class="flex h-full flex-col items-center justify-center gap-4 py-16 text-center text-slate-400">
-								<svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-									<path stroke-linecap="round" stroke-linejoin="round" d="m15 3 6 6m0 0-6-6m6 6h-6V3m0 3H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11m0 0a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v5" />
-								</svg>
-								<div class="space-y-2">
-									<h2 class="text-lg font-semibold">Awaiting selection</h2>
-									<p class="text-sm">Pass a file path or URL to begin previewing.</p>
-								</div>
+							<div class="space-y-2">
+								<h2 class="text-lg font-semibold">Awaiting selection</h2>
+								<p class="text-sm">Pass a file path or URL to begin previewing.</p>
 							</div>
 						</div>
 					</div>
 				</div>
-			</main>
+			</div>
+		</main>
 
-			<footer class="border-t border-slate-200/70 bg-white/80 py-4 text-center text-xs text-slate-500 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400">
-				<div class="container mx-auto px-4 md:px-6">
-					Built for effortless previews. Works best when the requested files are publicly accessible.
-				</div>
-			</footer>
+		<footer
+			class="border-t border-slate-200/70 bg-white/80 py-4 text-center text-xs text-slate-500 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400">
+			<div class="container mx-auto px-4 md:px-6">
+				Built for effortless previews. Works best when the requested files are publicly accessible.
+			</div>
+		</footer>
+
+		<!-- Back to Top Button -->
+		<button id="backToTop" type="button" aria-label="Back to top" title="Back to top">
+			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M12 4l-8 8h5v8h6v-8h5z"/>
+			</svg>
+		</button>
+	</div>
+
+	<template id="tableTemplate">
+		<div class="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
+			<table class="relative min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+				<thead
+					class="bg-slate-100 text-xs uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+					<tr id="tableHead"></tr>
+				</thead>
+				<tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+			</table>
 		</div>
+	</template>
 
-		<template id="tableTemplate">
-			<div class="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
-				<table class="relative min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
-					<thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-						<tr id="tableHead"></tr>
-					</thead>
-					<tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-				</table>
-			</div>
-		</template>
+	<template id="fileInfoTemplate">
+		<div
+			class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-slate-50/80 px-5 py-4 text-xs uppercase tracking-wide text-slate-500 dark:border-slate-700/60 dark:bg-slate-800/40 dark:text-slate-300">
+			<span id="fileName" class="max-w-full truncate font-semibold text-primary-600 dark:text-primary-300"></span>
+			<span id="fileMeta" class="text-slate-400 dark:text-slate-400"></span>
+		</div>
+	</template>
 
-		<template id="fileInfoTemplate">
-			<div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-slate-50/80 px-5 py-4 text-xs uppercase tracking-wide text-slate-500 dark:border-slate-700/60 dark:bg-slate-800/40 dark:text-slate-300">
-				<span id="fileName" class="max-w-full truncate font-semibold text-primary-600 dark:text-primary-300"></span>
-				<span id="fileMeta" class="text-slate-400 dark:text-slate-400"></span>
-			</div>
-		</template>
+	<script>
+		const htmlElement = document.documentElement;
+		const themeToggle = document.getElementById("themeToggle");
+		const themeIcon = document.getElementById("themeIcon");
+		const statusMessage = document.getElementById("statusMessage");
+		const statusTitle = document.getElementById("statusTitle");
+		const statusBody = document.getElementById("statusBody");
+		const viewer = document.getElementById("viewer");
+		const viewerWrapper = document.getElementById("viewerWrapper");
+		const downloadLink = document.getElementById("downloadLink");
+		const tableTemplate = document.getElementById("tableTemplate");
+		const fileInfoTemplate = document.getElementById("fileInfoTemplate");
+		const PDF_JS_VERSION = "3.11.174";
+		const PDF_JS_BASE_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDF_JS_VERSION}`;
+		let pdfjsLoaderPromise = null;
+		let pdfZoomOverlay = null;
+		let pdfZoomWrapper = null;
+		let pdfZoomImage = null;
+		let pdfZoomTitle = null;
+		let pdfZoomCaption = null;
+		let pdfZoomIndicator = null;
+		let pdfZoomPrevButton = null;
+		let pdfZoomNextButton = null;
+		let pdfZoomScale = 1;
+		let previousDocumentOverflow = "";
+		let pdfIsDragging = false;
+		let pdfDragPointerId = null;
+		let pdfDragStartX = 0;
+		let pdfDragStartY = 0;
+		let pdfDragScrollLeft = 0;
+		let pdfDragScrollTop = 0;
+		let pdfZoomListenersAttached = false;
+		let pdfZoomContext = createInitialPdfZoomContext();
+		const MERMAID_VERSION = "10.9.1";
+		const MERMAID_BASE_URL = `https://cdn.jsdelivr.net/npm/mermaid@${MERMAID_VERSION}/dist`;
+		let mermaidLoaderPromise = null;
+		const XLSX_VERSION = "0.18.5";
+		const XLSX_BASE_URL = `https://cdn.jsdelivr.net/npm/xlsx@${XLSX_VERSION}/dist`;
+		let xlsxLoaderPromise = null;
+		const MAMMOTH_VERSION = "1.6.0";
+		const MAMMOTH_BASE_URL = `https://cdn.jsdelivr.net/npm/mammoth@${MAMMOTH_VERSION}`;
+		let mammothLoaderPromise = null;
+		const JSZIP_VERSION = "3.10.1";
+		const JSZIP_BASE_URL = `https://cdn.jsdelivr.net/npm/jszip@${JSZIP_VERSION}/dist`;
+		let jszipLoaderPromise = null;
+		const KATEX_VERSION = "0.16.9";
+		const KATEX_BASE_URL = `https://cdn.jsdelivr.net/npm/katex@${KATEX_VERSION}/dist`;
+		let katexLoaderPromise = null;
+		const MAX_SPREADSHEET_PREVIEW_ROWS = 200;
 
-		<script>
-			const htmlElement = document.documentElement;
-			const themeToggle = document.getElementById("themeToggle");
-			const themeIcon = document.getElementById("themeIcon");
-			const statusMessage = document.getElementById("statusMessage");
-			const statusTitle = document.getElementById("statusTitle");
-			const statusBody = document.getElementById("statusBody");
-			const viewer = document.getElementById("viewer");
-			const viewerWrapper = document.getElementById("viewerWrapper");
-			const downloadLink = document.getElementById("downloadLink");
-			const tableTemplate = document.getElementById("tableTemplate");
-			const fileInfoTemplate = document.getElementById("fileInfoTemplate");
-			const PDF_JS_VERSION = "3.11.174";
-			const PDF_JS_BASE_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDF_JS_VERSION}`;
-			let pdfjsLoaderPromise = null;
-			let pdfZoomOverlay = null;
-			let pdfZoomWrapper = null;
-			let pdfZoomImage = null;
-			let pdfZoomTitle = null;
-			let pdfZoomCaption = null;
-			let pdfZoomIndicator = null;
-			let pdfZoomPrevButton = null;
-			let pdfZoomNextButton = null;
-			let pdfZoomScale = 1;
-			let previousDocumentOverflow = "";
-			let pdfIsDragging = false;
-			let pdfDragPointerId = null;
-			let pdfDragStartX = 0;
-			let pdfDragStartY = 0;
-			let pdfDragScrollLeft = 0;
-			let pdfDragScrollTop = 0;
-			let pdfZoomListenersAttached = false;
-			let pdfZoomContext = createInitialPdfZoomContext();
-			const MERMAID_VERSION = "10.9.1";
-			const MERMAID_BASE_URL = `https://cdn.jsdelivr.net/npm/mermaid@${MERMAID_VERSION}/dist`;
-			let mermaidLoaderPromise = null;
-			const XLSX_VERSION = "0.18.5";
-			const XLSX_BASE_URL = `https://cdn.jsdelivr.net/npm/xlsx@${XLSX_VERSION}/dist`;
-			let xlsxLoaderPromise = null;
-			const MAMMOTH_VERSION = "1.6.0";
-			const MAMMOTH_BASE_URL = `https://cdn.jsdelivr.net/npm/mammoth@${MAMMOTH_VERSION}`;
-			let mammothLoaderPromise = null;
-			const JSZIP_VERSION = "3.10.1";
-			const JSZIP_BASE_URL = `https://cdn.jsdelivr.net/npm/jszip@${JSZIP_VERSION}/dist`;
-			let jszipLoaderPromise = null;
-			const KATEX_VERSION = "0.16.9";
-			const KATEX_BASE_URL = `https://cdn.jsdelivr.net/npm/katex@${KATEX_VERSION}/dist`;
-			let katexLoaderPromise = null;
-			const MAX_SPREADSHEET_PREVIEW_ROWS = 200;
-
-			function ensurePdfJs() {
-				if (window.pdfjsLib) {
-					return Promise.resolve(window.pdfjsLib);
-				}
-				if (!pdfjsLoaderPromise) {
-					pdfjsLoaderPromise = new Promise((resolve, reject) => {
-						const script = document.createElement("script");
-						script.src = `${PDF_JS_BASE_URL}/pdf.min.js`;
-						script.crossOrigin = "anonymous";
-						script.referrerPolicy = "no-referrer";
-						script.onload = () => {
-							if (window.pdfjsLib) {
-								window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDF_JS_BASE_URL}/pdf.worker.min.js`;
-								resolve(window.pdfjsLib);
-							} else {
-								reject(new Error("PDF.js loaded, but pdfjsLib is unavailable."));
-							}
-						};
-						script.onerror = () => {
-							reject(new Error("Failed to load PDF.js viewer library."));
-						};
-						document.head.appendChild(script);
-					});
-					pdfjsLoaderPromise.catch(() => {
-						pdfjsLoaderPromise = null;
-					});
-				}
-				return pdfjsLoaderPromise;
+		function ensurePdfJs() {
+			if (window.pdfjsLib) {
+				return Promise.resolve(window.pdfjsLib);
 			}
-
-			function ensureMermaid() {
-				if (window.mermaid) {
-					return Promise.resolve(window.mermaid);
-				}
-				if (!mermaidLoaderPromise) {
-					mermaidLoaderPromise = new Promise((resolve, reject) => {
-						const script = document.createElement("script");
-						script.src = `${MERMAID_BASE_URL}/mermaid.min.js`;
-						script.crossOrigin = "anonymous";
-						script.referrerPolicy = "no-referrer";
-						script.onload = () => {
-							if (window.mermaid) {
-								initializeMermaidTheme();
-								resolve(window.mermaid);
-							} else {
-								reject(new Error("Mermaid loaded, but library is unavailable."));
-							}
-						};
-						script.onerror = () => {
-							reject(new Error("Failed to load Mermaid renderer."));
-						};
-						document.head.appendChild(script);
-					});
-					mermaidLoaderPromise.catch(() => {
-						mermaidLoaderPromise = null;
-					});
-				}
-				return mermaidLoaderPromise;
-			}
-
-			function ensureXlsx() {
-				if (window.XLSX) {
-					return Promise.resolve(window.XLSX);
-				}
-				if (!xlsxLoaderPromise) {
-					xlsxLoaderPromise = new Promise((resolve, reject) => {
-						const script = document.createElement("script");
-						script.src = `${XLSX_BASE_URL}/xlsx.full.min.js`;
-						script.crossOrigin = "anonymous";
-						script.referrerPolicy = "no-referrer";
-						script.onload = () => {
-							if (window.XLSX) {
-								resolve(window.XLSX);
-							} else {
-								reject(new Error("SheetJS loaded, but XLSX is unavailable."));
-							}
-						};
-						script.onerror = () => reject(new Error("Failed to load spreadsheet renderer."));
-						document.head.appendChild(script);
-					});
-					xlsxLoaderPromise.catch(() => {
-						xlsxLoaderPromise = null;
-					});
-				}
-				return xlsxLoaderPromise;
-			}
-
-			function ensureMammoth() {
-				if (window.mammoth) {
-					return Promise.resolve(window.mammoth);
-				}
-				if (!mammothLoaderPromise) {
-					mammothLoaderPromise = new Promise((resolve, reject) => {
-						const script = document.createElement("script");
-						script.src = `${MAMMOTH_BASE_URL}/mammoth.browser.min.js`;
-						script.crossOrigin = "anonymous";
-						script.referrerPolicy = "no-referrer";
-						script.onload = () => {
-							if (window.mammoth) {
-								resolve(window.mammoth);
-							} else {
-								reject(new Error("Mammoth loaded, but converter is unavailable."));
-							}
-						};
-						script.onerror = () => reject(new Error("Failed to load DOCX renderer."));
-						document.head.appendChild(script);
-					});
-					mammothLoaderPromise.catch(() => {
-						mammothLoaderPromise = null;
-					});
-				}
-				return mammothLoaderPromise;
-			}
-
-			function ensureJsZip() {
-				if (window.JSZip) {
-					return Promise.resolve(window.JSZip);
-				}
-				if (!jszipLoaderPromise) {
-					jszipLoaderPromise = new Promise((resolve, reject) => {
-						const script = document.createElement("script");
-						script.src = `${JSZIP_BASE_URL}/jszip.min.js`;
-						script.crossOrigin = "anonymous";
-						script.referrerPolicy = "no-referrer";
-						script.onload = () => {
-							if (window.JSZip) {
-								resolve(window.JSZip);
-							} else {
-								reject(new Error("JSZip loaded, but library is unavailable."));
-							}
-						};
-						script.onerror = () => reject(new Error("Failed to load JSZip."));
-						document.head.appendChild(script);
-					});
-					jszipLoaderPromise.catch(() => {
-						jszipLoaderPromise = null;
-					});
-				}
-				return jszipLoaderPromise;
-			}
-
-			function ensureKatex() {
-				if (window.katex && window.renderMathInElement) {
-					return Promise.resolve(window.renderMathInElement);
-				}
-				if (!katexLoaderPromise) {
-					katexLoaderPromise = new Promise((resolve, reject) => {
-						const finish = () => {
-							if (window.katex && window.renderMathInElement) {
-								resolve(window.renderMathInElement);
-							} else {
-								reject(new Error("KaTeX assets loaded, but renderer is unavailable."));
-							}
-						};
-
-						const ensureStylesheet = () => {
-							if (document.querySelector('link[data-katex="stylesheet"]')) return;
-							const link = document.createElement("link");
-							link.rel = "stylesheet";
-							link.href = `${KATEX_BASE_URL}/katex.min.css`;
-							link.crossOrigin = "anonymous";
-							link.referrerPolicy = "no-referrer";
-							link.dataset.katex = "stylesheet";
-							document.head.appendChild(link);
-						};
-
-						const loadAutoRender = () => {
-							if (window.renderMathInElement) {
-								finish();
-								return;
-							}
-							if (document.querySelector('script[data-katex="auto-render"]')) {
-								document.querySelector('script[data-katex="auto-render"]').addEventListener("load", finish, { once: true });
-								return;
-							}
-							const autoScript = document.createElement("script");
-							autoScript.src = `${KATEX_BASE_URL}/contrib/auto-render.min.js`;
-							autoScript.crossOrigin = "anonymous";
-							autoScript.referrerPolicy = "no-referrer";
-							autoScript.dataset.katex = "auto-render";
-							autoScript.onload = finish;
-							autoScript.onerror = () => reject(new Error("Failed to load KaTeX auto-render."));
-							document.head.appendChild(autoScript);
-						};
-
-						const loadMainScript = () => {
-							if (window.katex) {
-								loadAutoRender();
-								return;
-							}
-							if (document.querySelector('script[data-katex="core"]')) {
-								document.querySelector('script[data-katex="core"]').addEventListener("load", loadAutoRender, { once: true });
-								return;
-							}
-							const script = document.createElement("script");
-							script.src = `${KATEX_BASE_URL}/katex.min.js`;
-							script.crossOrigin = "anonymous";
-							script.referrerPolicy = "no-referrer";
-							script.dataset.katex = "core";
-							script.onload = loadAutoRender;
-							script.onerror = () => reject(new Error("Failed to load KaTeX core library."));
-							document.head.appendChild(script);
-						};
-
-						ensureStylesheet();
-						loadMainScript();
-					});
-					katexLoaderPromise.catch(() => {
-						katexLoaderPromise = null;
-					});
-				}
-				return katexLoaderPromise;
-			}
-
-			function initializeMermaidTheme() {
-				if (!window.mermaid) return;
-				const theme = htmlElement.classList.contains("dark") ? "dark" : "default";
-				window.mermaid.initialize({
-					startOnLoad: false,
-					theme,
-					securityLevel: "loose",
-					themeVariables: { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" },
-				});
-			}
-
-			async function rerenderMermaidDiagrams(target = viewer) {
-				try {
-					if (!target) return;
-					const mermaid = await ensureMermaid();
-					initializeMermaidTheme();
-					const nodes = target.querySelectorAll?.(".mermaid");
-					if (nodes && nodes.length) {
-						await mermaid.run({ nodes });
-					}
-				} catch (error) {
-					console.error("Mermaid render failed", error);
-				}
-			}
-
-			const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-			const savedTheme = localStorage.getItem("uv-theme");
-			setTheme(savedTheme || (prefersDark ? "dark" : "light"), true);
-
-			themeToggle.addEventListener("click", () => {
-				const nextTheme = htmlElement.classList.contains("dark") ? "light" : "dark";
-				setTheme(nextTheme);
-			});
-
-			function setTheme(theme, skipPersist = false) {
-				if (theme === "dark") {
-					htmlElement.classList.add("dark");
-					themeIcon.textContent = "🌙";
-					if (!skipPersist) localStorage.setItem("uv-theme", "dark");
-				} else {
-					htmlElement.classList.remove("dark");
-					themeIcon.textContent = "🌞";
-					if (!skipPersist) localStorage.setItem("uv-theme", "light");
-				}
-				initializeMermaidTheme();
-				renderMermaidAfterThemeChange();
-			}
-
-			function renderMermaidAfterThemeChange() {
-				if (window.mermaid || mermaidLoaderPromise) {
-					rerenderMermaidDiagrams();
-				}
-			}
-
-			const urlParams = new URLSearchParams(window.location.search);
-			const fileParam = urlParams.get("file");
-
-			if (fileParam) {
-				loadFile(decodeURIComponent(fileParam.trim()));
-			}
-
-			async function loadFile(requestedFile) {
-				updateStatus("loading", "Fetching file", `Attempting to retrieve \"${requestedFile}\"`);
-				showLoadingState(true);
-				try {
-					const { response, finalUrl } = await fetchWithFallback(requestedFile);
-					const resolvedUrl = new URL(finalUrl, window.location.href).href;
-					const fileName = extractFileName(resolvedUrl) || "download";
-					const extension = extractExtension(fileName);
-					const contentType = response.headers.get("content-type") || "";
-					const size = response.headers.get("content-length");
-
-					const fileInfo = document.importNode(fileInfoTemplate.content, true);
-					fileInfo.querySelector("#fileName").textContent = fileName;
-					fileInfo.querySelector("#fileMeta").textContent = buildMeta(extension, contentType, size);
-
-					const infoContainer = fileInfo;
-					viewer.innerHTML = "";
-					viewer.classList.remove("prose", "prose-slate", "dark:prose-invert");
-					viewer.appendChild(infoContainer);
-
-					const outcome = await renderByType({ response, extension, contentType, fileName, resolvedUrl });
-
-					if (outcome && outcome.statusMessage) {
-						const { level, title, body } = outcome.statusMessage;
-						updateStatus(level, title, body);
-					} else {
-						updateStatus("success", "File loaded successfully", resolvedUrl);
-					}
-					setDownloadLink(resolvedUrl);
-				} catch (error) {
-					console.error(error);
-					setDownloadLink(null);
-					showError(error instanceof Error ? error.message : "Unable to load file.");
-				} finally {
-					showLoadingState(false);
-				}
-			}
-
-			function buildMeta(extension, contentType, size) {
-				const parts = [];
-				if (extension) parts.push(extension.toUpperCase());
-				if (contentType) parts.push(contentType.split(";")[0]);
-				if (size) parts.push(formatBytes(Number(size)));
-				return parts.join(" • ") || "Preview";
-			}
-
-			function setDownloadLink(url) {
-				if (!url) {
-					downloadLink.classList.add("hidden");
-					downloadLink.removeAttribute("href");
-					return;
-				}
-				downloadLink.href = url;
-				downloadLink.classList.remove("hidden");
-			}
-
-			async function fetchWithFallback(requestedFile) {
-				const candidates = buildCandidateUrls(requestedFile);
-				let lastError = null;
-				for (const candidate of candidates) {
-					try {
-						const response = await fetch(candidate);
-						if (!response.ok) {
-							lastError = new Error(`Request failed with status ${response.status}`);
-							continue;
+			if (!pdfjsLoaderPromise) {
+				pdfjsLoaderPromise = new Promise((resolve, reject) => {
+					const script = document.createElement("script");
+					script.src = `${PDF_JS_BASE_URL}/pdf.min.js`;
+					script.crossOrigin = "anonymous";
+					script.referrerPolicy = "no-referrer";
+					script.onload = () => {
+						if (window.pdfjsLib) {
+							window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDF_JS_BASE_URL}/pdf.worker.min.js`;
+							resolve(window.pdfjsLib);
+						} else {
+							reject(new Error("PDF.js loaded, but pdfjsLib is unavailable."));
 						}
-						return { response, finalUrl: candidate };
-					} catch (error) {
-						lastError = error;
-					}
-				}
-				throw lastError || new Error("Unable to fetch the specified file.");
-			}
-
-			function buildCandidateUrls(requestedFile) {
-				const trimmed = requestedFile.trim();
-				const candidates = [];
-				if (looksExternal(trimmed)) {
-					candidates.push(trimmed);
-					return candidates;
-				}
-				const clean = trimmed.replace(/^\//, "");
-				candidates.push(clean);
-				if (!clean.includes("/")) {
-					candidates.push(`datasets/${clean}`);
-					candidates.push(`assets/${clean}`);
-				}
-				return candidates.map((candidate) => {
-					if (candidate.startsWith("http")) return candidate;
-					return new URL(candidate, window.location.href).href;
+					};
+					script.onerror = () => {
+						reject(new Error("Failed to load PDF.js viewer library."));
+					};
+					document.head.appendChild(script);
+				});
+				pdfjsLoaderPromise.catch(() => {
+					pdfjsLoaderPromise = null;
 				});
 			}
+			return pdfjsLoaderPromise;
+		}
 
-			function looksExternal(file) {
+		function ensureMermaid() {
+			if (window.mermaid) {
+				return Promise.resolve(window.mermaid);
+			}
+			if (!mermaidLoaderPromise) {
+				mermaidLoaderPromise = new Promise((resolve, reject) => {
+					const script = document.createElement("script");
+					script.src = `${MERMAID_BASE_URL}/mermaid.min.js`;
+					script.crossOrigin = "anonymous";
+					script.referrerPolicy = "no-referrer";
+					script.onload = () => {
+						if (window.mermaid) {
+							initializeMermaidTheme();
+							resolve(window.mermaid);
+						} else {
+							reject(new Error("Mermaid loaded, but library is unavailable."));
+						}
+					};
+					script.onerror = () => {
+						reject(new Error("Failed to load Mermaid renderer."));
+					};
+					document.head.appendChild(script);
+				});
+				mermaidLoaderPromise.catch(() => {
+					mermaidLoaderPromise = null;
+				});
+			}
+			return mermaidLoaderPromise;
+		}
+
+		function ensureXlsx() {
+			if (window.XLSX) {
+				return Promise.resolve(window.XLSX);
+			}
+			if (!xlsxLoaderPromise) {
+				xlsxLoaderPromise = new Promise((resolve, reject) => {
+					const script = document.createElement("script");
+					script.src = `${XLSX_BASE_URL}/xlsx.full.min.js`;
+					script.crossOrigin = "anonymous";
+					script.referrerPolicy = "no-referrer";
+					script.onload = () => {
+						if (window.XLSX) {
+							resolve(window.XLSX);
+						} else {
+							reject(new Error("SheetJS loaded, but XLSX is unavailable."));
+						}
+					};
+					script.onerror = () => reject(new Error("Failed to load spreadsheet renderer."));
+					document.head.appendChild(script);
+				});
+				xlsxLoaderPromise.catch(() => {
+					xlsxLoaderPromise = null;
+				});
+			}
+			return xlsxLoaderPromise;
+		}
+
+		function ensureMammoth() {
+			if (window.mammoth) {
+				return Promise.resolve(window.mammoth);
+			}
+			if (!mammothLoaderPromise) {
+				mammothLoaderPromise = new Promise((resolve, reject) => {
+					const script = document.createElement("script");
+					script.src = `${MAMMOTH_BASE_URL}/mammoth.browser.min.js`;
+					script.crossOrigin = "anonymous";
+					script.referrerPolicy = "no-referrer";
+					script.onload = () => {
+						if (window.mammoth) {
+							resolve(window.mammoth);
+						} else {
+							reject(new Error("Mammoth loaded, but converter is unavailable."));
+						}
+					};
+					script.onerror = () => reject(new Error("Failed to load DOCX renderer."));
+					document.head.appendChild(script);
+				});
+				mammothLoaderPromise.catch(() => {
+					mammothLoaderPromise = null;
+				});
+			}
+			return mammothLoaderPromise;
+		}
+
+		function ensureJsZip() {
+			if (window.JSZip) {
+				return Promise.resolve(window.JSZip);
+			}
+			if (!jszipLoaderPromise) {
+				jszipLoaderPromise = new Promise((resolve, reject) => {
+					const script = document.createElement("script");
+					script.src = `${JSZIP_BASE_URL}/jszip.min.js`;
+					script.crossOrigin = "anonymous";
+					script.referrerPolicy = "no-referrer";
+					script.onload = () => {
+						if (window.JSZip) {
+							resolve(window.JSZip);
+						} else {
+							reject(new Error("JSZip loaded, but library is unavailable."));
+						}
+					};
+					script.onerror = () => reject(new Error("Failed to load JSZip."));
+					document.head.appendChild(script);
+				});
+				jszipLoaderPromise.catch(() => {
+					jszipLoaderPromise = null;
+				});
+			}
+			return jszipLoaderPromise;
+		}
+
+		function ensureKatex() {
+			if (window.katex && window.renderMathInElement) {
+				return Promise.resolve(window.renderMathInElement);
+			}
+			if (!katexLoaderPromise) {
+				katexLoaderPromise = new Promise((resolve, reject) => {
+					const finish = () => {
+						if (window.katex && window.renderMathInElement) {
+							resolve(window.renderMathInElement);
+						} else {
+							reject(new Error("KaTeX assets loaded, but renderer is unavailable."));
+						}
+					};
+
+					const ensureStylesheet = () => {
+						if (document.querySelector('link[data-katex="stylesheet"]')) return;
+						const link = document.createElement("link");
+						link.rel = "stylesheet";
+						link.href = `${KATEX_BASE_URL}/katex.min.css`;
+						link.crossOrigin = "anonymous";
+						link.referrerPolicy = "no-referrer";
+						link.dataset.katex = "stylesheet";
+						document.head.appendChild(link);
+					};
+
+					const loadAutoRender = () => {
+						if (window.renderMathInElement) {
+							finish();
+							return;
+						}
+						if (document.querySelector('script[data-katex="auto-render"]')) {
+							document.querySelector('script[data-katex="auto-render"]').addEventListener("load", finish, { once: true });
+							return;
+						}
+						const autoScript = document.createElement("script");
+						autoScript.src = `${KATEX_BASE_URL}/contrib/auto-render.min.js`;
+						autoScript.crossOrigin = "anonymous";
+						autoScript.referrerPolicy = "no-referrer";
+						autoScript.dataset.katex = "auto-render";
+						autoScript.onload = finish;
+						autoScript.onerror = () => reject(new Error("Failed to load KaTeX auto-render."));
+						document.head.appendChild(autoScript);
+					};
+
+					const loadMainScript = () => {
+						if (window.katex) {
+							loadAutoRender();
+							return;
+						}
+						if (document.querySelector('script[data-katex="core"]')) {
+							document.querySelector('script[data-katex="core"]').addEventListener("load", loadAutoRender, { once: true });
+							return;
+						}
+						const script = document.createElement("script");
+						script.src = `${KATEX_BASE_URL}/katex.min.js`;
+						script.crossOrigin = "anonymous";
+						script.referrerPolicy = "no-referrer";
+						script.dataset.katex = "core";
+						script.onload = loadAutoRender;
+						script.onerror = () => reject(new Error("Failed to load KaTeX core library."));
+						document.head.appendChild(script);
+					};
+
+					ensureStylesheet();
+					loadMainScript();
+				});
+				katexLoaderPromise.catch(() => {
+					katexLoaderPromise = null;
+				});
+			}
+			return katexLoaderPromise;
+		}
+
+		function initializeMermaidTheme() {
+			if (!window.mermaid) return;
+			const theme = htmlElement.classList.contains("dark") ? "dark" : "default";
+			window.mermaid.initialize({
+				startOnLoad: false,
+				theme,
+				securityLevel: "loose",
+				themeVariables: { fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif" },
+			});
+		}
+
+		async function rerenderMermaidDiagrams(target = viewer) {
+			try {
+				if (!target) return;
+				const mermaid = await ensureMermaid();
+				initializeMermaidTheme();
+				const nodes = target.querySelectorAll?.(".mermaid");
+				if (nodes && nodes.length) {
+					await mermaid.run({ nodes });
+				}
+			} catch (error) {
+				console.error("Mermaid render failed", error);
+			}
+		}
+
+		const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+		const savedTheme = localStorage.getItem("uv-theme");
+		setTheme(savedTheme || (prefersDark ? "dark" : "light"), true);
+
+		themeToggle.addEventListener("click", () => {
+			const nextTheme = htmlElement.classList.contains("dark") ? "light" : "dark";
+			setTheme(nextTheme);
+		});
+
+		function setTheme(theme, skipPersist = false) {
+			if (theme === "dark") {
+				htmlElement.classList.add("dark");
+				themeIcon.textContent = "🌙";
+				if (!skipPersist) localStorage.setItem("uv-theme", "dark");
+			} else {
+				htmlElement.classList.remove("dark");
+				themeIcon.textContent = "🌞";
+				if (!skipPersist) localStorage.setItem("uv-theme", "light");
+			}
+			initializeMermaidTheme();
+			renderMermaidAfterThemeChange();
+		}
+
+		function renderMermaidAfterThemeChange() {
+			if (window.mermaid || mermaidLoaderPromise) {
+				rerenderMermaidDiagrams();
+			}
+		}
+
+		const urlParams = new URLSearchParams(window.location.search);
+		const fileParam = urlParams.get("file");
+
+		if (fileParam) {
+			loadFile(decodeURIComponent(fileParam.trim()));
+		}
+
+		async function loadFile(requestedFile) {
+			updateStatus("loading", "Fetching file", `Attempting to retrieve \"${requestedFile}\"`);
+			showLoadingState(true);
+			try {
+				const { response, finalUrl } = await fetchWithFallback(requestedFile);
+				const resolvedUrl = new URL(finalUrl, window.location.href).href;
+				const fileName = extractFileName(resolvedUrl) || "download";
+				const extension = extractExtension(fileName);
+				const contentType = response.headers.get("content-type") || "";
+				const size = response.headers.get("content-length");
+
+				const fileInfo = document.importNode(fileInfoTemplate.content, true);
+				fileInfo.querySelector("#fileName").textContent = fileName;
+				fileInfo.querySelector("#fileMeta").textContent = buildMeta(extension, contentType, size);
+
+				const infoContainer = fileInfo;
+				viewer.innerHTML = "";
+				viewer.classList.remove("prose", "prose-slate", "dark:prose-invert");
+				viewer.appendChild(infoContainer);
+
+				const outcome = await renderByType({ response, extension, contentType, fileName, resolvedUrl });
+
+				if (outcome && outcome.statusMessage) {
+					const { level, title, body } = outcome.statusMessage;
+					updateStatus(level, title, body);
+				} else {
+					updateStatus("success", "File loaded successfully", resolvedUrl);
+				}
+				setDownloadLink(resolvedUrl);
+			} catch (error) {
+				console.error(error);
+				setDownloadLink(null);
+				showError(error instanceof Error ? error.message : "Unable to load file.");
+			} finally {
+				showLoadingState(false);
+			}
+		}
+
+		function buildMeta(extension, contentType, size) {
+			const parts = [];
+			if (extension) parts.push(extension.toUpperCase());
+			if (contentType) parts.push(contentType.split(";")[0]);
+			if (size) parts.push(formatBytes(Number(size)));
+			return parts.join(" • ") || "Preview";
+		}
+
+		function setDownloadLink(url) {
+			if (!url) {
+				downloadLink.classList.add("hidden");
+				downloadLink.removeAttribute("href");
+				return;
+			}
+			downloadLink.href = url;
+			downloadLink.classList.remove("hidden");
+		}
+
+		async function fetchWithFallback(requestedFile) {
+			const candidates = buildCandidateUrls(requestedFile);
+			let lastError = null;
+			for (const candidate of candidates) {
 				try {
-					const url = new URL(file);
-					return url.protocol === "http:" || url.protocol === "https:";
+					const response = await fetch(candidate);
+					if (!response.ok) {
+						lastError = new Error(`Request failed with status ${response.status}`);
+						continue;
+					}
+					return { response, finalUrl: candidate };
 				} catch (error) {
-					return false;
+					lastError = error;
 				}
 			}
+			throw lastError || new Error("Unable to fetch the specified file.");
+		}
 
-			async function renderByType({ response, extension, contentType, fileName, resolvedUrl }) {
-				const type = (extension || "").toLowerCase();
-				const lowerContentType = contentType.toLowerCase();
+		function buildCandidateUrls(requestedFile) {
+			const trimmed = requestedFile.trim();
+			const candidates = [];
+			if (looksExternal(trimmed)) {
+				candidates.push(trimmed);
+				return candidates;
+			}
+			const clean = trimmed.replace(/^\//, "");
+			candidates.push(clean);
+			if (!clean.includes("/")) {
+				candidates.push(`datasets/${clean}`);
+				candidates.push(`assets/${clean}`);
+			}
+			return candidates.map((candidate) => {
+				if (candidate.startsWith("http")) return candidate;
+				return new URL(candidate, window.location.href).href;
+			});
+		}
 
-				viewerWrapper.classList.remove("bg-slate-900/90", "dark:bg-black");
+		function looksExternal(file) {
+			try {
+				const url = new URL(file);
+				return url.protocol === "http:" || url.protocol === "https:";
+			} catch (error) {
+				return false;
+			}
+		}
 
-				if (isPdf(type, lowerContentType)) {
-					const blob = await response.blob();
-					return await renderPdf(blob, fileName);
-				}
+		async function renderByType({ response, extension, contentType, fileName, resolvedUrl }) {
+			const type = (extension || "").toLowerCase();
+			const lowerContentType = contentType.toLowerCase();
 
-				if (isImage(type, lowerContentType)) {
-					const blob = await response.blob();
-					renderImage(blob, fileName);
-					return null;
-				}
+			viewerWrapper.classList.remove("bg-slate-900/90", "dark:bg-black");
 
-				if (isVideo(type, lowerContentType)) {
-					const blob = await response.blob();
-					renderVideo(blob, lowerContentType || "video/mp4");
-					return null;
-				}
+			if (isPdf(type, lowerContentType)) {
+				const blob = await response.blob();
+				return await renderPdf(blob, fileName);
+			}
 
-				if (isAudio(type, lowerContentType)) {
-					const blob = await response.blob();
-					renderAudio(blob, lowerContentType || "audio/mpeg");
-					return null;
-				}
-
-				if (isOfficeSpreadsheet(type, lowerContentType)) {
-					const buffer = await response.arrayBuffer();
-					return await renderSpreadsheet(buffer, fileName, resolvedUrl);
-				}
-
-				if (isDocxDocument(type, lowerContentType)) {
-					const buffer = await response.arrayBuffer();
-					return await renderDocx(buffer, fileName, resolvedUrl);
-				}
-
-				if (isLegacyWordDocument(type, lowerContentType)) {
-					return renderOfficeEmbed(resolvedUrl, fileName, { kind: "document" });
-				}
-
-				if (isOpenXmlPowerPoint(type, lowerContentType)) {
-					const buffer = await response.arrayBuffer();
-					return await renderPowerPoint(buffer, fileName, resolvedUrl);
-				}
-
-				if (isPowerPointDeck(type, lowerContentType)) {
-					return renderOfficeEmbed(resolvedUrl, fileName, { kind: "presentation" });
-				}
-
-				const text = await response.text();
-
-				if (isMermaid(type, lowerContentType)) {
-					return await renderMermaidDiagram(text, fileName);
-				}
-
-				if (isMarkdown(type, lowerContentType)) {
-					await renderMarkdown(text, fileName);
-					return null;
-				}
-
-				if (isCsv(type, lowerContentType)) {
-					renderCsv(text);
-					return null;
-				}
-
-				if (isJson(type, lowerContentType)) {
-					renderJson(text);
-					return null;
-				}
-
-				if (looksLikeHtml(type, lowerContentType)) {
-					renderHtml(text, resolvedUrl);
-					return null;
-				}
-
-				renderPlainText(text);
+			if (isImage(type, lowerContentType)) {
+				const blob = await response.blob();
+				renderImage(blob, fileName);
 				return null;
 			}
 
-			function createInitialPdfZoomContext() {
-				return {
-					canvases: [],
-					currentIndex: -1,
-					fileName: "",
-					totalPages: 0,
-				};
+			if (isVideo(type, lowerContentType)) {
+				const blob = await response.blob();
+				renderVideo(blob, lowerContentType || "video/mp4");
+				return null;
 			}
 
-			function setPdfZoomContextFromCanvas(canvas, meta = {}) {
-				const canvases = Array.from(viewer.querySelectorAll("canvas[data-page-number]"));
-				let index = canvases.indexOf(canvas);
-				if (index === -1) {
-					canvases.push(canvas);
-					index = canvases.length - 1;
-				}
-				const totalPages = Number(meta.totalPages) || Number(canvas?.dataset?.totalPages) || canvases.length;
-				const fileName = meta.fileName || canvas?.dataset?.fileName || "PDF page";
-				pdfZoomContext = {
-					canvases,
-					currentIndex: index,
-					fileName,
-					totalPages,
-				};
-				updatePdfNavigationState();
+			if (isAudio(type, lowerContentType)) {
+				const blob = await response.blob();
+				renderAudio(blob, lowerContentType || "audio/mpeg");
+				return null;
 			}
 
-			function getCanvasMeta(canvas, fallback = {}) {
-				const dataset = canvas?.dataset || {};
-				const fileName = dataset.fileName || fallback.fileName || pdfZoomContext.fileName || "PDF page";
-				const pageNumber = dataset.pageNumber ? Number(dataset.pageNumber) : fallback.pageNumber || null;
-				const totalPages = dataset.totalPages ? Number(dataset.totalPages) : fallback.totalPages || pdfZoomContext.totalPages || null;
-				return { fileName, pageNumber, totalPages };
+			if (isOfficeSpreadsheet(type, lowerContentType)) {
+				const buffer = await response.arrayBuffer();
+				return await renderSpreadsheet(buffer, fileName, resolvedUrl);
 			}
 
-			function displayPdfCanvasInZoom(canvas, options = {}) {
-				if (!canvas || !pdfZoomImage) return;
-				const { resetScale = false } = options;
-				if (resetScale) {
-					setPdfZoomScale(1, { skipUpdateOverlay: true });
-				}
-				const meta = getCanvasMeta(canvas, options.fallbackMeta || {});
-				const indexWithinContext = pdfZoomContext.canvases.indexOf(canvas);
-				if (indexWithinContext !== -1) {
-					pdfZoomContext.currentIndex = indexWithinContext;
-				}
-				if (meta.fileName) {
-					pdfZoomContext.fileName = meta.fileName;
-				}
-				if (meta.totalPages) {
-					pdfZoomContext.totalPages = meta.totalPages;
-				}
-				const pageLabel = meta.pageNumber ? `Page ${meta.pageNumber}${meta.totalPages ? ` of ${meta.totalPages}` : ""}` : "";
-				if (pdfZoomTitle) {
-					pdfZoomTitle.textContent = meta.fileName;
-				}
-				if (pdfZoomCaption) {
-					pdfZoomCaption.textContent = pageLabel;
-				}
-				try {
-					pdfZoomImage.src = canvas.toDataURL("image/png", 1.0);
-				} catch (error) {
-					console.error("Failed to create zoom preview", error);
-					canvas.toBlob((blob) => {
-						if (!blob) return;
-						const blobUrl = URL.createObjectURL(blob);
-						pdfZoomImage.onload = () => {
-							URL.revokeObjectURL(blobUrl);
-							pdfZoomImage.onload = null;
-						};
-						pdfZoomImage.src = blobUrl;
-					}, "image/png");
-				}
-				pdfZoomImage.alt = pageLabel ? `${meta.fileName} — ${pageLabel}` : meta.fileName;
-				if (meta.pageNumber != null) {
-					pdfZoomImage.dataset.pageNumber = String(meta.pageNumber);
-				} else {
-					delete pdfZoomImage.dataset.pageNumber;
-				}
-				if (meta.totalPages) {
-					pdfZoomImage.dataset.totalPages = String(meta.totalPages);
-				} else {
-					delete pdfZoomImage.dataset.totalPages;
-				}
-				if (pdfZoomWrapper) {
-					if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
-						try {
-							pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
-						} catch (error) {
-							console.debug("Pointer capture release failed", error);
-						}
+			if (isDocxDocument(type, lowerContentType)) {
+				const buffer = await response.arrayBuffer();
+				return await renderDocx(buffer, fileName, resolvedUrl);
+			}
+
+			if (isLegacyWordDocument(type, lowerContentType)) {
+				return renderOfficeEmbed(resolvedUrl, fileName, { kind: "document" });
+			}
+
+			if (isOpenXmlPowerPoint(type, lowerContentType)) {
+				const buffer = await response.arrayBuffer();
+				return await renderPowerPoint(buffer, fileName, resolvedUrl);
+			}
+
+			if (isPowerPointDeck(type, lowerContentType)) {
+				return renderOfficeEmbed(resolvedUrl, fileName, { kind: "presentation" });
+			}
+
+			const text = await response.text();
+
+			if (isMermaid(type, lowerContentType)) {
+				return await renderMermaidDiagram(text, fileName);
+			}
+
+			if (isMarkdown(type, lowerContentType)) {
+				await renderMarkdown(text, fileName);
+				return null;
+			}
+
+			if (isCsv(type, lowerContentType)) {
+				renderCsv(text);
+				return null;
+			}
+
+			if (isJson(type, lowerContentType)) {
+				renderJson(text);
+				return null;
+			}
+
+			if (looksLikeHtml(type, lowerContentType)) {
+				renderHtml(text, resolvedUrl);
+				return null;
+			}
+
+			renderPlainText(text);
+			return null;
+		}
+
+		function createInitialPdfZoomContext() {
+			return {
+				canvases: [],
+				currentIndex: -1,
+				fileName: "",
+				totalPages: 0,
+			};
+		}
+
+		function setPdfZoomContextFromCanvas(canvas, meta = {}) {
+			const canvases = Array.from(viewer.querySelectorAll("canvas[data-page-number]"));
+			let index = canvases.indexOf(canvas);
+			if (index === -1) {
+				canvases.push(canvas);
+				index = canvases.length - 1;
+			}
+			const totalPages = Number(meta.totalPages) || Number(canvas?.dataset?.totalPages) || canvases.length;
+			const fileName = meta.fileName || canvas?.dataset?.fileName || "PDF page";
+			pdfZoomContext = {
+				canvases,
+				currentIndex: index,
+				fileName,
+				totalPages,
+			};
+			updatePdfNavigationState();
+		}
+
+		function getCanvasMeta(canvas, fallback = {}) {
+			const dataset = canvas?.dataset || {};
+			const fileName = dataset.fileName || fallback.fileName || pdfZoomContext.fileName || "PDF page";
+			const pageNumber = dataset.pageNumber ? Number(dataset.pageNumber) : fallback.pageNumber || null;
+			const totalPages = dataset.totalPages ? Number(dataset.totalPages) : fallback.totalPages || pdfZoomContext.totalPages || null;
+			return { fileName, pageNumber, totalPages };
+		}
+
+		function displayPdfCanvasInZoom(canvas, options = {}) {
+			if (!canvas || !pdfZoomImage) return;
+			const { resetScale = false } = options;
+			if (resetScale) {
+				setPdfZoomScale(1, { skipUpdateOverlay: true });
+			}
+			const meta = getCanvasMeta(canvas, options.fallbackMeta || {});
+			const indexWithinContext = pdfZoomContext.canvases.indexOf(canvas);
+			if (indexWithinContext !== -1) {
+				pdfZoomContext.currentIndex = indexWithinContext;
+			}
+			if (meta.fileName) {
+				pdfZoomContext.fileName = meta.fileName;
+			}
+			if (meta.totalPages) {
+				pdfZoomContext.totalPages = meta.totalPages;
+			}
+			const pageLabel = meta.pageNumber ? `Page ${meta.pageNumber}${meta.totalPages ? ` of ${meta.totalPages}` : ""}` : "";
+			if (pdfZoomTitle) {
+				pdfZoomTitle.textContent = meta.fileName;
+			}
+			if (pdfZoomCaption) {
+				pdfZoomCaption.textContent = pageLabel;
+			}
+			try {
+				pdfZoomImage.src = canvas.toDataURL("image/png", 1.0);
+			} catch (error) {
+				console.error("Failed to create zoom preview", error);
+				canvas.toBlob((blob) => {
+					if (!blob) return;
+					const blobUrl = URL.createObjectURL(blob);
+					pdfZoomImage.onload = () => {
+						URL.revokeObjectURL(blobUrl);
+						pdfZoomImage.onload = null;
+					};
+					pdfZoomImage.src = blobUrl;
+				}, "image/png");
+			}
+			pdfZoomImage.alt = pageLabel ? `${meta.fileName} — ${pageLabel}` : meta.fileName;
+			if (meta.pageNumber != null) {
+				pdfZoomImage.dataset.pageNumber = String(meta.pageNumber);
+			} else {
+				delete pdfZoomImage.dataset.pageNumber;
+			}
+			if (meta.totalPages) {
+				pdfZoomImage.dataset.totalPages = String(meta.totalPages);
+			} else {
+				delete pdfZoomImage.dataset.totalPages;
+			}
+			if (pdfZoomWrapper) {
+				if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
+					try {
+						pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
+					} catch (error) {
+						console.debug("Pointer capture release failed", error);
 					}
-					pdfZoomWrapper.scrollLeft = 0;
-					pdfZoomWrapper.scrollTop = 0;
-					pdfZoomWrapper.classList.remove("is-dragging");
 				}
-				pdfIsDragging = false;
-				pdfDragPointerId = null;
-				updatePdfZoomScale();
-				updatePdfNavigationState();
+				pdfZoomWrapper.scrollLeft = 0;
+				pdfZoomWrapper.scrollTop = 0;
+				pdfZoomWrapper.classList.remove("is-dragging");
 			}
+			pdfIsDragging = false;
+			pdfDragPointerId = null;
+			updatePdfZoomScale();
+			updatePdfNavigationState();
+		}
 
-			function updatePdfNavigationState() {
-				if (pdfZoomPrevButton) {
-					const hasPrev = pdfZoomContext.currentIndex > 0;
-					pdfZoomPrevButton.disabled = !hasPrev;
-					pdfZoomPrevButton.setAttribute("aria-disabled", hasPrev ? "false" : "true");
+		function updatePdfNavigationState() {
+			if (pdfZoomPrevButton) {
+				const hasPrev = pdfZoomContext.currentIndex > 0;
+				pdfZoomPrevButton.disabled = !hasPrev;
+				pdfZoomPrevButton.setAttribute("aria-disabled", hasPrev ? "false" : "true");
+			}
+			if (pdfZoomNextButton) {
+				const totalCandidates = pdfZoomContext.canvases.length || pdfZoomContext.totalPages || 0;
+				const hasNext = pdfZoomContext.currentIndex >= 0 && pdfZoomContext.currentIndex < totalCandidates - 1;
+				pdfZoomNextButton.disabled = !hasNext;
+				pdfZoomNextButton.setAttribute("aria-disabled", hasNext ? "false" : "true");
+			}
+		}
+
+		function navigatePdfZoom(direction) {
+			if (!pdfZoomContext.canvases.length) return;
+			const nextIndex = pdfZoomContext.currentIndex + direction;
+			if (nextIndex < 0 || nextIndex >= pdfZoomContext.canvases.length) return;
+			const nextCanvas = pdfZoomContext.canvases[nextIndex];
+			if (!nextCanvas) return;
+			pdfZoomContext.currentIndex = nextIndex;
+			displayPdfCanvasInZoom(nextCanvas);
+		}
+
+		function resetPdfZoomContext() {
+			pdfZoomContext = createInitialPdfZoomContext();
+			updatePdfNavigationState();
+		}
+
+		function ensurePdfZoomOverlay() {
+			if (pdfZoomOverlay) {
+				if (!pdfZoomWrapper) {
+					pdfZoomWrapper = pdfZoomOverlay.querySelector(".pdf-zoom-image-wrapper");
 				}
-				if (pdfZoomNextButton) {
-					const totalCandidates = pdfZoomContext.canvases.length || pdfZoomContext.totalPages || 0;
-					const hasNext = pdfZoomContext.currentIndex >= 0 && pdfZoomContext.currentIndex < totalCandidates - 1;
-					pdfZoomNextButton.disabled = !hasNext;
-					pdfZoomNextButton.setAttribute("aria-disabled", hasNext ? "false" : "true");
-				}
+				return pdfZoomOverlay;
 			}
-
-			function navigatePdfZoom(direction) {
-				if (!pdfZoomContext.canvases.length) return;
-				const nextIndex = pdfZoomContext.currentIndex + direction;
-				if (nextIndex < 0 || nextIndex >= pdfZoomContext.canvases.length) return;
-				const nextCanvas = pdfZoomContext.canvases[nextIndex];
-				if (!nextCanvas) return;
-				pdfZoomContext.currentIndex = nextIndex;
-				displayPdfCanvasInZoom(nextCanvas);
-			}
-
-			function resetPdfZoomContext() {
-				pdfZoomContext = createInitialPdfZoomContext();
-				updatePdfNavigationState();
-			}
-
-			function ensurePdfZoomOverlay() {
-				if (pdfZoomOverlay) {
-					if (!pdfZoomWrapper) {
-						pdfZoomWrapper = pdfZoomOverlay.querySelector(".pdf-zoom-image-wrapper");
-					}
-					return pdfZoomOverlay;
-				}
-				const overlay = document.createElement("div");
-				overlay.id = "pdfZoomOverlay";
-				overlay.className = "pdf-zoom-overlay";
-				overlay.setAttribute("aria-hidden", "true");
-				overlay.innerHTML = `
+			const overlay = document.createElement("div");
+			overlay.id = "pdfZoomOverlay";
+			overlay.className = "pdf-zoom-overlay";
+			overlay.setAttribute("aria-hidden", "true");
+			overlay.innerHTML = `
 					<div class="pdf-zoom-dialog" role="dialog" aria-modal="true" aria-labelledby="pdfZoomTitle" aria-describedby="pdfZoomCaption">
 						<div class="pdf-zoom-toolbar">
 							<div class="pdf-zoom-info">
@@ -1134,1250 +1307,1335 @@
 						</div>
 					</div>
 				`;
-				document.body.appendChild(overlay);
-				pdfZoomOverlay = overlay;
-				pdfZoomWrapper = overlay.querySelector(".pdf-zoom-image-wrapper");
-				pdfZoomImage = overlay.querySelector(".pdf-zoom-image");
-				pdfZoomTitle = overlay.querySelector("#pdfZoomTitle");
-				pdfZoomCaption = overlay.querySelector("#pdfZoomCaption");
-				pdfZoomIndicator = overlay.querySelector("[data-zoom-indicator]");
-				pdfZoomPrevButton = overlay.querySelector('[data-action="prev-page"]');
-				pdfZoomNextButton = overlay.querySelector('[data-action="next-page"]');
-				updatePdfNavigationState();
+			document.body.appendChild(overlay);
+			pdfZoomOverlay = overlay;
+			pdfZoomWrapper = overlay.querySelector(".pdf-zoom-image-wrapper");
+			pdfZoomImage = overlay.querySelector(".pdf-zoom-image");
+			pdfZoomTitle = overlay.querySelector("#pdfZoomTitle");
+			pdfZoomCaption = overlay.querySelector("#pdfZoomCaption");
+			pdfZoomIndicator = overlay.querySelector("[data-zoom-indicator]");
+			pdfZoomPrevButton = overlay.querySelector('[data-action="prev-page"]');
+			pdfZoomNextButton = overlay.querySelector('[data-action="next-page"]');
+			updatePdfNavigationState();
 
-				const controls = overlay.querySelector(".pdf-zoom-controls");
-				if (controls) {
-					controls.addEventListener("click", (event) => {
-						const target = event.target instanceof Element ? event.target.closest("button[data-action]") : null;
-						if (!target) return;
-						const action = target.dataset.action;
-						switch (action) {
-							case "prev-page":
-								navigatePdfZoom(-1);
-								break;
-							case "next-page":
-								navigatePdfZoom(1);
-								break;
-							case "zoom-in":
-								changePdfZoomScale(0.5);
-								break;
-							case "zoom-out":
-								changePdfZoomScale(-0.5);
-								break;
-							case "zoom-reset":
-								setPdfZoomScale(1);
-								break;
-							case "close":
-								closePdfZoomOverlay();
-								break;
-							default:
-								break;
-						}
-					});
-				}
-
-				overlay.addEventListener("click", (event) => {
-					if (event.target === overlay) {
-						closePdfZoomOverlay();
-					}
-				});
-
-				document.addEventListener("keydown", (event) => {
-					if (!overlay.classList.contains("active")) return;
-					if (event.key === "Escape") {
-						event.preventDefault();
-						closePdfZoomOverlay();
-						return;
-					}
-					if (event.key === "ArrowRight") {
-						event.preventDefault();
-						navigatePdfZoom(1);
-						return;
-					}
-					if (event.key === "ArrowLeft") {
-						event.preventDefault();
-						navigatePdfZoom(-1);
-						return;
-					}
-					if (event.key === "+" || event.key === "=") {
-						event.preventDefault();
-						changePdfZoomScale(0.5);
-						return;
-					}
-					if (event.key === "-" || event.key === "_") {
-						event.preventDefault();
-						changePdfZoomScale(-0.5);
-						return;
-					}
-					if (event.key === "0") {
-						event.preventDefault();
-						setPdfZoomScale(1);
-						return;
-					}
-				});
-
-				if (pdfZoomWrapper) {
-					pdfZoomWrapper.addEventListener("wheel", (event) => {
-						if (!overlay.classList.contains("active")) return;
-						if (!event.ctrlKey && !event.metaKey) return;
-						event.preventDefault();
-						const delta = event.deltaY < 0 ? 0.25 : -0.25;
-						changePdfZoomScale(delta);
-					});
-					if (!pdfZoomListenersAttached) {
-						const handlePointerDown = (event) => {
-							if (!overlay.classList.contains("active")) return;
-							if (pdfZoomScale <= 1 || !pdfZoomWrapper) return;
-							if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") return;
-							pdfIsDragging = true;
-							pdfDragPointerId = event.pointerId;
-							pdfDragStartX = event.clientX;
-							pdfDragStartY = event.clientY;
-							pdfDragScrollLeft = pdfZoomWrapper.scrollLeft;
-							pdfDragScrollTop = pdfZoomWrapper.scrollTop;
-							pdfZoomWrapper.classList.add("is-dragging");
-							if (typeof pdfZoomWrapper.setPointerCapture === "function") {
-								pdfZoomWrapper.setPointerCapture(event.pointerId);
-							}
-							event.preventDefault();
-						};
-
-						const handlePointerMove = (event) => {
-							if (!pdfIsDragging || event.pointerId !== pdfDragPointerId || !pdfZoomWrapper) return;
-							const deltaX = event.clientX - pdfDragStartX;
-							const deltaY = event.clientY - pdfDragStartY;
-							pdfZoomWrapper.scrollLeft = pdfDragScrollLeft - deltaX;
-							pdfZoomWrapper.scrollTop = pdfDragScrollTop - deltaY;
-						};
-
-						const endDrag = () => {
-							if (!pdfIsDragging) return;
-							pdfIsDragging = false;
-							if (pdfZoomWrapper) {
-								pdfZoomWrapper.classList.remove("is-dragging");
-								if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
-									try {
-										pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
-									} catch (error) {
-										console.debug("Pointer capture release failed", error);
-									}
-								}
-							}
-							pdfDragPointerId = null;
-						};
-
-						pdfZoomWrapper.addEventListener("pointerdown", handlePointerDown);
-						pdfZoomWrapper.addEventListener("pointermove", handlePointerMove);
-						pdfZoomWrapper.addEventListener("pointerup", endDrag);
-						pdfZoomWrapper.addEventListener("pointercancel", endDrag);
-						pdfZoomWrapper.addEventListener("pointerleave", (event) => {
-							if (event.pointerId !== pdfDragPointerId) return;
-							endDrag();
-						});
-						pdfZoomListenersAttached = true;
-					}
-				}
-
-				return overlay;
-			}
-
-			function openPdfZoomOverlay(canvas, meta = {}) {
-				const overlay = ensurePdfZoomOverlay();
-				if (!canvas || !overlay || !pdfZoomImage) return;
-				setPdfZoomContextFromCanvas(canvas, meta);
-				displayPdfCanvasInZoom(canvas, { resetScale: true, fallbackMeta: meta });
-				overlay.dataset.scale = String(pdfZoomScale);
-				overlay.classList.add("active");
-				overlay.setAttribute("aria-hidden", "false");
-				previousDocumentOverflow = document.documentElement.style.overflow;
-				document.documentElement.style.overflow = "hidden";
-			}
-
-			function closePdfZoomOverlay() {
-				if (!pdfZoomOverlay) return;
-				pdfZoomOverlay.classList.remove("active");
-				pdfZoomOverlay.setAttribute("aria-hidden", "true");
-				pdfZoomOverlay.dataset.scale = "1";
-				pdfZoomScale = 1;
-				if (pdfZoomWrapper) {
-					if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
-						try {
-							pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
-						} catch (error) {
-							console.debug("Pointer capture release failed", error);
-						}
-					}
-					pdfZoomWrapper.scrollLeft = 0;
-					pdfZoomWrapper.scrollTop = 0;
-					pdfZoomWrapper.classList.remove("is-dragging", "is-zoomed");
-				}
-				pdfIsDragging = false;
-				pdfDragPointerId = null;
-				if (pdfZoomImage) {
-					pdfZoomImage.style.transform = "scale(1)";
-					pdfZoomImage.removeAttribute("src");
-				}
-				if (pdfZoomIndicator) {
-					pdfZoomIndicator.textContent = "100%";
-				}
-				if (pdfZoomCaption) {
-					pdfZoomCaption.textContent = "";
-				}
-				if (pdfZoomTitle) {
-					pdfZoomTitle.textContent = "PDF preview";
-				}
-				resetPdfZoomContext();
-				document.documentElement.style.overflow = previousDocumentOverflow;
-			}
-
-			function setPdfZoomScale(value, options = {}) {
-				const { skipUpdateOverlay = false } = options;
-				const clamped = Math.min(Math.max(value, 0.25), 8);
-				pdfZoomScale = Number.isFinite(clamped) ? clamped : 1;
-				if (!skipUpdateOverlay) {
-					updatePdfZoomScale();
-				}
-			}
-
-			function changePdfZoomScale(delta) {
-				setPdfZoomScale(pdfZoomScale + delta);
-			}
-
-			function updatePdfZoomScale() {
-				if (pdfZoomImage) {
-					pdfZoomImage.style.transform = `scale(${pdfZoomScale})`;
-				}
-				if (pdfZoomIndicator) {
-					pdfZoomIndicator.textContent = `${Math.round(pdfZoomScale * 100)}%`;
-				}
-				if (pdfZoomOverlay) {
-					pdfZoomOverlay.dataset.scale = String(pdfZoomScale);
-				}
-				if (pdfZoomWrapper) {
-					const isZoomed = pdfZoomScale > 1.02;
-					pdfZoomWrapper.classList.toggle("is-zoomed", isZoomed);
-					if (!isZoomed) {
-						pdfZoomWrapper.classList.remove("is-dragging");
-						pdfIsDragging = false;
-						pdfZoomWrapper.scrollLeft = 0;
-						pdfZoomWrapper.scrollTop = 0;
-					} else {
-						// When zoomed, scroll to top-left
-						pdfZoomWrapper.scrollLeft = 0;
-						pdfZoomWrapper.scrollTop = 0;
-					}
-				}
-			}
-
-			function attachPdfZoomBehavior(canvas, meta) {
-				if (!canvas) return;
-				canvas.addEventListener("click", () => openPdfZoomOverlay(canvas, meta));
-				canvas.addEventListener("keydown", (event) => {
-					if (event.key === "Enter" || event.key === " ") {
-						event.preventDefault();
-						openPdfZoomOverlay(canvas, meta);
+			const controls = overlay.querySelector(".pdf-zoom-controls");
+			if (controls) {
+				controls.addEventListener("click", (event) => {
+					const target = event.target instanceof Element ? event.target.closest("button[data-action]") : null;
+					if (!target) return;
+					const action = target.dataset.action;
+					switch (action) {
+						case "prev-page":
+							navigatePdfZoom(-1);
+							break;
+						case "next-page":
+							navigatePdfZoom(1);
+							break;
+						case "zoom-in":
+							changePdfZoomScale(0.5);
+							break;
+						case "zoom-out":
+							changePdfZoomScale(-0.5);
+							break;
+						case "zoom-reset":
+							setPdfZoomScale(1);
+							break;
+						case "close":
+							closePdfZoomOverlay();
+							break;
+						default:
+							break;
 					}
 				});
 			}
 
-			async function renderPdf(blob, fileName) {
-				viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
-				try {
-					const pdfjsLib = await ensurePdfJs();
-					const arrayBuffer = await blob.arrayBuffer();
-					const typedArray = new Uint8Array(arrayBuffer);
-					const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
-
-					const pdfContainer = document.createElement("div");
-					pdfContainer.className = "flex w-full flex-col items-center gap-8";
-					pdfContainer.setAttribute("role", "region");
-					pdfContainer.setAttribute("aria-label", `${fileName} PDF preview`);
-
-					const intro = document.createElement("p");
-					intro.className = "text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500";
-					intro.textContent = `${pdf.numPages} page${pdf.numPages > 1 ? "s" : ""} • Scroll to view`;
-					pdfContainer.appendChild(intro);
-
-					for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-						const pageWrapper = document.createElement("div");
-						pageWrapper.className = "relative flex w-full max-w-4xl flex-col items-center overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 shadow-lg dark:border-slate-800/40 dark:bg-slate-950/60";
-						const canvas = document.createElement("canvas");
-						canvas.className = "w-full cursor-zoom-in rounded-lg bg-white transition-transform duration-200 ease-out";
-						pageWrapper.appendChild(canvas);
-						pdfContainer.appendChild(pageWrapper);
-
-						const page = await pdf.getPage(pageNumber);
-						const baseViewport = page.getViewport({ scale: 1 });
-						const containerWidth = Math.min(viewerWrapper.clientWidth - 32, 1024);
-						const maxScale = Math.min(containerWidth / baseViewport.width, 1.6);
-						const scale = Number.isFinite(maxScale) && maxScale > 0 ? maxScale : 1;
-						const viewport = page.getViewport({ scale });
-						const outputScale = window.devicePixelRatio || 1;
-
-						canvas.width = viewport.width * outputScale;
-						canvas.height = viewport.height * outputScale;
-						canvas.style.width = `${viewport.width}px`;
-						canvas.style.height = `${viewport.height}px`;
-
-						const context = canvas.getContext("2d", { alpha: false });
-						context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
-
-						await page.render({ canvasContext: context, viewport }).promise;
-						canvas.dataset.pageNumber = String(pageNumber);
-						canvas.dataset.totalPages = String(pdf.numPages);
-						canvas.dataset.fileName = fileName;
-						canvas.setAttribute("role", "button");
-						canvas.setAttribute("aria-label", `Zoom ${fileName}, page ${pageNumber} of ${pdf.numPages}`);
-						canvas.tabIndex = 0;
-						attachPdfZoomBehavior(canvas, { fileName, pageNumber, totalPages: pdf.numPages });
-
-						const label = document.createElement("div");
-						label.className = "mt-3 w-full rounded-lg border border-slate-200/70 bg-slate-100 px-4 py-2 text-center text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
-						label.textContent = `Page ${pageNumber} of ${pdf.numPages}`;
-						pageWrapper.appendChild(label);
-					}
-
-					viewer.appendChild(pdfContainer);
-					return null;
-				} catch (error) {
-					const reason = error instanceof Error ? error.message : String(error);
-					console.error("PDF render failed", error);
-					renderPdfFallback(blob, fileName, reason);
-					return {
-						statusMessage: {
-							level: "info",
-							title: "PDF preview unavailable",
-							body: reason ? `PDF.js couldn't render this file (${reason}). Use the download link instead.` : "PDF.js couldn't render this file. Use the download link instead.",
-						},
-					};
+			overlay.addEventListener("click", (event) => {
+				if (event.target === overlay) {
+					closePdfZoomOverlay();
 				}
-			}
+			});
 
-			function renderPdfFallback(blob, fileName, reason = "") {
-				const blobUrl = URL.createObjectURL(blob);
-				const message = document.createElement("div");
-				message.className = "space-y-3 rounded-xl border border-slate-200/70 bg-white p-6 text-center text-sm text-slate-600 shadow-sm dark:border-slate-700/50 dark:bg-slate-900/60 dark:text-slate-300";
-				const primary = document.createElement("p");
-				primary.textContent = "Preview isn’t supported on this device. You can download the PDF instead.";
-				message.appendChild(primary);
-				if (reason) {
-					const details = document.createElement("p");
-					details.className = "text-xs text-slate-500 dark:text-slate-400";
-					details.textContent = reason;
-					message.appendChild(details);
-				}
-				const link = document.createElement("a");
-				link.href = blobUrl;
-				link.download = fileName;
-				link.rel = "noopener";
-				link.target = "_blank";
-				link.className = "inline-flex items-center gap-2 rounded-full bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-primary-600";
-				link.textContent = "Download PDF";
-				link.addEventListener("click", () => {
-					setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
-				});
-				message.appendChild(link);
-				viewer.appendChild(message);
-			}
-
-			async function renderMermaidDiagram(definition, fileName) {
-				try {
-					const mermaid = await ensureMermaid();
-					const wrapper = document.createElement("section");
-					wrapper.className = "space-y-4";
-
-					const badge = document.createElement("div");
-					badge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
-					badge.textContent = fileName || "Mermaid diagram";
-					wrapper.appendChild(badge);
-
-					const diagram = document.createElement("div");
-					diagram.className = "mermaid overflow-x-auto rounded-xl border border-slate-200/70 bg-white px-4 py-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60";
-					diagram.textContent = definition.trim();
-					wrapper.appendChild(diagram);
-
-					viewer.appendChild(wrapper);
-					await rerenderMermaidDiagrams(wrapper);
-					return null;
-				} catch (error) {
-					const reason = error instanceof Error ? error.message : String(error);
-					console.error("Mermaid render failed", error);
-					renderCodeBlock(definition, "mermaid");
-					return {
-						statusMessage: {
-							level: "info",
-							title: "Mermaid preview unavailable",
-							body: reason ? `Mermaid.js couldn't render this diagram (${reason}). Use the raw definition instead.` : "Mermaid.js couldn't render this diagram. Showing raw definition instead.",
-						},
-					};
-				}
-			}
-
-			function renderImage(blob, fileName) {
-				const blobUrl = URL.createObjectURL(blob);
-				const figure = document.createElement("figure");
-				figure.className = "flex flex-col items-center gap-3 p-4";
-				const img = document.createElement("img");
-				img.src = blobUrl;
-				img.alt = fileName;
-				img.className = "max-h-[70vh] w-full rounded-xl border border-slate-200/60 object-contain shadow-sm dark:border-slate-800/60";
-				img.onload = () => URL.revokeObjectURL(blobUrl);
-				const figcaption = document.createElement("figcaption");
-				figcaption.className = "text-xs text-slate-500 dark:text-slate-400";
-				figcaption.textContent = `Previewing ${fileName}`;
-				figure.append(img, figcaption);
-				viewer.appendChild(figure);
-			}
-
-			function renderVideo(blob, mime) {
-				const blobUrl = URL.createObjectURL(blob);
-				const video = document.createElement("video");
-				video.controls = true;
-				video.className = "h-auto w-full max-h-[70vh] rounded-xl border border-slate-200/60 bg-black shadow-lg dark:border-slate-800/60";
-				const source = document.createElement("source");
-				source.src = blobUrl;
-				source.type = mime;
-				video.appendChild(source);
-				viewer.appendChild(video);
-				video.addEventListener("loadeddata", () => URL.revokeObjectURL(blobUrl), { once: true });
-			}
-
-			function renderAudio(blob, mime) {
-				const blobUrl = URL.createObjectURL(blob);
-				const audio = document.createElement("audio");
-				audio.controls = true;
-				audio.className = "w-full rounded-full border border-slate-200/60 bg-slate-50/80 p-3 shadow-sm dark:border-slate-800/60 dark:bg-slate-800/40";
-				const source = document.createElement("source");
-				source.src = blobUrl;
-				source.type = mime;
-				audio.appendChild(source);
-				viewer.appendChild(audio);
-				audio.addEventListener("loadeddata", () => URL.revokeObjectURL(blobUrl), { once: true });
-			}
-
-			async function renderMarkdown(text, fileName) {
-				marked.setOptions({ breaks: true, mangle: false, headerIds: true });
-				const rawHtml = marked.parse(text);
-				const safeHtml = DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } });
-				const article = document.createElement("article");
-				article.className = "prose prose-slate max-w-none dark:prose-invert";
-				article.innerHTML = safeHtml;
-				wrapMarkdownTables(article);
-				const title = article.querySelector("h1") || article.querySelector("h2");
-				if (!title) {
-					const heading = document.createElement("h1");
-					heading.textContent = fileName;
-					article.prepend(heading);
-				}
-				await renderMathInMarkdown(article);
-				viewer.appendChild(article);
-				await embedMermaidInMarkdown(article);
-			}
-
-			async function embedMermaidInMarkdown(article) {
-				const codeBlocks = article.querySelectorAll("pre code");
-				const mermaidBlocks = Array.from(codeBlocks).filter((block) => {
-					const classes = block.className || "";
-					return /language-mermaid|lang-mermaid|language-mermaidjs|lang-mermaidjs/.test(classes);
-				});
-				if (!mermaidBlocks.length) return;
-				try {
-					const mermaid = await ensureMermaid();
-					mermaidBlocks.forEach((block) => {
-						const pre = block.closest("pre");
-						const code = block.textContent || "";
-						const diagram = document.createElement("div");
-						diagram.className = "mermaid my-6 overflow-x-auto rounded-xl border border-slate-200/70 bg-white px-4 py-4 text-left text-slate-800 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-100";
-						diagram.textContent = code.trim();
-						if (pre) pre.replaceWith(diagram);
-					});
-					await rerenderMermaidDiagrams(article);
-				} catch (error) {
-					console.error("Mermaid block render failed", error);
-				}
-			}
-
-			async function renderMathInMarkdown(article) {
-				if (!article) return;
-				try {
-					const renderMathInElement = await ensureKatex();
-					renderMathInElement(article, {
-						delimiters: [
-							{ left: "$$", right: "$$", display: true },
-							{ left: "\\[", right: "\\]", display: true },
-							{ left: "$", right: "$", display: false },
-							{ left: "\\(", right: "\\)", display: false },
-						],
-						ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
-						ignoredClasses: ["no-katex"],
-						throwOnError: false,
-					});
-				} catch (error) {
-					console.error("KaTeX render failed", error);
-				}
-			}
-
-			function wrapMarkdownTables(root) {
-				if (!root) return;
-				const tables = root.querySelectorAll("table");
-				if (!tables.length) return;
-				tables.forEach((table) => {
-					if (table.closest(".markdown-table-scroll")) return;
-					const parent = table.parentNode;
-					if (!parent) return;
-					const wrapper = document.createElement("div");
-					wrapper.className = "markdown-table-scroll";
-					parent.insertBefore(wrapper, table);
-					wrapper.appendChild(table);
-				});
-			}
-
-			function renderCsv(text) {
-				const { data } = Papa.parse(text, { skipEmptyLines: "greedy" });
-				if (!data || data.length === 0) {
-					renderPlainText("No data rows detected in CSV file.");
+			document.addEventListener("keydown", (event) => {
+				if (!overlay.classList.contains("active")) return;
+				if (event.key === "Escape") {
+					event.preventDefault();
+					closePdfZoomOverlay();
 					return;
 				}
-				const tableNode = createTableFrom2DArray(data);
-				viewer.appendChild(tableNode);
-			}
-
-			function createTableFrom2DArray(data, options = {}) {
-				const { caption = "", emptyMessage = "No rows to display." } = options;
-				if (!Array.isArray(data) || data.length === 0) {
-					return createEmptyTableMessage(emptyMessage);
+				if (event.key === "ArrowRight") {
+					event.preventDefault();
+					navigatePdfZoom(1);
+					return;
 				}
-				const normalizedRows = data.map((row) => {
-					if (Array.isArray(row)) {
-						return row.map((value) => normalizeTableCellValue(value));
-					}
-					return [normalizeTableCellValue(row)];
+				if (event.key === "ArrowLeft") {
+					event.preventDefault();
+					navigatePdfZoom(-1);
+					return;
+				}
+				if (event.key === "+" || event.key === "=") {
+					event.preventDefault();
+					changePdfZoomScale(0.5);
+					return;
+				}
+				if (event.key === "-" || event.key === "_") {
+					event.preventDefault();
+					changePdfZoomScale(-0.5);
+					return;
+				}
+				if (event.key === "0") {
+					event.preventDefault();
+					setPdfZoomScale(1);
+					return;
+				}
+			});
+
+			if (pdfZoomWrapper) {
+				pdfZoomWrapper.addEventListener("wheel", (event) => {
+					if (!overlay.classList.contains("active")) return;
+					if (!event.ctrlKey && !event.metaKey) return;
+					event.preventDefault();
+					const delta = event.deltaY < 0 ? 0.25 : -0.25;
+					changePdfZoomScale(delta);
 				});
-				const columnCount = normalizedRows.reduce((max, row) => Math.max(max, row.length), 0);
-				if (columnCount === 0) {
-					return createEmptyTableMessage(emptyMessage);
-				}
-				const headerRow = normalizedRows[0] || [];
-				const headers = Array.from({ length: columnCount }, (_, index) => {
-					const raw = headerRow[index] || "";
-					const label = typeof raw === "string" ? raw.trim() : String(raw).trim();
-					return label || `Column ${index + 1}`;
-				});
-				const bodyRows = normalizedRows.slice(1);
-				const fragment = document.importNode(tableTemplate.content, true);
-				const headRow = fragment.querySelector("#tableHead");
-				const body = fragment.querySelector("#tableBody");
+				if (!pdfZoomListenersAttached) {
+					const handlePointerDown = (event) => {
+						if (!overlay.classList.contains("active")) return;
+						if (pdfZoomScale <= 1 || !pdfZoomWrapper) return;
+						if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") return;
+						pdfIsDragging = true;
+						pdfDragPointerId = event.pointerId;
+						pdfDragStartX = event.clientX;
+						pdfDragStartY = event.clientY;
+						pdfDragScrollLeft = pdfZoomWrapper.scrollLeft;
+						pdfDragScrollTop = pdfZoomWrapper.scrollTop;
+						pdfZoomWrapper.classList.add("is-dragging");
+						if (typeof pdfZoomWrapper.setPointerCapture === "function") {
+							pdfZoomWrapper.setPointerCapture(event.pointerId);
+						}
+						event.preventDefault();
+					};
 
-				headers.forEach((title) => {
-					const th = document.createElement("th");
-					th.scope = "col";
-					th.className = "sticky top-0 z-20 border-b border-slate-200 bg-slate-100/95 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80";
-					th.textContent = title;
-					headRow.appendChild(th);
-				});
+					const handlePointerMove = (event) => {
+						if (!pdfIsDragging || event.pointerId !== pdfDragPointerId || !pdfZoomWrapper) return;
+						const deltaX = event.clientX - pdfDragStartX;
+						const deltaY = event.clientY - pdfDragStartY;
+						pdfZoomWrapper.scrollLeft = pdfDragScrollLeft - deltaX;
+						pdfZoomWrapper.scrollTop = pdfDragScrollTop - deltaY;
+					};
 
-				bodyRows.forEach((row) => {
-					const tr = document.createElement("tr");
-					tr.className = "bg-white/90 hover:bg-primary-50/60 dark:bg-slate-900/70 dark:hover:bg-slate-800/70";
-					for (let col = 0; col < columnCount; col += 1) {
-						const td = document.createElement("td");
-						td.className = "px-4 py-3 align-top text-xs text-slate-600 dark:text-slate-300";
-						td.textContent = row[col] ?? "";
-						tr.appendChild(td);
-					}
-					body.appendChild(tr);
-				});
-
-				if (headRow) headRow.removeAttribute("id");
-				if (body) body.removeAttribute("id");
-
-				const container = document.createElement("div");
-				container.className = "space-y-2";
-				if (caption) {
-					const captionBadge = document.createElement("div");
-					captionBadge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
-					captionBadge.textContent = caption;
-					container.appendChild(captionBadge);
-				}
-				container.appendChild(fragment);
-
-				if (!bodyRows.length) {
-					const note = document.createElement("p");
-					note.className = "text-xs text-slate-500 dark:text-slate-400";
-					note.textContent = "No data rows detected.";
-					container.appendChild(note);
-				}
-
-				return container;
-			}
-
-			function normalizeTableCellValue(value) {
-				if (value == null) return "";
-				if (value instanceof Date) {
-					return value.toISOString().replace("T", " ").replace("Z", " UTC");
-				}
-				if (typeof value === "number") {
-					return Number.isFinite(value) ? String(value) : "";
-				}
-				if (typeof value === "boolean") {
-					return value ? "TRUE" : "FALSE";
-				}
-				if (typeof value === "object") {
-					try {
-						return JSON.stringify(value);
-					} catch (error) {
-						return String(value);
-					}
-				}
-				return String(value);
-			}
-
-			function createEmptyTableMessage(message) {
-				const wrapper = document.createElement("div");
-				wrapper.className = "rounded-xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-500 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-300";
-				wrapper.textContent = message;
-				return wrapper;
-			}
-
-			async function renderSpreadsheet(arrayBuffer, fileName, resolvedUrl) {
-				try {
-					const XLSX = await ensureXlsx();
-					const workbook = XLSX.read(arrayBuffer, { type: "array", cellDates: true, dateNF: "yyyy-mm-dd" });
-					if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-						return renderOfficeDownloadFallback(fileName, resolvedUrl, "No worksheets were found in this spreadsheet.");
-					}
-					const section = document.createElement("section");
-					section.className = "space-y-6";
-					workbook.SheetNames.forEach((sheetName) => {
-						const sheet = workbook.Sheets[sheetName];
-						const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false, raw: false });
-						const sheetBlock = document.createElement("div");
-						sheetBlock.className = "space-y-3";
-
-						const badge = document.createElement("div");
-						badge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
-						badge.textContent = sheetName || "Sheet";
-						sheetBlock.appendChild(badge);
-
-						const headerRow = rows[0] || [];
-						const dataRows = rows.length > 1 ? rows.slice(1) : [];
-						const truncated = dataRows.length > MAX_SPREADSHEET_PREVIEW_ROWS;
-						const limitedRows = truncated ? dataRows.slice(0, MAX_SPREADSHEET_PREVIEW_ROWS) : dataRows;
-						const tableData = [headerRow, ...limitedRows];
-						const hasVisibleCells = tableData.some((row) => Array.isArray(row) && row.some((cell) => normalizeTableCellValue(cell).trim() !== ""));
-
-						if (!hasVisibleCells) {
-							sheetBlock.appendChild(createEmptyTableMessage("No visible cells in this worksheet."));
-						} else {
-							sheetBlock.appendChild(createTableFrom2DArray(tableData));
-							if (truncated) {
-								const note = document.createElement("p");
-								note.className = "text-[11px] text-slate-500 dark:text-slate-400";
-								note.textContent = `Showing the first ${MAX_SPREADSHEET_PREVIEW_ROWS.toLocaleString()} rows. Download the workbook to view everything.`;
-								sheetBlock.appendChild(note);
+					const endDrag = () => {
+						if (!pdfIsDragging) return;
+						pdfIsDragging = false;
+						if (pdfZoomWrapper) {
+							pdfZoomWrapper.classList.remove("is-dragging");
+							if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
+								try {
+									pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
+								} catch (error) {
+									console.debug("Pointer capture release failed", error);
+								}
 							}
 						}
-
-						section.appendChild(sheetBlock);
-					});
-
-					viewer.appendChild(section);
-					return null;
-				} catch (error) {
-					console.error("Spreadsheet render failed", error);
-					const reason = error instanceof Error ? error.message : String(error);
-					return renderOfficeEmbed(resolvedUrl, fileName, {
-						kind: "spreadsheet",
-						note: "Falling back to Microsoft Office web viewer.",
-						reason,
-					});
-				}
-			}
-
-			async function renderDocx(arrayBuffer, fileName, resolvedUrl) {
-				try {
-					const mammoth = await ensureMammoth();
-					const result = await mammoth.convertToHtml({ arrayBuffer });
-					const html = (result && result.value) || "";
-					const safeHtml = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
-					const article = document.createElement("article");
-					article.className = "prose prose-slate max-w-none dark:prose-invert";
-					article.innerHTML = safeHtml && safeHtml.trim() ? safeHtml : "<p>No readable content detected in this document.</p>";
-					viewer.appendChild(article);
-					return null;
-				} catch (error) {
-					console.error("DOCX render failed", error);
-					const reason = error instanceof Error ? error.message : String(error);
-					return renderOfficeEmbed(resolvedUrl, fileName, {
-						kind: "document",
-						note: "Falling back to Microsoft Office web viewer.",
-						reason,
-					});
-				}
-			}
-
-			async function renderPowerPoint(arrayBuffer, fileName, resolvedUrl) {
-				try {
-					const JSZip = await ensureJsZip();
-					const zip = await JSZip.loadAsync(arrayBuffer);
-					const slideFiles = Object.keys(zip.files)
-						.filter((name) => /^ppt\/slides\/slide\d+\.xml$/i.test(name))
-						.sort((a, b) => extractSlideNumber(a) - extractSlideNumber(b));
-					if (!slideFiles.length) {
-						return renderOfficeDownloadFallback(fileName, resolvedUrl, "No slides found in this presentation.");
-					}
-					viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
-					const deck = document.createElement("section");
-					deck.className = "flex w-full flex-col items-center gap-8";
-					const intro = document.createElement("p");
-					intro.className = "text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500";
-					intro.textContent = `${slideFiles.length} slide${slideFiles.length > 1 ? "s" : ""} • Scroll to view`;
-					deck.appendChild(intro);
-					const parser = new DOMParser();
-					for (const slidePath of slideFiles) {
-						const xmlText = await zip.file(slidePath).async("string");
-						const doc = parser.parseFromString(xmlText, "application/xml");
-						const slideNumber = extractSlideNumber(slidePath);
-						const slideWrapper = document.createElement("article");
-						slideWrapper.className = "relative flex w-full max-w-4xl flex-col items-center gap-4";
-						const frame = document.createElement("div");
-						frame.className = "relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-100 shadow-2xl dark:border-slate-800/60 dark:from-slate-950/80 dark:via-slate-950/60 dark:to-slate-900";
-						const frameInner = document.createElement("div");
-						frameInner.className = "absolute inset-0 flex h-full w-full flex-col gap-5 overflow-hidden p-6 text-slate-700 dark:text-slate-100";
-						const cornerBadge = document.createElement("span");
-						cornerBadge.className = "pointer-events-none absolute left-6 top-5 inline-flex items-center gap-2 rounded-full border border-slate-300/60 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-300";
-						cornerBadge.textContent = `Slide ${slideNumber}`;
-						frame.appendChild(cornerBadge);
-						const bulletList = buildSlideBullets(doc);
-						if (bulletList) {
-							bulletList.classList.add("text-base", "leading-relaxed", "space-y-3");
-							frameInner.appendChild(bulletList);
-						}
-						const images = await extractSlideImages(zip, slidePath, doc, parser);
-						if (images.length) {
-							const gallery = document.createElement("div");
-							gallery.className = "mt-auto grid gap-3 sm:grid-cols-2";
-							images.forEach((figure) => {
-								figure.classList.add("overflow-hidden", "rounded-xl", "border", "border-slate-200/60", "bg-white/70", "p-3", "shadow-md", "dark:border-slate-800/70", "dark:bg-slate-900/60");
-								const picture = figure.querySelector("img");
-								if (picture) {
-									picture.classList.add("h-full", "w-full", "object-contain", "drop-shadow-sm");
-								}
-								gallery.appendChild(figure);
-							});
-							frameInner.appendChild(gallery);
-						}
-						if (!bulletList && !images.length) {
-							const placeholder = document.createElement("div");
-							placeholder.className = "flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-200/70 bg-white/70 text-sm text-slate-400 dark:border-slate-800/60 dark:bg-slate-900/50 dark:text-slate-500";
-							placeholder.textContent = "No readable content detected on this slide.";
-							frameInner.appendChild(placeholder);
-						}
-						frame.appendChild(frameInner);
-						slideWrapper.appendChild(frame);
-						const label = document.createElement("div");
-						label.className = "w-full rounded-lg border border-slate-200/70 bg-slate-100 px-4 py-2 text-center text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
-						label.textContent = `Slide ${slideNumber} of ${slideFiles.length}`;
-						slideWrapper.appendChild(label);
-						deck.appendChild(slideWrapper);
-					}
-					viewer.appendChild(deck);
-					return null;
-				} catch (error) {
-					console.error("PowerPoint render failed", error);
-					const reason = error instanceof Error ? error.message : String(error);
-					return renderOfficeEmbed(resolvedUrl, fileName, {
-						kind: "presentation",
-						note: "Falling back to Microsoft Office web viewer.",
-						reason,
-					});
-				}
-			}
-
-			function extractSlideNumber(path) {
-				const match = /slide(\d+)\.xml$/i.exec(path);
-				return match ? Number(match[1]) : 0;
-			}
-
-			function buildSlideBullets(slideDoc) {
-				const TEXT_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
-				const paragraphs = Array.from(slideDoc.getElementsByTagNameNS(TEXT_NS, "p"));
-				const bullets = [];
-				paragraphs.forEach((p) => {
-					const runs = Array.from(p.getElementsByTagNameNS(TEXT_NS, "t"));
-					const combined = runs.map((node) => (node.textContent || "").replace(/\s+/g, " ").trim()).join("").trim();
-					if (combined) {
-						bullets.push(combined);
-					}
-				});
-				if (!bullets.length) return null;
-				const list = document.createElement("ul");
-				list.className = "space-y-1 text-sm text-slate-600 dark:text-slate-200";
-				bullets.forEach((line) => {
-					const li = document.createElement("li");
-					li.className = "relative pl-4 before:absolute before:left-0 before:top-[0.55rem] before:h-[5px] before:w-[5px] before:-translate-y-1/2 before:rounded-full before:bg-primary-400 before:content-['']";
-					li.textContent = line;
-					list.appendChild(li);
-				});
-				return list;
-			}
-
-			async function extractSlideImages(zip, slidePath, slideDoc, parser) {
-				const REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-				const relationships = new Map();
-				const relsPath = slidePath.replace("slides/", "slides/_rels/") + ".rels";
-				if (zip.file(relsPath)) {
-					const relsXml = await zip.file(relsPath).async("string");
-					const relsDoc = parser.parseFromString(relsXml, "application/xml");
-					Array.from(relsDoc.getElementsByTagName("Relationship")).forEach((rel) => {
-						const id = rel.getAttribute("Id");
-						const target = rel.getAttribute("Target");
-						const type = rel.getAttribute("Type") || "";
-						if (id && target && type.includes("image")) {
-							relationships.set(id, normalizeZipPath(slidePath, target));
-						}
-					});
-				}
-				const IMAGE_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
-				const blips = Array.from(slideDoc.getElementsByTagNameNS(IMAGE_NS, "blip"));
-				const images = [];
-				for (const blip of blips) {
-					const embedId = blip.getAttributeNS(REL_NS, "embed") || blip.getAttribute("r:embed");
-					if (!embedId) continue;
-					const targetPath = relationships.get(embedId);
-					if (!targetPath) continue;
-					const file = zip.file(targetPath);
-					if (!file) continue;
-					try {
-						const buffer = await file.async("arraybuffer");
-						const mimeType = guessMimeFromExtension(targetPath) || "application/octet-stream";
-						const blob = new Blob([buffer], { type: mimeType });
-						const url = URL.createObjectURL(blob);
-						const figure = document.createElement("figure");
-						figure.className = "relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-transparent";
-						const img = document.createElement("img");
-						img.src = url;
-						img.alt = "Slide image";
-						img.className = "h-full w-full object-contain";
-						img.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
-						figure.appendChild(img);
-						images.push(figure);
-					} catch (error) {
-						console.debug("Failed to read slide image", error);
-					}
-				}
-				return images;
-			}
-
-			function normalizeZipPath(basePath, target) {
-				const baseDir = basePath.slice(0, basePath.lastIndexOf("/") + 1);
-				const url = new URL(target, `https://example.com/${baseDir}`);
-				return url.pathname.replace(/^\//, "");
-			}
-
-			function guessMimeFromExtension(name) {
-				const ext = (name.split(".").pop() || "").toLowerCase();
-				switch (ext) {
-					case "png":
-						return "image/png";
-					case "jpg":
-					case "jpeg":
-						return "image/jpeg";
-					case "gif":
-						return "image/gif";
-					case "bmp":
-						return "image/bmp";
-					case "svg":
-						return "image/svg+xml";
-					case "webp":
-						return "image/webp";
-					default:
-						return "application/octet-stream";
-				}
-			}
-
-			function renderOfficeEmbed(resolvedUrl, fileName, { kind = "document", note, reason } = {}) {
-				try {
-					const url = new URL(resolvedUrl, window.location.href);
-					if (!canEmbedViaOffice(url)) {
-						return renderOfficeDownloadFallback(fileName, resolvedUrl, "This preview requires a publicly accessible HTTPS URL.");
-					}
-					const embedUrl = buildOfficeViewerUrl(url.href);
-					const wrapper = document.createElement("section");
-					wrapper.className = "space-y-3";
-					const frame = document.createElement("div");
-					const ratioClass = kind === "presentation" ? "aspect-[16/9]" : "aspect-[4/3]";
-					frame.className = `${ratioClass} w-full overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60`;
-					const iframe = document.createElement("iframe");
-					iframe.src = embedUrl;
-					iframe.className = "h-full w-full border-0";
-					iframe.loading = "lazy";
-					iframe.referrerPolicy = "no-referrer";
-					iframe.title = `${fileName} preview`;
-					iframe.setAttribute("allowfullscreen", "true");
-					frame.appendChild(iframe);
-					wrapper.appendChild(frame);
-
-					const message = document.createElement("p");
-					message.className = "text-xs text-slate-500 dark:text-slate-400";
-					const baseNote = note || "Rendered via Microsoft Office web viewer. If the preview stays blank, use the download link.";
-					message.textContent = reason ? `${baseNote} (Fallback reason: ${reason})` : baseNote;
-					wrapper.appendChild(message);
-
-					viewer.appendChild(wrapper);
-					return {
-						statusMessage: {
-							level: "info",
-							title: "Previewing with Office web viewer",
-							body: "The file is embedded using Microsoft Office web viewer. Open the download link if the preview fails.",
-						},
+						pdfDragPointerId = null;
 					};
-				} catch (error) {
-					return renderOfficeDownloadFallback(fileName, resolvedUrl, "Unable to construct a preview URL for this file.");
+
+					pdfZoomWrapper.addEventListener("pointerdown", handlePointerDown);
+					pdfZoomWrapper.addEventListener("pointermove", handlePointerMove);
+					pdfZoomWrapper.addEventListener("pointerup", endDrag);
+					pdfZoomWrapper.addEventListener("pointercancel", endDrag);
+					pdfZoomWrapper.addEventListener("pointerleave", (event) => {
+						if (event.pointerId !== pdfDragPointerId) return;
+						endDrag();
+					});
+					pdfZoomListenersAttached = true;
 				}
 			}
 
-			function renderOfficeDownloadFallback(fileName, resolvedUrl, reason = "") {
-				const message = document.createElement("div");
-				message.className = "space-y-3 rounded-xl border border-slate-200/70 bg-white/80 p-6 text-center text-sm text-slate-600 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-300";
-				const primary = document.createElement("p");
-				primary.textContent = "Browser preview isn’t available for this file. Use the download link instead.";
-				message.appendChild(primary);
-				if (reason) {
-					const details = document.createElement("p");
-					details.className = "text-xs text-slate-500 dark:text-slate-400";
-					details.textContent = reason;
-					message.appendChild(details);
+			return overlay;
+		}
+
+		function openPdfZoomOverlay(canvas, meta = {}) {
+			const overlay = ensurePdfZoomOverlay();
+			if (!canvas || !overlay || !pdfZoomImage) return;
+			setPdfZoomContextFromCanvas(canvas, meta);
+			displayPdfCanvasInZoom(canvas, { resetScale: true, fallbackMeta: meta });
+			overlay.dataset.scale = String(pdfZoomScale);
+			overlay.classList.add("active");
+			overlay.setAttribute("aria-hidden", "false");
+			previousDocumentOverflow = document.documentElement.style.overflow;
+			document.documentElement.style.overflow = "hidden";
+		}
+
+		function closePdfZoomOverlay() {
+			if (!pdfZoomOverlay) return;
+			pdfZoomOverlay.classList.remove("active");
+			pdfZoomOverlay.setAttribute("aria-hidden", "true");
+			pdfZoomOverlay.dataset.scale = "1";
+			pdfZoomScale = 1;
+			if (pdfZoomWrapper) {
+				if (pdfDragPointerId != null && typeof pdfZoomWrapper.releasePointerCapture === "function") {
+					try {
+						pdfZoomWrapper.releasePointerCapture(pdfDragPointerId);
+					} catch (error) {
+						console.debug("Pointer capture release failed", error);
+					}
 				}
-				if (resolvedUrl) {
-					const link = document.createElement("a");
-					link.href = resolvedUrl;
-					link.target = "_blank";
-					link.rel = "noopener";
-					link.className = "inline-flex items-center gap-2 rounded-full bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-primary-600";
-					link.textContent = `Open ${fileName}`;
-					message.appendChild(link);
+				pdfZoomWrapper.scrollLeft = 0;
+				pdfZoomWrapper.scrollTop = 0;
+				pdfZoomWrapper.classList.remove("is-dragging", "is-zoomed");
+			}
+			pdfIsDragging = false;
+			pdfDragPointerId = null;
+			if (pdfZoomImage) {
+				pdfZoomImage.style.transform = "scale(1)";
+				pdfZoomImage.removeAttribute("src");
+			}
+			if (pdfZoomIndicator) {
+				pdfZoomIndicator.textContent = "100%";
+			}
+			if (pdfZoomCaption) {
+				pdfZoomCaption.textContent = "";
+			}
+			if (pdfZoomTitle) {
+				pdfZoomTitle.textContent = "PDF preview";
+			}
+			resetPdfZoomContext();
+			document.documentElement.style.overflow = previousDocumentOverflow;
+		}
+
+		function setPdfZoomScale(value, options = {}) {
+			const { skipUpdateOverlay = false } = options;
+			const clamped = Math.min(Math.max(value, 0.25), 8);
+			pdfZoomScale = Number.isFinite(clamped) ? clamped : 1;
+			if (!skipUpdateOverlay) {
+				updatePdfZoomScale();
+			}
+		}
+
+		function changePdfZoomScale(delta) {
+			setPdfZoomScale(pdfZoomScale + delta);
+		}
+
+		function updatePdfZoomScale() {
+			if (pdfZoomImage) {
+				pdfZoomImage.style.transform = `scale(${pdfZoomScale})`;
+			}
+			if (pdfZoomIndicator) {
+				pdfZoomIndicator.textContent = `${Math.round(pdfZoomScale * 100)}%`;
+			}
+			if (pdfZoomOverlay) {
+				pdfZoomOverlay.dataset.scale = String(pdfZoomScale);
+			}
+			if (pdfZoomWrapper) {
+				const isZoomed = pdfZoomScale > 1.02;
+				pdfZoomWrapper.classList.toggle("is-zoomed", isZoomed);
+				if (!isZoomed) {
+					pdfZoomWrapper.classList.remove("is-dragging");
+					pdfIsDragging = false;
+					pdfZoomWrapper.scrollLeft = 0;
+					pdfZoomWrapper.scrollTop = 0;
+				} else {
+					// When zoomed, scroll to top-left
+					pdfZoomWrapper.scrollLeft = 0;
+					pdfZoomWrapper.scrollTop = 0;
 				}
-				viewer.appendChild(message);
+			}
+		}
+
+		function attachPdfZoomBehavior(canvas, meta) {
+			if (!canvas) return;
+			canvas.addEventListener("click", () => openPdfZoomOverlay(canvas, meta));
+			canvas.addEventListener("keydown", (event) => {
+				if (event.key === "Enter" || event.key === " ") {
+					event.preventDefault();
+					openPdfZoomOverlay(canvas, meta);
+				}
+			});
+		}
+
+		async function renderPdf(blob, fileName) {
+			viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
+			try {
+				const pdfjsLib = await ensurePdfJs();
+				const arrayBuffer = await blob.arrayBuffer();
+				const typedArray = new Uint8Array(arrayBuffer);
+				const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+
+				const pdfContainer = document.createElement("div");
+				pdfContainer.className = "flex w-full flex-col items-center gap-8";
+				pdfContainer.setAttribute("role", "region");
+				pdfContainer.setAttribute("aria-label", `${fileName} PDF preview`);
+
+				const intro = document.createElement("p");
+				intro.className = "text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500";
+				intro.textContent = `${pdf.numPages} page${pdf.numPages > 1 ? "s" : ""} • Scroll to view`;
+				pdfContainer.appendChild(intro);
+
+				for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+					const pageWrapper = document.createElement("div");
+					pageWrapper.className = "relative flex w-full max-w-4xl flex-col items-center overflow-hidden rounded-xl border border-slate-200/80 bg-white p-3 shadow-lg dark:border-slate-800/40 dark:bg-slate-950/60";
+					const canvas = document.createElement("canvas");
+					canvas.className = "w-full cursor-zoom-in rounded-lg bg-white transition-transform duration-200 ease-out";
+					pageWrapper.appendChild(canvas);
+					pdfContainer.appendChild(pageWrapper);
+
+					const page = await pdf.getPage(pageNumber);
+					const baseViewport = page.getViewport({ scale: 1 });
+					const containerWidth = Math.min(viewerWrapper.clientWidth - 32, 1024);
+					const maxScale = Math.min(containerWidth / baseViewport.width, 1.6);
+					const scale = Number.isFinite(maxScale) && maxScale > 0 ? maxScale : 1;
+					const viewport = page.getViewport({ scale });
+					const outputScale = window.devicePixelRatio || 1;
+
+					canvas.width = viewport.width * outputScale;
+					canvas.height = viewport.height * outputScale;
+					canvas.style.width = `${viewport.width}px`;
+					canvas.style.height = `${viewport.height}px`;
+
+					const context = canvas.getContext("2d", { alpha: false });
+					context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+
+					await page.render({ canvasContext: context, viewport }).promise;
+					canvas.dataset.pageNumber = String(pageNumber);
+					canvas.dataset.totalPages = String(pdf.numPages);
+					canvas.dataset.fileName = fileName;
+					canvas.setAttribute("role", "button");
+					canvas.setAttribute("aria-label", `Zoom ${fileName}, page ${pageNumber} of ${pdf.numPages}`);
+					canvas.tabIndex = 0;
+					attachPdfZoomBehavior(canvas, { fileName, pageNumber, totalPages: pdf.numPages });
+
+					const label = document.createElement("div");
+					label.className = "mt-3 w-full rounded-lg border border-slate-200/70 bg-slate-100 px-4 py-2 text-center text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
+					label.textContent = `Page ${pageNumber} of ${pdf.numPages}`;
+					pageWrapper.appendChild(label);
+				}
+
+				viewer.appendChild(pdfContainer);
+				return null;
+			} catch (error) {
+				const reason = error instanceof Error ? error.message : String(error);
+				console.error("PDF render failed", error);
+				renderPdfFallback(blob, fileName, reason);
 				return {
 					statusMessage: {
 						level: "info",
-						title: "Preview not available",
-						body: reason || "The file can be opened via the download link instead.",
+						title: "PDF preview unavailable",
+						body: reason ? `PDF.js couldn't render this file (${reason}). Use the download link instead.` : "PDF.js couldn't render this file. Use the download link instead.",
 					},
 				};
 			}
+		}
 
-			function canEmbedViaOffice(url) {
-				if (!url) return false;
-				if (!url.protocol || (url.protocol !== "https:" && url.protocol !== "http:")) {
-					return false;
-				}
-				const forbiddenHosts = new Set(["localhost", "127.0.0.1", "::1"]);
-				if (forbiddenHosts.has(url.hostname)) {
-					return false;
-				}
-				return url.protocol === "https:";
+		function renderPdfFallback(blob, fileName, reason = "") {
+			const blobUrl = URL.createObjectURL(blob);
+			const message = document.createElement("div");
+			message.className = "space-y-3 rounded-xl border border-slate-200/70 bg-white p-6 text-center text-sm text-slate-600 shadow-sm dark:border-slate-700/50 dark:bg-slate-900/60 dark:text-slate-300";
+			const primary = document.createElement("p");
+			primary.textContent = "Preview isn’t supported on this device. You can download the PDF instead.";
+			message.appendChild(primary);
+			if (reason) {
+				const details = document.createElement("p");
+				details.className = "text-xs text-slate-500 dark:text-slate-400";
+				details.textContent = reason;
+				message.appendChild(details);
 			}
+			const link = document.createElement("a");
+			link.href = blobUrl;
+			link.download = fileName;
+			link.rel = "noopener";
+			link.target = "_blank";
+			link.className = "inline-flex items-center gap-2 rounded-full bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-primary-600";
+			link.textContent = "Download PDF";
+			link.addEventListener("click", () => {
+				setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+			});
+			message.appendChild(link);
+			viewer.appendChild(message);
+		}
 
-			function buildOfficeViewerUrl(url) {
-				return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
-			}
+		async function renderMermaidDiagram(definition, fileName) {
+			try {
+				const mermaid = await ensureMermaid();
+				const wrapper = document.createElement("section");
+				wrapper.className = "space-y-4";
 
-			function renderJson(text) {
-				try {
-					const parsed = JSON.parse(text);
-					const formatted = JSON.stringify(parsed, null, 2);
-					const section = document.createElement("section");
-					section.className = "space-y-4";
+				const badge = document.createElement("div");
+				badge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
+				badge.textContent = fileName || "Mermaid diagram";
+				wrapper.appendChild(badge);
 
-					const header = document.createElement("div");
-					header.className = "flex flex-wrap items-center justify-between gap-3";
-					const title = document.createElement("h3");
-					title.className = "flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300";
-					title.textContent = "JSON preview";
-					header.appendChild(title);
+				const diagram = document.createElement("div");
+				diagram.className = "mermaid overflow-x-auto rounded-xl border border-slate-200/70 bg-white px-4 py-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60";
+				diagram.textContent = definition.trim();
+				wrapper.appendChild(diagram);
 
-					const tabGroup = document.createElement("div");
-					tabGroup.className = "inline-flex overflow-hidden rounded-full border border-slate-200/80 bg-white text-xs font-medium text-slate-500 shadow-sm dark:border-slate-700/70 dark:bg-slate-800/60";
-
-					const rawButton = createJsonTabButton("Raw");
-					const treeButton = createJsonTabButton("Tree");
-					tabGroup.append(treeButton, rawButton);
-					header.appendChild(tabGroup);
-
-					const panels = document.createElement("div");
-					panels.className = "space-y-4";
-
-					const treePanel = document.createElement("div");
-					treePanel.dataset.panel = "tree";
-					treePanel.className = "space-y-2";
-					treePanel.appendChild(buildJsonTree(parsed, "root", 0));
-
-					const rawPanel = document.createElement("div");
-					rawPanel.dataset.panel = "raw";
-					rawPanel.appendChild(createCodeBlock(formatted, "json"));
-
-					panels.append(treePanel, rawPanel);
-					section.append(header, panels);
-					viewer.appendChild(section);
-
-					activateJsonTab("tree");
-
-					function createJsonTabButton(label) {
-						const button = document.createElement("button");
-						const value = label.toLowerCase();
-						button.type = "button";
-						button.dataset.panel = value;
-						button.className = "px-4 py-1.5 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 dark:focus-visible:ring-primary-500";
-						button.textContent = label;
-						button.addEventListener("click", () => activateJsonTab(value));
-						return button;
-					}
-
-					function activateJsonTab(panel) {
-						const buttons = tabGroup.querySelectorAll("button");
-						buttons.forEach((btn) => {
-							const isActive = btn.dataset.panel === panel;
-							btn.setAttribute("aria-pressed", isActive ? "true" : "false");
-							btn.classList.toggle("bg-primary-500", isActive);
-							btn.classList.toggle("text-white", isActive);
-						});
-
-						const panelNodes = panels.querySelectorAll("[data-panel]");
-						panelNodes.forEach((node) => {
-							node.classList.toggle("hidden", node.dataset.panel !== panel);
-						});
-					}
-				} catch (error) {
-					renderPlainText(text);
-				}
-			}
-
-			function buildJsonTree(value, key = "root", depth = 0) {
-				const isObject = isPlainObject(value);
-				const isArray = Array.isArray(value);
-				if (isObject || isArray) {
-					const details = document.createElement("details");
-					details.open = depth <= 1;
-					details.className = "group rounded-xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60";
-
-					const summary = document.createElement("summary");
-					summary.className = "flex cursor-pointer items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-200";
-					summary.textContent = describeJsonCollection(key, value);
-					details.appendChild(summary);
-
-					const childrenContainer = document.createElement("div");
-					childrenContainer.className = "space-y-1 border-t border-slate-100/80 bg-slate-50/60 px-4 py-3 dark:border-slate-800/60 dark:bg-slate-900/50";
-					if (isArray) {
-						value.forEach((item, index) => {
-							childrenContainer.appendChild(buildJsonTree(item, `[${index}]`, depth + 1));
-						});
-					} else {
-						Object.entries(value).forEach(([childKey, childValue]) => {
-							childrenContainer.appendChild(buildJsonTree(childValue, childKey, depth + 1));
-						});
-					}
-					details.appendChild(childrenContainer);
-					return details;
-				}
-
-				const item = document.createElement("div");
-				item.className = "flex items-start gap-3 rounded-lg bg-slate-50/80 px-3 py-2 text-sm text-slate-600 shadow-sm dark:bg-slate-800/60 dark:text-slate-200";
-				const keySpan = document.createElement("span");
-				keySpan.className = "min-w-[72px] shrink-0 font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300";
-				keySpan.textContent = formatJsonKey(key);
-				const valueSpan = document.createElement("span");
-				valueSpan.className = "flex-1 break-words font-mono text-xs text-primary-700 dark:text-primary-300";
-				valueSpan.textContent = formatJsonValue(value);
-				item.append(keySpan, valueSpan);
-				return item;
-			}
-
-			function describeJsonCollection(key, value) {
-				const isArray = Array.isArray(value);
-				const size = isArray ? value.length : Object.keys(value).length;
-				const label = key === "root" ? (isArray ? "Array" : "Object") : key;
-				const suffix = isArray ? `[${size}]` : `{${size}}`;
-				return `${label} ${suffix}`;
-			}
-
-			function formatJsonKey(key) {
-				if (key === "root") return "value";
-				return String(key);
-			}
-
-			function formatJsonValue(value) {
-				if (value === null) return "null";
-				if (typeof value === "string") return `"${value}"`;
-				if (typeof value === "number" && Number.isNaN(value)) return "NaN";
-				if (typeof value === "object") return Array.isArray(value) ? `Array(${value.length})` : "Object";
-				return String(value);
-			}
-
-			function isPlainObject(value) {
-				return Object.prototype.toString.call(value) === "[object Object]";
-			}
-
-			function renderHtml(text, origin) {
-				const safeHtml = DOMPurify.sanitize(text, { ADD_ATTR: ["target", "rel"], ADD_TAGS: ["iframe"] });
-				const iframe = document.createElement("iframe");
-				iframe.className = "h-[75vh] w-full border-0";
-				const blob = new Blob([safeHtml], { type: "text/html" });
-				const blobUrl = URL.createObjectURL(blob);
-				iframe.src = blobUrl;
-				iframe.setAttribute("sandbox", "allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts");
-				iframe.title = `HTML preview from ${origin}`;
-				iframe.addEventListener("load", () => URL.revokeObjectURL(blobUrl), { once: true });
-				viewer.appendChild(iframe);
-			}
-
-			function renderPlainText(text) {
-				renderCodeBlock(text, "plain");
-			}
-
-			function renderCodeBlock(text, language) {
-				viewer.appendChild(createCodeBlock(text, language));
-			}
-
-			function createCodeBlock(text, language) {
-				const pre = document.createElement("pre");
-				pre.className = "whitespace-pre-wrap rounded-xl border border-slate-200/80 bg-slate-50/90 p-4 font-mono text-sm text-slate-700 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-200";
-				const code = document.createElement("code");
-				code.textContent = text;
-				code.setAttribute("data-language", language);
-				pre.appendChild(code);
-				return pre;
-			}
-
-			function formatBytes(bytes) {
-				if (!bytes || Number.isNaN(bytes)) return "";
-				const units = ["B", "KB", "MB", "GB", "TB"];
-				const exponent = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
-				const size = (bytes / Math.pow(1024, exponent)).toFixed(exponent === 0 ? 0 : 1);
-				return `${size} ${units[exponent]}`;
-			}
-
-			function extractFileName(url) {
-				try {
-					const { pathname } = new URL(url);
-					const segments = pathname.split("/").filter(Boolean);
-					return segments.pop() || "";
-				} catch (error) {
-					return url.split("/").pop() || "";
-				}
-			}
-
-			function extractExtension(fileName) {
-				const match = /(\.([^.?#]+))(?:[?#].*)?$/.exec(fileName);
-				return match && match[2] ? match[2] : "";
-			}
-
-			function isPdf(ext, type) {
-				return ext === "pdf" || type.includes("application/pdf");
-			}
-			function isMermaid(ext, type) {
-				return ["mmd", "mermaid"].includes(ext) || type.includes("text/vnd.mermaid") || type.includes("text/x-mermaid");
-			}
-			function isMarkdown(ext, type) {
-				return ["md", "markdown", "mdown"].includes(ext) || type.includes("text/markdown") || type.includes("text/x-markdown");
-			}
-			function isCsv(ext, type) {
-				return ext === "csv" || type.includes("text/csv");
-			}
-			function isJson(ext, type) {
-				const jsonExtensions = ["json", "jsonl", "geojson", "topojson"];
-				const normalizedType = type.toLowerCase();
-				return (
-					jsonExtensions.includes(ext) ||
-					normalizedType.includes("application/json") ||
-					normalizedType.includes("application/geo+json") ||
-					normalizedType.includes("application/vnd.geo+json") ||
-					normalizedType.includes("text/json")
-				);
-			}
-			function isOfficeSpreadsheet(ext, type) {
-				const spreadsheetExtensions = ["xls", "xlsx", "xlsm", "xlt", "xltx", "xlsb", "ods"];
-				const spreadsheetMimeTokens = [
-					"application/vnd.ms-excel",
-					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-					"application/vnd.ms-excel.sheet.macroenabled.12",
-					"application/vnd.ms-excel.sheet.binary.macroenabled.12",
-					"application/vnd.oasis.opendocument.spreadsheet",
-				];
-				return spreadsheetExtensions.includes(ext) || spreadsheetMimeTokens.some((token) => type.includes(token));
-			}
-			function isDocxDocument(ext, type) {
-				const modernWordExtensions = ["docx", "docm", "dotx", "dotm"];
-				const modernWordMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-				return modernWordExtensions.includes(ext) || type.includes(modernWordMime);
-			}
-			function isLegacyWordDocument(ext, type) {
-				const legacyWordExtensions = ["doc", "dot"];
-				return legacyWordExtensions.includes(ext) || type.includes("application/msword");
-			}
-			function isOpenXmlPowerPoint(ext, type) {
-				const openXmlExtensions = ["pptx", "pptm", "ppsx", "ppsm", "potx", "potm"];
-				const openXmlMime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-				return openXmlExtensions.includes(ext) || type.includes(openXmlMime);
-			}
-			function isPowerPointDeck(ext, type) {
-				const powerpointExtensions = ["ppt", "pptx", "pptm", "pps", "ppsx", "pot", "potx"];
-				const powerpointMimeTokens = [
-					"application/vnd.ms-powerpoint",
-					"application/vnd.openxmlformats-officedocument.presentationml.presentation",
-					"application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-				];
-				return powerpointExtensions.includes(ext) || powerpointMimeTokens.some((token) => type.includes(token));
-			}
-			function looksLikeHtml(ext, type) {
-				return ["html", "htm"].includes(ext) || type.includes("text/html");
-			}
-			function isImage(ext, type) {
-				return ["png", "jpg", "jpeg", "gif", "bmp", "webp", "svg", "avif", "ico"].includes(ext) || type.startsWith("image/");
-			}
-			function isVideo(ext, type) {
-				return ["mp4", "webm", "ogg", "ogv", "mov", "m4v"].includes(ext) || type.startsWith("video/");
-			}
-			function isAudio(ext, type) {
-				return ["mp3", "wav", "ogg", "oga", "flac", "aac", "m4a"].includes(ext) || type.startsWith("audio/");
-			}
-
-			function showLoadingState(isLoading) {
-				if (isLoading) {
-					viewerWrapper.classList.add("animate-pulse");
-				} else {
-					viewerWrapper.classList.remove("animate-pulse");
-				}
-			}
-
-			function updateStatus(level, title, message) {
-				const baseClasses = "rounded-2xl border px-6 py-5 text-sm shadow-sm transition-all";
-				const palettes = {
-					info: "border-slate-200/70 bg-white/80 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-300",
-					loading: "border-primary-200/70 bg-primary-50/80 text-primary-700 dark:border-primary-900/70 dark:bg-primary-950/40 dark:text-primary-200",
-					success: "border-emerald-200/70 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
-					error: "border-rose-200/70 bg-rose-50/80 text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200",
+				viewer.appendChild(wrapper);
+				await rerenderMermaidDiagrams(wrapper);
+				return null;
+			} catch (error) {
+				const reason = error instanceof Error ? error.message : String(error);
+				console.error("Mermaid render failed", error);
+				renderCodeBlock(definition, "mermaid");
+				return {
+					statusMessage: {
+						level: "info",
+						title: "Mermaid preview unavailable",
+						body: reason ? `Mermaid.js couldn't render this diagram (${reason}). Use the raw definition instead.` : "Mermaid.js couldn't render this diagram. Showing raw definition instead.",
+					},
 				};
-				statusMessage.className = `${baseClasses} ${palettes[level] || palettes.info}`;
-				statusTitle.textContent = title;
-				statusBody.textContent = message;
+			}
+		}
+
+		function renderImage(blob, fileName) {
+			const blobUrl = URL.createObjectURL(blob);
+			const figure = document.createElement("figure");
+			figure.className = "flex flex-col items-center gap-3 p-4";
+			const img = document.createElement("img");
+			img.src = blobUrl;
+			img.alt = fileName;
+			img.className = "max-h-[70vh] w-full rounded-xl border border-slate-200/60 object-contain shadow-sm dark:border-slate-800/60";
+			img.onload = () => URL.revokeObjectURL(blobUrl);
+			const figcaption = document.createElement("figcaption");
+			figcaption.className = "text-xs text-slate-500 dark:text-slate-400";
+			figcaption.textContent = `Previewing ${fileName}`;
+			figure.append(img, figcaption);
+			viewer.appendChild(figure);
+		}
+
+		function renderVideo(blob, mime) {
+			const blobUrl = URL.createObjectURL(blob);
+			const video = document.createElement("video");
+			video.controls = true;
+			video.className = "h-auto w-full max-h-[70vh] rounded-xl border border-slate-200/60 bg-black shadow-lg dark:border-slate-800/60";
+			const source = document.createElement("source");
+			source.src = blobUrl;
+			source.type = mime;
+			video.appendChild(source);
+			viewer.appendChild(video);
+			video.addEventListener("loadeddata", () => URL.revokeObjectURL(blobUrl), { once: true });
+		}
+
+		function renderAudio(blob, mime) {
+			const blobUrl = URL.createObjectURL(blob);
+			const audio = document.createElement("audio");
+			audio.controls = true;
+			audio.className = "w-full rounded-full border border-slate-200/60 bg-slate-50/80 p-3 shadow-sm dark:border-slate-800/60 dark:bg-slate-800/40";
+			const source = document.createElement("source");
+			source.src = blobUrl;
+			source.type = mime;
+			audio.appendChild(source);
+			viewer.appendChild(audio);
+			audio.addEventListener("loadeddata", () => URL.revokeObjectURL(blobUrl), { once: true });
+		}
+
+		async function renderMarkdown(text, fileName) {
+			marked.setOptions({ breaks: true, mangle: false, headerIds: true });
+			const rawHtml = marked.parse(text);
+			const safeHtml = DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } });
+			const article = document.createElement("article");
+			article.className = "prose prose-slate max-w-none dark:prose-invert";
+			article.innerHTML = safeHtml;
+			wrapMarkdownTables(article);
+			const title = article.querySelector("h1") || article.querySelector("h2");
+			if (!title) {
+				const heading = document.createElement("h1");
+				heading.textContent = fileName;
+				article.prepend(heading);
+			}
+			generateTableOfContents(article);
+			await renderMathInMarkdown(article);
+			viewer.appendChild(article);
+			await embedMermaidInMarkdown(article);
+		}
+
+		function generateTableOfContents(article) {
+			const headings = Array.from(article.querySelectorAll("h2, h3, h4, h5, h6"));
+			if (headings.length < 2) return;
+
+			headings.forEach((heading, index) => {
+				if (!heading.id) {
+					const text = heading.textContent || "";
+					heading.id = text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-") || `heading-${index}`;
+				}
+			});
+
+			const toc = document.createElement("nav");
+			toc.className = "not-prose my-6 rounded-xl border border-slate-200/70 bg-slate-50/80 dark:border-slate-700/60 dark:bg-slate-800/40";
+			toc.setAttribute("aria-label", "Table of Contents");
+			
+			const tocHeader = document.createElement("details");
+			tocHeader.className = "group";
+			tocHeader.open = false;
+			
+			const tocSummary = document.createElement("summary");
+			tocSummary.className = "flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-semibold uppercase tracking-wide text-slate-700 hover:text-primary-600 dark:text-slate-300 dark:hover:text-primary-400 transition-colors";
+			tocSummary.innerHTML = `
+				<span>📑 Table of Contents</span>
+				<span class="transition-transform group-open:rotate-180">▼</span>
+			`;
+			
+			const tocContent = document.createElement("div");
+			tocContent.className = "px-5 pb-4";
+
+			const tocList = document.createElement("ul");
+			tocList.className = "space-y-2 text-sm border-l-2 border-slate-200 dark:border-slate-700 pl-3";
+
+			headings.forEach((heading) => {
+				const level = parseInt(heading.tagName.substring(1));
+				const li = document.createElement("li");
+				li.style.marginLeft = `${(level - 2) * 1.2}rem`;
+				
+				const link = document.createElement("a");
+				link.href = `#${heading.id}`;
+				link.className = "block py-1 text-slate-600 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors hover:translate-x-1 transform duration-200";
+				link.textContent = heading.textContent;
+				
+				link.addEventListener("click", (e) => {
+					e.preventDefault();
+					heading.scrollIntoView({ behavior: "smooth", block: "start" });
+					history.pushState(null, "", `#${heading.id}`);
+				});
+
+				li.appendChild(link);
+				tocList.appendChild(li);
+			});
+
+			tocContent.appendChild(tocList);
+			tocHeader.appendChild(tocSummary);
+			tocHeader.appendChild(tocContent);
+			toc.appendChild(tocHeader);
+
+			const firstHeading = article.querySelector("h1, h2");
+			if (firstHeading && firstHeading.nextSibling) {
+				firstHeading.parentNode.insertBefore(toc, firstHeading.nextSibling);
+			} else {
+				article.insertBefore(toc, article.firstChild);
+			}
+		}
+
+		async function embedMermaidInMarkdown(article) {
+			const codeBlocks = article.querySelectorAll("pre code");
+			const mermaidBlocks = Array.from(codeBlocks).filter((block) => {
+				const classes = block.className || "";
+				return /language-mermaid|lang-mermaid|language-mermaidjs|lang-mermaidjs/.test(classes);
+			});
+			if (!mermaidBlocks.length) return;
+			try {
+				const mermaid = await ensureMermaid();
+				mermaidBlocks.forEach((block) => {
+					const pre = block.closest("pre");
+					const code = block.textContent || "";
+					const diagram = document.createElement("div");
+					diagram.className = "mermaid my-6 overflow-x-auto rounded-xl border border-slate-200/70 bg-white px-4 py-4 text-left text-slate-800 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-slate-100";
+					diagram.textContent = code.trim();
+					if (pre) pre.replaceWith(diagram);
+				});
+				await rerenderMermaidDiagrams(article);
+			} catch (error) {
+				console.error("Mermaid block render failed", error);
+			}
+		}
+
+		async function renderMathInMarkdown(article) {
+			if (!article) return;
+			try {
+				const renderMathInElement = await ensureKatex();
+				renderMathInElement(article, {
+					delimiters: [
+						{ left: "$$", right: "$$", display: true },
+						{ left: "\\[", right: "\\]", display: true },
+						{ left: "$", right: "$", display: false },
+						{ left: "\\(", right: "\\)", display: false },
+					],
+					ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+					ignoredClasses: ["no-katex"],
+					throwOnError: false,
+				});
+			} catch (error) {
+				console.error("KaTeX render failed", error);
+			}
+		}
+
+		function wrapMarkdownTables(root) {
+			if (!root) return;
+			const tables = root.querySelectorAll("table");
+			if (!tables.length) return;
+			tables.forEach((table) => {
+				if (table.closest(".markdown-table-scroll")) return;
+				const parent = table.parentNode;
+				if (!parent) return;
+				const wrapper = document.createElement("div");
+				wrapper.className = "markdown-table-scroll";
+				parent.insertBefore(wrapper, table);
+				wrapper.appendChild(table);
+			});
+		}
+
+		function renderCsv(text) {
+			const { data } = Papa.parse(text, { skipEmptyLines: "greedy" });
+			if (!data || data.length === 0) {
+				renderPlainText("No data rows detected in CSV file.");
+				return;
+			}
+			const tableNode = createTableFrom2DArray(data);
+			viewer.appendChild(tableNode);
+		}
+
+		function createTableFrom2DArray(data, options = {}) {
+			const { caption = "", emptyMessage = "No rows to display." } = options;
+			if (!Array.isArray(data) || data.length === 0) {
+				return createEmptyTableMessage(emptyMessage);
+			}
+			const normalizedRows = data.map((row) => {
+				if (Array.isArray(row)) {
+					return row.map((value) => normalizeTableCellValue(value));
+				}
+				return [normalizeTableCellValue(row)];
+			});
+			const columnCount = normalizedRows.reduce((max, row) => Math.max(max, row.length), 0);
+			if (columnCount === 0) {
+				return createEmptyTableMessage(emptyMessage);
+			}
+			const headerRow = normalizedRows[0] || [];
+			const headers = Array.from({ length: columnCount }, (_, index) => {
+				const raw = headerRow[index] || "";
+				const label = typeof raw === "string" ? raw.trim() : String(raw).trim();
+				return label || `Column ${index + 1}`;
+			});
+			const bodyRows = normalizedRows.slice(1);
+			const fragment = document.importNode(tableTemplate.content, true);
+			const headRow = fragment.querySelector("#tableHead");
+			const body = fragment.querySelector("#tableBody");
+
+			headers.forEach((title) => {
+				const th = document.createElement("th");
+				th.scope = "col";
+				th.className = "sticky top-0 z-20 border-b border-slate-200 bg-slate-100/95 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80";
+				th.textContent = title;
+				headRow.appendChild(th);
+			});
+
+			bodyRows.forEach((row) => {
+				const tr = document.createElement("tr");
+				tr.className = "bg-white/90 hover:bg-primary-50/60 dark:bg-slate-900/70 dark:hover:bg-slate-800/70";
+				for (let col = 0; col < columnCount; col += 1) {
+					const td = document.createElement("td");
+					td.className = "px-4 py-3 align-top text-xs text-slate-600 dark:text-slate-300";
+					td.textContent = row[col] ?? "";
+					tr.appendChild(td);
+				}
+				body.appendChild(tr);
+			});
+
+			if (headRow) headRow.removeAttribute("id");
+			if (body) body.removeAttribute("id");
+
+			const container = document.createElement("div");
+			container.className = "space-y-2";
+			if (caption) {
+				const captionBadge = document.createElement("div");
+				captionBadge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
+				captionBadge.textContent = caption;
+				container.appendChild(captionBadge);
+			}
+			container.appendChild(fragment);
+
+			if (!bodyRows.length) {
+				const note = document.createElement("p");
+				note.className = "text-xs text-slate-500 dark:text-slate-400";
+				note.textContent = "No data rows detected.";
+				container.appendChild(note);
 			}
 
-			function showError(message) {
-				viewer.innerHTML = "";
-				const block = document.createElement("div");
-				block.className = "flex flex-col items-center gap-3 rounded-xl border border-rose-200/70 bg-rose-50/60 p-8 text-center text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200";
-				block.innerHTML = `
+			return container;
+		}
+
+		function normalizeTableCellValue(value) {
+			if (value == null) return "";
+			if (value instanceof Date) {
+				return value.toISOString().replace("T", " ").replace("Z", " UTC");
+			}
+			if (typeof value === "number") {
+				return Number.isFinite(value) ? String(value) : "";
+			}
+			if (typeof value === "boolean") {
+				return value ? "TRUE" : "FALSE";
+			}
+			if (typeof value === "object") {
+				try {
+					return JSON.stringify(value);
+				} catch (error) {
+					return String(value);
+				}
+			}
+			return String(value);
+		}
+
+		function createEmptyTableMessage(message) {
+			const wrapper = document.createElement("div");
+			wrapper.className = "rounded-xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-500 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-300";
+			wrapper.textContent = message;
+			return wrapper;
+		}
+
+		async function renderSpreadsheet(arrayBuffer, fileName, resolvedUrl) {
+			try {
+				const XLSX = await ensureXlsx();
+				const workbook = XLSX.read(arrayBuffer, { type: "array", cellDates: true, dateNF: "yyyy-mm-dd" });
+				if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+					return renderOfficeDownloadFallback(fileName, resolvedUrl, "No worksheets were found in this spreadsheet.");
+				}
+				const section = document.createElement("section");
+				section.className = "space-y-6";
+				workbook.SheetNames.forEach((sheetName) => {
+					const sheet = workbook.Sheets[sheetName];
+					const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false, raw: false });
+					const sheetBlock = document.createElement("div");
+					sheetBlock.className = "space-y-3";
+
+					const badge = document.createElement("div");
+					badge.className = "inline-flex items-center gap-2 rounded-full border border-primary-200/80 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600 dark:border-primary-900/60 dark:bg-primary-900/40 dark:text-primary-200";
+					badge.textContent = sheetName || "Sheet";
+					sheetBlock.appendChild(badge);
+
+					const headerRow = rows[0] || [];
+					const dataRows = rows.length > 1 ? rows.slice(1) : [];
+					const truncated = dataRows.length > MAX_SPREADSHEET_PREVIEW_ROWS;
+					const limitedRows = truncated ? dataRows.slice(0, MAX_SPREADSHEET_PREVIEW_ROWS) : dataRows;
+					const tableData = [headerRow, ...limitedRows];
+					const hasVisibleCells = tableData.some((row) => Array.isArray(row) && row.some((cell) => normalizeTableCellValue(cell).trim() !== ""));
+
+					if (!hasVisibleCells) {
+						sheetBlock.appendChild(createEmptyTableMessage("No visible cells in this worksheet."));
+					} else {
+						sheetBlock.appendChild(createTableFrom2DArray(tableData));
+						if (truncated) {
+							const note = document.createElement("p");
+							note.className = "text-[11px] text-slate-500 dark:text-slate-400";
+							note.textContent = `Showing the first ${MAX_SPREADSHEET_PREVIEW_ROWS.toLocaleString()} rows. Download the workbook to view everything.`;
+							sheetBlock.appendChild(note);
+						}
+					}
+
+					section.appendChild(sheetBlock);
+				});
+
+				viewer.appendChild(section);
+				return null;
+			} catch (error) {
+				console.error("Spreadsheet render failed", error);
+				const reason = error instanceof Error ? error.message : String(error);
+				return renderOfficeEmbed(resolvedUrl, fileName, {
+					kind: "spreadsheet",
+					note: "Falling back to Microsoft Office web viewer.",
+					reason,
+				});
+			}
+		}
+
+		async function renderDocx(arrayBuffer, fileName, resolvedUrl) {
+			try {
+				const mammoth = await ensureMammoth();
+				const result = await mammoth.convertToHtml({ arrayBuffer });
+				const html = (result && result.value) || "";
+				const safeHtml = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+				const article = document.createElement("article");
+				article.className = "prose prose-slate max-w-none dark:prose-invert";
+				article.innerHTML = safeHtml && safeHtml.trim() ? safeHtml : "<p>No readable content detected in this document.</p>";
+				viewer.appendChild(article);
+				return null;
+			} catch (error) {
+				console.error("DOCX render failed", error);
+				const reason = error instanceof Error ? error.message : String(error);
+				return renderOfficeEmbed(resolvedUrl, fileName, {
+					kind: "document",
+					note: "Falling back to Microsoft Office web viewer.",
+					reason,
+				});
+			}
+		}
+
+		async function renderPowerPoint(arrayBuffer, fileName, resolvedUrl) {
+			try {
+				const JSZip = await ensureJsZip();
+				const zip = await JSZip.loadAsync(arrayBuffer);
+				const slideFiles = Object.keys(zip.files)
+					.filter((name) => /^ppt\/slides\/slide\d+\.xml$/i.test(name))
+					.sort((a, b) => extractSlideNumber(a) - extractSlideNumber(b));
+				if (!slideFiles.length) {
+					return renderOfficeDownloadFallback(fileName, resolvedUrl, "No slides found in this presentation.");
+				}
+				viewerWrapper.classList.add("bg-slate-900/90", "dark:bg-black");
+				const deck = document.createElement("section");
+				deck.className = "flex w-full flex-col items-center gap-8";
+				const intro = document.createElement("p");
+				intro.className = "text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500";
+				intro.textContent = `${slideFiles.length} slide${slideFiles.length > 1 ? "s" : ""} • Scroll to view`;
+				deck.appendChild(intro);
+				const parser = new DOMParser();
+				for (const slidePath of slideFiles) {
+					const xmlText = await zip.file(slidePath).async("string");
+					const doc = parser.parseFromString(xmlText, "application/xml");
+					const slideNumber = extractSlideNumber(slidePath);
+					const slideWrapper = document.createElement("article");
+					slideWrapper.className = "relative flex w-full max-w-4xl flex-col items-center gap-4";
+					const frame = document.createElement("div");
+					frame.className = "relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-100 shadow-2xl dark:border-slate-800/60 dark:from-slate-950/80 dark:via-slate-950/60 dark:to-slate-900";
+					const frameInner = document.createElement("div");
+					frameInner.className = "absolute inset-0 flex h-full w-full flex-col gap-5 overflow-hidden p-6 text-slate-700 dark:text-slate-100";
+					const cornerBadge = document.createElement("span");
+					cornerBadge.className = "pointer-events-none absolute left-6 top-5 inline-flex items-center gap-2 rounded-full border border-slate-300/60 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-300";
+					cornerBadge.textContent = `Slide ${slideNumber}`;
+					frame.appendChild(cornerBadge);
+					const bulletList = buildSlideBullets(doc);
+					if (bulletList) {
+						bulletList.classList.add("text-base", "leading-relaxed", "space-y-3");
+						frameInner.appendChild(bulletList);
+					}
+					const images = await extractSlideImages(zip, slidePath, doc, parser);
+					if (images.length) {
+						const gallery = document.createElement("div");
+						gallery.className = "mt-auto grid gap-3 sm:grid-cols-2";
+						images.forEach((figure) => {
+							figure.classList.add("overflow-hidden", "rounded-xl", "border", "border-slate-200/60", "bg-white/70", "p-3", "shadow-md", "dark:border-slate-800/70", "dark:bg-slate-900/60");
+							const picture = figure.querySelector("img");
+							if (picture) {
+								picture.classList.add("h-full", "w-full", "object-contain", "drop-shadow-sm");
+							}
+							gallery.appendChild(figure);
+						});
+						frameInner.appendChild(gallery);
+					}
+					if (!bulletList && !images.length) {
+						const placeholder = document.createElement("div");
+						placeholder.className = "flex h-full w-full items-center justify-center rounded-lg border border-dashed border-slate-200/70 bg-white/70 text-sm text-slate-400 dark:border-slate-800/60 dark:bg-slate-900/50 dark:text-slate-500";
+						placeholder.textContent = "No readable content detected on this slide.";
+						frameInner.appendChild(placeholder);
+					}
+					frame.appendChild(frameInner);
+					slideWrapper.appendChild(frame);
+					const label = document.createElement("div");
+					label.className = "w-full rounded-lg border border-slate-200/70 bg-slate-100 px-4 py-2 text-center text-[10px] uppercase tracking-wide text-slate-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-400";
+					label.textContent = `Slide ${slideNumber} of ${slideFiles.length}`;
+					slideWrapper.appendChild(label);
+					deck.appendChild(slideWrapper);
+				}
+				viewer.appendChild(deck);
+				return null;
+			} catch (error) {
+				console.error("PowerPoint render failed", error);
+				const reason = error instanceof Error ? error.message : String(error);
+				return renderOfficeEmbed(resolvedUrl, fileName, {
+					kind: "presentation",
+					note: "Falling back to Microsoft Office web viewer.",
+					reason,
+				});
+			}
+		}
+
+		function extractSlideNumber(path) {
+			const match = /slide(\d+)\.xml$/i.exec(path);
+			return match ? Number(match[1]) : 0;
+		}
+
+		function buildSlideBullets(slideDoc) {
+			const TEXT_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
+			const paragraphs = Array.from(slideDoc.getElementsByTagNameNS(TEXT_NS, "p"));
+			const bullets = [];
+			paragraphs.forEach((p) => {
+				const runs = Array.from(p.getElementsByTagNameNS(TEXT_NS, "t"));
+				const combined = runs.map((node) => (node.textContent || "").replace(/\s+/g, " ").trim()).join("").trim();
+				if (combined) {
+					bullets.push(combined);
+				}
+			});
+			if (!bullets.length) return null;
+			const list = document.createElement("ul");
+			list.className = "space-y-1 text-sm text-slate-600 dark:text-slate-200";
+			bullets.forEach((line) => {
+				const li = document.createElement("li");
+				li.className = "relative pl-4 before:absolute before:left-0 before:top-[0.55rem] before:h-[5px] before:w-[5px] before:-translate-y-1/2 before:rounded-full before:bg-primary-400 before:content-['']";
+				li.textContent = line;
+				list.appendChild(li);
+			});
+			return list;
+		}
+
+		async function extractSlideImages(zip, slidePath, slideDoc, parser) {
+			const REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+			const relationships = new Map();
+			const relsPath = slidePath.replace("slides/", "slides/_rels/") + ".rels";
+			if (zip.file(relsPath)) {
+				const relsXml = await zip.file(relsPath).async("string");
+				const relsDoc = parser.parseFromString(relsXml, "application/xml");
+				Array.from(relsDoc.getElementsByTagName("Relationship")).forEach((rel) => {
+					const id = rel.getAttribute("Id");
+					const target = rel.getAttribute("Target");
+					const type = rel.getAttribute("Type") || "";
+					if (id && target && type.includes("image")) {
+						relationships.set(id, normalizeZipPath(slidePath, target));
+					}
+				});
+			}
+			const IMAGE_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
+			const blips = Array.from(slideDoc.getElementsByTagNameNS(IMAGE_NS, "blip"));
+			const images = [];
+			for (const blip of blips) {
+				const embedId = blip.getAttributeNS(REL_NS, "embed") || blip.getAttribute("r:embed");
+				if (!embedId) continue;
+				const targetPath = relationships.get(embedId);
+				if (!targetPath) continue;
+				const file = zip.file(targetPath);
+				if (!file) continue;
+				try {
+					const buffer = await file.async("arraybuffer");
+					const mimeType = guessMimeFromExtension(targetPath) || "application/octet-stream";
+					const blob = new Blob([buffer], { type: mimeType });
+					const url = URL.createObjectURL(blob);
+					const figure = document.createElement("figure");
+					figure.className = "relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg bg-transparent";
+					const img = document.createElement("img");
+					img.src = url;
+					img.alt = "Slide image";
+					img.className = "h-full w-full object-contain";
+					img.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
+					figure.appendChild(img);
+					images.push(figure);
+				} catch (error) {
+					console.debug("Failed to read slide image", error);
+				}
+			}
+			return images;
+		}
+
+		function normalizeZipPath(basePath, target) {
+			const baseDir = basePath.slice(0, basePath.lastIndexOf("/") + 1);
+			const url = new URL(target, `https://example.com/${baseDir}`);
+			return url.pathname.replace(/^\//, "");
+		}
+
+		function guessMimeFromExtension(name) {
+			const ext = (name.split(".").pop() || "").toLowerCase();
+			switch (ext) {
+				case "png":
+					return "image/png";
+				case "jpg":
+				case "jpeg":
+					return "image/jpeg";
+				case "gif":
+					return "image/gif";
+				case "bmp":
+					return "image/bmp";
+				case "svg":
+					return "image/svg+xml";
+				case "webp":
+					return "image/webp";
+				default:
+					return "application/octet-stream";
+			}
+		}
+
+		function renderOfficeEmbed(resolvedUrl, fileName, { kind = "document", note, reason } = {}) {
+			try {
+				const url = new URL(resolvedUrl, window.location.href);
+				if (!canEmbedViaOffice(url)) {
+					return renderOfficeDownloadFallback(fileName, resolvedUrl, "This preview requires a publicly accessible HTTPS URL.");
+				}
+				const embedUrl = buildOfficeViewerUrl(url.href);
+				const wrapper = document.createElement("section");
+				wrapper.className = "space-y-3";
+				const frame = document.createElement("div");
+				const ratioClass = kind === "presentation" ? "aspect-[16/9]" : "aspect-[4/3]";
+				frame.className = `${ratioClass} w-full overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60`;
+				const iframe = document.createElement("iframe");
+				iframe.src = embedUrl;
+				iframe.className = "h-full w-full border-0";
+				iframe.loading = "lazy";
+				iframe.referrerPolicy = "no-referrer";
+				iframe.title = `${fileName} preview`;
+				iframe.setAttribute("allowfullscreen", "true");
+				frame.appendChild(iframe);
+				wrapper.appendChild(frame);
+
+				const message = document.createElement("p");
+				message.className = "text-xs text-slate-500 dark:text-slate-400";
+				const baseNote = note || "Rendered via Microsoft Office web viewer. If the preview stays blank, use the download link.";
+				message.textContent = reason ? `${baseNote} (Fallback reason: ${reason})` : baseNote;
+				wrapper.appendChild(message);
+
+				viewer.appendChild(wrapper);
+				return {
+					statusMessage: {
+						level: "info",
+						title: "Previewing with Office web viewer",
+						body: "The file is embedded using Microsoft Office web viewer. Open the download link if the preview fails.",
+					},
+				};
+			} catch (error) {
+				return renderOfficeDownloadFallback(fileName, resolvedUrl, "Unable to construct a preview URL for this file.");
+			}
+		}
+
+		function renderOfficeDownloadFallback(fileName, resolvedUrl, reason = "") {
+			const message = document.createElement("div");
+			message.className = "space-y-3 rounded-xl border border-slate-200/70 bg-white/80 p-6 text-center text-sm text-slate-600 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-300";
+			const primary = document.createElement("p");
+			primary.textContent = "Browser preview isn’t available for this file. Use the download link instead.";
+			message.appendChild(primary);
+			if (reason) {
+				const details = document.createElement("p");
+				details.className = "text-xs text-slate-500 dark:text-slate-400";
+				details.textContent = reason;
+				message.appendChild(details);
+			}
+			if (resolvedUrl) {
+				const link = document.createElement("a");
+				link.href = resolvedUrl;
+				link.target = "_blank";
+				link.rel = "noopener";
+				link.className = "inline-flex items-center gap-2 rounded-full bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow transition hover:bg-primary-600";
+				link.textContent = `Open ${fileName}`;
+				message.appendChild(link);
+			}
+			viewer.appendChild(message);
+			return {
+				statusMessage: {
+					level: "info",
+					title: "Preview not available",
+					body: reason || "The file can be opened via the download link instead.",
+				},
+			};
+		}
+
+		function canEmbedViaOffice(url) {
+			if (!url) return false;
+			if (!url.protocol || (url.protocol !== "https:" && url.protocol !== "http:")) {
+				return false;
+			}
+			const forbiddenHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+			if (forbiddenHosts.has(url.hostname)) {
+				return false;
+			}
+			return url.protocol === "https:";
+		}
+
+		function buildOfficeViewerUrl(url) {
+			return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+		}
+
+		function renderJson(text) {
+			try {
+				const parsed = JSON.parse(text);
+				const formatted = JSON.stringify(parsed, null, 2);
+				const section = document.createElement("section");
+				section.className = "space-y-4";
+
+				const header = document.createElement("div");
+				header.className = "flex flex-wrap items-center justify-between gap-3";
+				const title = document.createElement("h3");
+				title.className = "flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300";
+				title.textContent = "JSON preview";
+				header.appendChild(title);
+
+				const tabGroup = document.createElement("div");
+				tabGroup.className = "inline-flex overflow-hidden rounded-full border border-slate-200/80 bg-white text-xs font-medium text-slate-500 shadow-sm dark:border-slate-700/70 dark:bg-slate-800/60";
+
+				const rawButton = createJsonTabButton("Raw");
+				const treeButton = createJsonTabButton("Tree");
+				tabGroup.append(treeButton, rawButton);
+				header.appendChild(tabGroup);
+
+				const panels = document.createElement("div");
+				panels.className = "space-y-4";
+
+				const treePanel = document.createElement("div");
+				treePanel.dataset.panel = "tree";
+				treePanel.className = "space-y-2";
+				treePanel.appendChild(buildJsonTree(parsed, "root", 0));
+
+				const rawPanel = document.createElement("div");
+				rawPanel.dataset.panel = "raw";
+				rawPanel.appendChild(createCodeBlock(formatted, "json"));
+
+				panels.append(treePanel, rawPanel);
+				section.append(header, panels);
+				viewer.appendChild(section);
+
+				activateJsonTab("tree");
+
+				function createJsonTabButton(label) {
+					const button = document.createElement("button");
+					const value = label.toLowerCase();
+					button.type = "button";
+					button.dataset.panel = value;
+					button.className = "px-4 py-1.5 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 dark:focus-visible:ring-primary-500";
+					button.textContent = label;
+					button.addEventListener("click", () => activateJsonTab(value));
+					return button;
+				}
+
+				function activateJsonTab(panel) {
+					const buttons = tabGroup.querySelectorAll("button");
+					buttons.forEach((btn) => {
+						const isActive = btn.dataset.panel === panel;
+						btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+						btn.classList.toggle("bg-primary-500", isActive);
+						btn.classList.toggle("text-white", isActive);
+					});
+
+					const panelNodes = panels.querySelectorAll("[data-panel]");
+					panelNodes.forEach((node) => {
+						node.classList.toggle("hidden", node.dataset.panel !== panel);
+					});
+				}
+			} catch (error) {
+				renderPlainText(text);
+			}
+		}
+
+		function buildJsonTree(value, key = "root", depth = 0) {
+			const isObject = isPlainObject(value);
+			const isArray = Array.isArray(value);
+			if (isObject || isArray) {
+				const details = document.createElement("details");
+				details.open = depth <= 1;
+				details.className = "group rounded-xl border border-slate-200/70 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900/60";
+
+				const summary = document.createElement("summary");
+				summary.className = "flex cursor-pointer items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-200";
+				summary.textContent = describeJsonCollection(key, value);
+				details.appendChild(summary);
+
+				const childrenContainer = document.createElement("div");
+				childrenContainer.className = "space-y-1 border-t border-slate-100/80 bg-slate-50/60 px-4 py-3 dark:border-slate-800/60 dark:bg-slate-900/50";
+				if (isArray) {
+					value.forEach((item, index) => {
+						childrenContainer.appendChild(buildJsonTree(item, `[${index}]`, depth + 1));
+					});
+				} else {
+					Object.entries(value).forEach(([childKey, childValue]) => {
+						childrenContainer.appendChild(buildJsonTree(childValue, childKey, depth + 1));
+					});
+				}
+				details.appendChild(childrenContainer);
+				return details;
+			}
+
+			const item = document.createElement("div");
+			item.className = "flex items-start gap-3 rounded-lg bg-slate-50/80 px-3 py-2 text-sm text-slate-600 shadow-sm dark:bg-slate-800/60 dark:text-slate-200";
+			const keySpan = document.createElement("span");
+			keySpan.className = "min-w-[72px] shrink-0 font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300";
+			keySpan.textContent = formatJsonKey(key);
+			const valueSpan = document.createElement("span");
+			valueSpan.className = "flex-1 break-words font-mono text-xs text-primary-700 dark:text-primary-300";
+			valueSpan.textContent = formatJsonValue(value);
+			item.append(keySpan, valueSpan);
+			return item;
+		}
+
+		function describeJsonCollection(key, value) {
+			const isArray = Array.isArray(value);
+			const size = isArray ? value.length : Object.keys(value).length;
+			const label = key === "root" ? (isArray ? "Array" : "Object") : key;
+			const suffix = isArray ? `[${size}]` : `{${size}}`;
+			return `${label} ${suffix}`;
+		}
+
+		function formatJsonKey(key) {
+			if (key === "root") return "value";
+			return String(key);
+		}
+
+		function formatJsonValue(value) {
+			if (value === null) return "null";
+			if (typeof value === "string") return `"${value}"`;
+			if (typeof value === "number" && Number.isNaN(value)) return "NaN";
+			if (typeof value === "object") return Array.isArray(value) ? `Array(${value.length})` : "Object";
+			return String(value);
+		}
+
+		function isPlainObject(value) {
+			return Object.prototype.toString.call(value) === "[object Object]";
+		}
+
+		function renderHtml(text, origin) {
+			const safeHtml = DOMPurify.sanitize(text, { ADD_ATTR: ["target", "rel"], ADD_TAGS: ["iframe"] });
+			const iframe = document.createElement("iframe");
+			iframe.className = "h-[75vh] w-full border-0";
+			const blob = new Blob([safeHtml], { type: "text/html" });
+			const blobUrl = URL.createObjectURL(blob);
+			iframe.src = blobUrl;
+			iframe.setAttribute("sandbox", "allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts");
+			iframe.title = `HTML preview from ${origin}`;
+			iframe.addEventListener("load", () => URL.revokeObjectURL(blobUrl), { once: true });
+			viewer.appendChild(iframe);
+		}
+
+		function renderPlainText(text) {
+			renderCodeBlock(text, "plain");
+		}
+
+		function renderCodeBlock(text, language) {
+			viewer.appendChild(createCodeBlock(text, language));
+		}
+
+		function createCodeBlock(text, language) {
+			const pre = document.createElement("pre");
+			pre.className = "whitespace-pre-wrap rounded-xl border border-slate-200/80 bg-slate-50/90 p-4 font-mono text-sm text-slate-700 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-200";
+			const code = document.createElement("code");
+			code.textContent = text;
+			code.setAttribute("data-language", language);
+			pre.appendChild(code);
+			return pre;
+		}
+
+		function formatBytes(bytes) {
+			if (!bytes || Number.isNaN(bytes)) return "";
+			const units = ["B", "KB", "MB", "GB", "TB"];
+			const exponent = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
+			const size = (bytes / Math.pow(1024, exponent)).toFixed(exponent === 0 ? 0 : 1);
+			return `${size} ${units[exponent]}`;
+		}
+
+		function extractFileName(url) {
+			try {
+				const { pathname } = new URL(url);
+				const segments = pathname.split("/").filter(Boolean);
+				return segments.pop() || "";
+			} catch (error) {
+				return url.split("/").pop() || "";
+			}
+		}
+
+		function extractExtension(fileName) {
+			const match = /(\.([^.?#]+))(?:[?#].*)?$/.exec(fileName);
+			return match && match[2] ? match[2] : "";
+		}
+
+		function isPdf(ext, type) {
+			return ext === "pdf" || type.includes("application/pdf");
+		}
+		function isMermaid(ext, type) {
+			return ["mmd", "mermaid"].includes(ext) || type.includes("text/vnd.mermaid") || type.includes("text/x-mermaid");
+		}
+		function isMarkdown(ext, type) {
+			return ["md", "markdown", "mdown"].includes(ext) || type.includes("text/markdown") || type.includes("text/x-markdown");
+		}
+		function isCsv(ext, type) {
+			return ext === "csv" || type.includes("text/csv");
+		}
+		function isJson(ext, type) {
+			const jsonExtensions = ["json", "jsonl", "geojson", "topojson"];
+			const normalizedType = type.toLowerCase();
+			return (
+				jsonExtensions.includes(ext) ||
+				normalizedType.includes("application/json") ||
+				normalizedType.includes("application/geo+json") ||
+				normalizedType.includes("application/vnd.geo+json") ||
+				normalizedType.includes("text/json")
+			);
+		}
+		function isOfficeSpreadsheet(ext, type) {
+			const spreadsheetExtensions = ["xls", "xlsx", "xlsm", "xlt", "xltx", "xlsb", "ods"];
+			const spreadsheetMimeTokens = [
+				"application/vnd.ms-excel",
+				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"application/vnd.ms-excel.sheet.macroenabled.12",
+				"application/vnd.ms-excel.sheet.binary.macroenabled.12",
+				"application/vnd.oasis.opendocument.spreadsheet",
+			];
+			return spreadsheetExtensions.includes(ext) || spreadsheetMimeTokens.some((token) => type.includes(token));
+		}
+		function isDocxDocument(ext, type) {
+			const modernWordExtensions = ["docx", "docm", "dotx", "dotm"];
+			const modernWordMime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			return modernWordExtensions.includes(ext) || type.includes(modernWordMime);
+		}
+		function isLegacyWordDocument(ext, type) {
+			const legacyWordExtensions = ["doc", "dot"];
+			return legacyWordExtensions.includes(ext) || type.includes("application/msword");
+		}
+		function isOpenXmlPowerPoint(ext, type) {
+			const openXmlExtensions = ["pptx", "pptm", "ppsx", "ppsm", "potx", "potm"];
+			const openXmlMime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+			return openXmlExtensions.includes(ext) || type.includes(openXmlMime);
+		}
+		function isPowerPointDeck(ext, type) {
+			const powerpointExtensions = ["ppt", "pptx", "pptm", "pps", "ppsx", "pot", "potx"];
+			const powerpointMimeTokens = [
+				"application/vnd.ms-powerpoint",
+				"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+				"application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+			];
+			return powerpointExtensions.includes(ext) || powerpointMimeTokens.some((token) => type.includes(token));
+		}
+		function looksLikeHtml(ext, type) {
+			return ["html", "htm"].includes(ext) || type.includes("text/html");
+		}
+		function isImage(ext, type) {
+			return ["png", "jpg", "jpeg", "gif", "bmp", "webp", "svg", "avif", "ico"].includes(ext) || type.startsWith("image/");
+		}
+		function isVideo(ext, type) {
+			return ["mp4", "webm", "ogg", "ogv", "mov", "m4v"].includes(ext) || type.startsWith("video/");
+		}
+		function isAudio(ext, type) {
+			return ["mp3", "wav", "ogg", "oga", "flac", "aac", "m4a"].includes(ext) || type.startsWith("audio/");
+		}
+
+		function showLoadingState(isLoading) {
+			if (isLoading) {
+				viewerWrapper.classList.add("animate-pulse");
+			} else {
+				viewerWrapper.classList.remove("animate-pulse");
+			}
+		}
+
+		function updateStatus(level, title, message) {
+			const baseClasses = "rounded-2xl border px-6 py-5 text-sm shadow-sm transition-all";
+			const palettes = {
+				info: "border-slate-200/70 bg-white/80 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-300",
+				loading: "border-primary-200/70 bg-primary-50/80 text-primary-700 dark:border-primary-900/70 dark:bg-primary-950/40 dark:text-primary-200",
+				success: "border-emerald-200/70 bg-emerald-50/80 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+				error: "border-rose-200/70 bg-rose-50/80 text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200",
+			};
+			statusMessage.className = `${baseClasses} ${palettes[level] || palettes.info}`;
+			statusTitle.textContent = title;
+			statusBody.textContent = message;
+		}
+
+		function showError(message) {
+			viewer.innerHTML = "";
+			const block = document.createElement("div");
+			block.className = "flex flex-col items-center gap-3 rounded-xl border border-rose-200/70 bg-rose-50/60 p-8 text-center text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200";
+			block.innerHTML = `
 					<svg class="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a1.1 1.1 0 0 0 .95 1.65h18.46a1.1 1.1 0 0 0 .95-1.65L13.71 3.86a1.1 1.1 0 0 0-1.9 0Z" />
 					</svg>
 					<p class="text-sm">${message}</p>
 					<p class="text-xs text-rose-500/80">Confirm the file exists, is publicly accessible, and supports cross-origin requests.</p>
 				`;
-				viewer.appendChild(block);
-				updateStatus("error", "Unable to load file", message);
+			viewer.appendChild(block);
+			updateStatus("error", "Unable to load file", message);
+		}
+
+		// Back to Top Button functionality
+		const backToTopButton = document.getElementById("backToTop");
+		
+		window.addEventListener("scroll", () => {
+			if (window.scrollY > 300) {
+				backToTopButton.classList.add("show");
+			} else {
+				backToTopButton.classList.remove("show");
 			}
-		</script>
-	</body>
+		});
+
+		backToTopButton.addEventListener("click", () => {
+			window.scrollTo({
+				top: 0,
+				behavior: "smooth"
+			});
+		});
+	</script>
+</body>
+
 </html>
