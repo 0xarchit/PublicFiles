@@ -452,28 +452,29 @@
 
 		/* Back to Top Button */
 		#backToTop {
-			position: fixed;
-			bottom: 2rem;
-			right: 2rem;
+			position: fixed !important;
+			bottom: 2rem !important;
+			right: 2rem !important;
 			width: 3rem;
 			height: 3rem;
 			background: rgba(99, 102, 241, 0.9);
 			border: 2px solid rgba(99, 102, 241, 0.3);
 			border-radius: 50%;
-			display: flex;
+			display: flex !important;
 			align-items: center;
 			justify-content: center;
 			cursor: pointer;
 			opacity: 0;
 			visibility: hidden;
 			transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease, background 0.2s ease;
-			z-index: 50;
+			z-index: 9999 !important;
 			box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+			pointer-events: auto !important;
 		}
 
 		#backToTop.show {
-			opacity: 1;
-			visibility: visible;
+			opacity: 1 !important;
+			visibility: visible !important;
 		}
 
 		#backToTop:hover {
@@ -967,12 +968,12 @@
 		document.documentElement.style.width = '100dvw';
 		document.documentElement.style.margin = '0';
 		document.documentElement.style.padding = '0';
-		document.documentElement.style.overflow = 'hidden';
-		document.documentElement.style.position = 'fixed';
-		document.documentElement.style.top = '0';
-		document.documentElement.style.left = '0';
-		document.documentElement.style.right = '0';
-		document.documentElement.style.bottom = '0';
+		document.documentElement.style.overflow = 'auto';
+		document.documentElement.style.position = 'relative';
+		document.documentElement.style.top = '';
+		document.documentElement.style.left = '';
+		document.documentElement.style.right = '';
+		document.documentElement.style.bottom = '';
 
 		let viewportMeta = document.querySelector('meta[name="viewport"]');
 		if (!viewportMeta) {
@@ -2754,16 +2755,30 @@
 		// Back to Top Button functionality
 		const backToTopButton = document.getElementById("backToTop");
 		
-		window.addEventListener("scroll", () => {
-			if (window.scrollY > 300) {
+		function checkScrollPosition() {
+			const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+			if (scrollTop > 300) {
 				backToTopButton.classList.add("show");
 			} else {
 				backToTopButton.classList.remove("show");
 			}
-		});
+		}
+
+		window.addEventListener("scroll", checkScrollPosition, true);
+		document.addEventListener("scroll", checkScrollPosition, true);
+		document.body.addEventListener("scroll", checkScrollPosition, true);
+		document.documentElement.addEventListener("scroll", checkScrollPosition, true);
 
 		backToTopButton.addEventListener("click", () => {
 			window.scrollTo({
+				top: 0,
+				behavior: "smooth"
+			});
+			document.documentElement.scrollTo({
+				top: 0,
+				behavior: "smooth"
+			});
+			document.body.scrollTo({
 				top: 0,
 				behavior: "smooth"
 			});
