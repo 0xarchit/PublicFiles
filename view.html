@@ -517,6 +517,122 @@
 				height: 1.25rem;
 			}
 		}
+
+		/* Search Bar */
+		#searchBar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			z-index: 1000;
+			display: none;
+			padding: 1rem;
+			background: rgba(248, 250, 252, 0.98);
+			border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+			-webkit-backdrop-filter: blur(8px);
+			backdrop-filter: blur(8px);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		#searchBar.show {
+			display: block;
+		}
+
+		.dark #searchBar {
+			background: rgba(15, 23, 42, 0.98);
+			border-color: rgba(71, 85, 105, 0.6);
+		}
+
+		#searchBar .search-container {
+			display: flex;
+			gap: 0.5rem;
+			max-width: 600px;
+			margin: 0 auto;
+		}
+
+		#searchBar input {
+			flex: 1;
+			padding: 0.5rem 1rem;
+			border: 1px solid rgba(226, 232, 240, 0.8);
+			border-radius: 0.5rem;
+			background: white;
+			color: #1e293b;
+			font-size: 0.875rem;
+			outline: none;
+			transition: all 0.2s;
+		}
+
+		#searchBar input:focus {
+			border-color: #6366f1;
+			box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+		}
+
+		.dark #searchBar input {
+			background: #1e293b;
+			border-color: rgba(71, 85, 105, 0.8);
+			color: #e2e8f0;
+		}
+
+		.dark #searchBar input:focus {
+			border-color: #818cf8;
+			box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+		}
+
+		#searchBar .search-info {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			font-size: 0.75rem;
+			color: #64748b;
+			white-space: nowrap;
+		}
+
+		.dark #searchBar .search-info {
+			color: #94a3b8;
+		}
+
+		#searchBar button {
+			padding: 0.5rem 1rem;
+			border-radius: 0.5rem;
+			background: #6366f1;
+			color: white;
+			border: none;
+			cursor: pointer;
+			font-size: 0.875rem;
+			font-weight: 500;
+			transition: background 0.2s;
+		}
+
+		#searchBar button:hover {
+			background: #4f46e5;
+		}
+
+		#searchBar button:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.search-highlight {
+			background-color: #fef08a;
+			color: #854d0e;
+			padding: 0.125rem 0.25rem;
+			border-radius: 0.25rem;
+		}
+
+		.dark .search-highlight {
+			background-color: #a16207;
+			color: #fef9c3;
+		}
+
+		.search-highlight.current {
+			background-color: #fbbf24;
+			color: #78350f;
+		}
+
+		.dark .search-highlight.current {
+			background-color: #f59e0b;
+			color: #fef3c7;
+		}
 	</style>
 </head>
 
@@ -548,6 +664,12 @@
 						title="Enter fullscreen">
 						<span aria-hidden="true" class="h-4 w-4">🖥️</span>
 						<span class="hidden sm:inline">Fullscreen</span>
+					</button>
+					<button id="searchToggle" type="button"
+						class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600"
+						title="Search in document">
+						<span aria-hidden="true" class="h-4 w-4">🔍</span>
+						<span class="hidden sm:inline">Search</span>
 					</button>
 					<button id="themeToggle" type="button"
 						class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600">
@@ -613,6 +735,19 @@
 				<path d="M12 4l-8 8h5v8h6v-8h5z"/>
 			</svg>
 		</button>
+
+		<!-- Floating Search Bar -->
+		<div id="searchBar">
+			<div class="search-container">
+				<input type="text" id="searchInput" placeholder="Search in document..." />
+				<button id="searchPrev" title="Previous match">▲</button>
+				<button id="searchNext" title="Next match">▼</button>
+				<div class="search-info">
+					<span id="searchCount">0/0</span>
+				</div>
+				<button id="searchClose" title="Close search">✕</button>
+			</div>
+		</div>
 	</div>
 
 	<template id="tableTemplate">
@@ -1876,13 +2011,11 @@
 				heading.textContent = fileName;
 				article.prepend(heading);
 			}
-			generateTableOfContents(article);
-			await renderMathInMarkdown(article);
-			viewer.appendChild(article);
-			await embedMermaidInMarkdown(article);
-		}
-
-		function generateTableOfContents(article) {
+		generateTableOfContents(article);
+		await renderMathInMarkdown(article);
+		viewer.appendChild(article);
+		await embedMermaidInMarkdown(article);
+	}		function generateTableOfContents(article) {
 			const headings = Array.from(article.querySelectorAll("h2, h3, h4, h5, h6"));
 			if (headings.length < 2) return;
 
@@ -2605,11 +2738,9 @@
 			viewer.appendChild(iframe);
 		}
 
-		function renderPlainText(text) {
-			renderCodeBlock(text, "plain");
-		}
-
-		function renderCodeBlock(text, language) {
+	function renderPlainText(text) {
+		renderCodeBlock(text, "plain");
+	}		function renderCodeBlock(text, language) {
 			viewer.appendChild(createCodeBlock(text, language));
 		}
 
@@ -2782,6 +2913,198 @@
 				top: 0,
 				behavior: "smooth"
 			});
+		});
+
+		// Search functionality
+		const searchBar = document.getElementById("searchBar");
+		const searchInput = document.getElementById("searchInput");
+		const searchPrev = document.getElementById("searchPrev");
+		const searchNext = document.getElementById("searchNext");
+		const searchClose = document.getElementById("searchClose");
+		const searchCount = document.getElementById("searchCount");
+		
+		let searchMatches = [];
+		let currentMatchIndex = -1;
+
+		function showSearchBar() {
+			searchBar.classList.add("show");
+			searchInput.focus();
+		}
+
+		function hideSearchBar() {
+			searchBar.classList.remove("show");
+			clearSearchHighlights();
+		}
+
+		function clearSearchHighlights() {
+			const highlights = viewer.querySelectorAll(".search-highlight");
+			highlights.forEach(highlight => {
+				const parent = highlight.parentNode;
+				parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+				parent.normalize();
+			});
+			searchMatches = [];
+			currentMatchIndex = -1;
+			updateSearchCount();
+		}
+
+		function highlightSearchMatches(query) {
+			if (!query || query.length < 2) {
+				clearSearchHighlights();
+				return;
+			}
+
+			clearSearchHighlights();
+			
+		const textNodes = [];
+		const walker = document.createTreeWalker(
+			viewer,
+			NodeFilter.SHOW_TEXT,
+			{
+				acceptNode: function(node) {
+					// Skip script, style, already highlighted nodes, and TOC when collapsed
+					if (node.parentElement.tagName === 'SCRIPT' || 
+						node.parentElement.tagName === 'STYLE' ||
+						node.parentElement.classList.contains('search-highlight')) {
+						return NodeFilter.FILTER_REJECT;
+					}
+					
+					// Skip TOC content if it's inside a closed details element
+					let parent = node.parentElement;
+					while (parent && parent !== viewer) {
+						if (parent.tagName === 'DETAILS' && !parent.open) {
+							return NodeFilter.FILTER_REJECT;
+						}
+						parent = parent.parentElement;
+					}
+					
+					return NodeFilter.FILTER_ACCEPT;
+				}
+			}
+		);			while (walker.nextNode()) {
+				textNodes.push(walker.currentNode);
+			}
+
+			const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+			
+			textNodes.forEach(node => {
+				const text = node.textContent;
+				const matches = [...text.matchAll(regex)];
+				
+				if (matches.length > 0) {
+					const fragment = document.createDocumentFragment();
+					let lastIndex = 0;
+					
+					matches.forEach(match => {
+						// Add text before match
+						if (match.index > lastIndex) {
+							fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+						}
+						
+						// Add highlighted match
+						const highlight = document.createElement('span');
+						highlight.className = 'search-highlight';
+						highlight.textContent = match[0];
+						fragment.appendChild(highlight);
+						searchMatches.push(highlight);
+						
+						lastIndex = match.index + match[0].length;
+					});
+					
+					// Add remaining text
+					if (lastIndex < text.length) {
+						fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+					}
+					
+					node.parentNode.replaceChild(fragment, node);
+				}
+			});
+
+			updateSearchCount();
+			if (searchMatches.length > 0) {
+				currentMatchIndex = 0;
+				scrollToMatch(0);
+			}
+		}
+
+		function scrollToMatch(index) {
+			if (index < 0 || index >= searchMatches.length) return;
+			
+			// Remove current class from all matches
+			searchMatches.forEach(match => match.classList.remove('current'));
+			
+			// Add current class to the current match
+			searchMatches[index].classList.add('current');
+			currentMatchIndex = index;
+			
+			// Scroll to match
+			searchMatches[index].scrollIntoView({
+				behavior: 'smooth',
+				block: 'center'
+			});
+			
+			updateSearchCount();
+		}
+
+		function updateSearchCount() {
+			if (searchMatches.length > 0) {
+				searchCount.textContent = `${currentMatchIndex + 1}/${searchMatches.length}`;
+			} else {
+				searchCount.textContent = '0/0';
+			}
+		}
+
+		searchInput.addEventListener('input', (e) => {
+			highlightSearchMatches(e.target.value);
+		});
+
+		searchInput.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				if (e.shiftKey) {
+					searchPrev.click();
+				} else {
+					searchNext.click();
+				}
+			} else if (e.key === 'Escape') {
+				hideSearchBar();
+			}
+		});
+
+		searchNext.addEventListener('click', () => {
+			if (searchMatches.length > 0) {
+				const nextIndex = (currentMatchIndex + 1) % searchMatches.length;
+				scrollToMatch(nextIndex);
+			}
+		});
+
+		searchPrev.addEventListener('click', () => {
+			if (searchMatches.length > 0) {
+				const prevIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+				scrollToMatch(prevIndex);
+			}
+		});
+
+		searchClose.addEventListener('click', () => {
+			hideSearchBar();
+		});
+
+		// Search toggle button
+		const searchToggle = document.getElementById('searchToggle');
+		searchToggle.addEventListener('click', () => {
+			if (searchBar.classList.contains('show')) {
+				hideSearchBar();
+			} else {
+				showSearchBar();
+			}
+		});
+
+		// Keyboard shortcut: Ctrl+F or Cmd+F to open search
+		document.addEventListener('keydown', (e) => {
+			if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+				e.preventDefault();
+				showSearchBar();
+			}
 		});
 	</script>
 </body>
