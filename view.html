@@ -542,6 +542,12 @@
 						</svg>
 						Open file
 					</a>
+					<button id="fullscreenToggle" type="button"
+						class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600"
+						title="Enter fullscreen">
+						<span aria-hidden="true" class="h-4 w-4">🖥️</span>
+						<span class="hidden sm:inline">Fullscreen</span>
+					</button>
 					<button id="themeToggle" type="button"
 						class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-primary-300 hover:text-primary-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-600">
 						<span id="themeIcon" aria-hidden="true" class="h-4 w-4">🌞</span>
@@ -917,36 +923,163 @@
 			}
 		}
 
-		const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-		const savedTheme = localStorage.getItem("uv-theme");
-		setTheme(savedTheme || (prefersDark ? "dark" : "light"), true);
+	const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+	const savedTheme = localStorage.getItem("uv-theme");
+	setTheme(savedTheme || (prefersDark ? "dark" : "light"), true);
 
-		themeToggle.addEventListener("click", () => {
-			const nextTheme = htmlElement.classList.contains("dark") ? "light" : "dark";
-			setTheme(nextTheme);
-		});
+	themeToggle.addEventListener("click", () => {
+		const nextTheme = htmlElement.classList.contains("dark") ? "light" : "dark";
+		setTheme(nextTheme);
+	});
 
-		function setTheme(theme, skipPersist = false) {
-			if (theme === "dark") {
-				htmlElement.classList.add("dark");
-				themeIcon.textContent = "🌙";
-				if (!skipPersist) localStorage.setItem("uv-theme", "dark");
-			} else {
-				htmlElement.classList.remove("dark");
-				themeIcon.textContent = "🌞";
-				if (!skipPersist) localStorage.setItem("uv-theme", "light");
-			}
-			initializeMermaidTheme();
-			renderMermaidAfterThemeChange();
+	function setTheme(theme, skipPersist = false) {
+		if (theme === "dark") {
+			htmlElement.classList.add("dark");
+			themeIcon.textContent = "🌙";
+			if (!skipPersist) localStorage.setItem("uv-theme", "dark");
+		} else {
+			htmlElement.classList.remove("dark");
+			themeIcon.textContent = "🌞";
+			if (!skipPersist) localStorage.setItem("uv-theme", "light");
 		}
+		initializeMermaidTheme();
+		renderMermaidAfterThemeChange();
+	}
 
-		function renderMermaidAfterThemeChange() {
-			if (window.mermaid || mermaidLoaderPromise) {
-				rerenderMermaidDiagrams();
-			}
+	function renderMermaidAfterThemeChange() {
+		if (window.mermaid || mermaidLoaderPromise) {
+			rerenderMermaidDiagrams();
 		}
+	}
 
-		const urlParams = new URLSearchParams(window.location.search);
+	// Fullscreen functionality
+	const fullscreenToggle = document.getElementById("fullscreenToggle");
+
+	function applyImmersiveStyles() {
+		document.body.style.height = '100dvh';
+		document.body.style.width = '100dvw';
+		document.body.style.margin = '0';
+		document.body.style.padding = '0';
+		document.body.style.overflow = 'auto';
+		document.body.style.overscrollBehavior = 'none';
+
+		document.documentElement.style.height = '100dvh';
+		document.documentElement.style.width = '100dvw';
+		document.documentElement.style.margin = '0';
+		document.documentElement.style.padding = '0';
+		document.documentElement.style.overflow = 'hidden';
+		document.documentElement.style.position = 'fixed';
+		document.documentElement.style.top = '0';
+		document.documentElement.style.left = '0';
+		document.documentElement.style.right = '0';
+		document.documentElement.style.bottom = '0';
+
+		let viewportMeta = document.querySelector('meta[name="viewport"]');
+		if (!viewportMeta) {
+			viewportMeta = document.createElement('meta');
+			viewportMeta.name = 'viewport';
+			document.head.appendChild(viewportMeta);
+		}
+		viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+	}
+
+	function resetStyles() {
+		document.body.style.height = '';
+		document.body.style.width = '';
+		document.body.style.margin = '';
+		document.body.style.padding = '';
+		document.body.style.overflow = '';
+		document.body.style.overscrollBehavior = '';
+
+		document.documentElement.style.height = '';
+		document.documentElement.style.width = '';
+		document.documentElement.style.margin = '';
+		document.documentElement.style.padding = '';
+		document.documentElement.style.overflow = '';
+		document.documentElement.style.position = '';
+		document.documentElement.style.top = '';
+		document.documentElement.style.left = '';
+		document.documentElement.style.right = '';
+		document.documentElement.style.bottom = '';
+	}
+
+	fullscreenToggle.addEventListener('click', function() {
+		const isFullscreen = document.fullscreenElement ||
+			document.mozFullScreenElement ||
+			document.webkitFullscreenElement ||
+			document.msFullscreenElement;
+
+		if (isFullscreen) {
+			// Exit fullscreen
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+		} else {
+			// Enter fullscreen
+			const elem = document.documentElement;
+
+			if (elem.requestFullscreen) {
+				elem.requestFullscreen();
+			} else if (elem.mozRequestFullScreen) {
+				elem.mozRequestFullScreen();
+			} else if (elem.webkitRequestFullscreen) {
+				elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+			} else if (elem.msRequestFullscreen) {
+				elem.msRequestFullscreen();
+			}
+
+			applyImmersiveStyles();
+		}
+	});
+
+	const fullscreenChangeHandler = function() {
+		const isFullscreen = document.fullscreenElement ||
+			document.mozFullScreenElement ||
+			document.webkitFullscreenElement ||
+			document.msFullscreenElement;
+
+		if (!isFullscreen) {
+			fullscreenToggle.innerHTML = '<span aria-hidden="true" class="h-4 w-4">🖥️</span><span class="hidden sm:inline">Fullscreen</span>';
+			fullscreenToggle.title = 'Enter fullscreen';
+			resetStyles();
+		} else {
+			fullscreenToggle.innerHTML = '<span aria-hidden="true" class="h-4 w-4">⬜</span><span class="hidden sm:inline">Exit</span>';
+			fullscreenToggle.title = 'Exit fullscreen';
+			applyImmersiveStyles();
+		}
+	};
+
+	document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+	document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+	document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+	document.addEventListener('MSFullscreenChange', fullscreenChangeHandler);
+
+	window.addEventListener('orientationchange', function() {
+		if (document.fullscreenElement ||
+			document.mozFullScreenElement ||
+			document.webkitFullscreenElement ||
+			document.msFullscreenElement) {
+			setTimeout(applyImmersiveStyles, 300);
+		}
+	});
+
+	// Initial state check
+	if (document.fullscreenElement ||
+		document.mozFullScreenElement ||
+		document.webkitFullscreenElement ||
+		document.msFullscreenElement) {
+		applyImmersiveStyles();
+		fullscreenToggle.innerHTML = '<span aria-hidden="true" class="h-4 w-4">⬜</span><span class="hidden sm:inline">Exit</span>';
+		fullscreenToggle.title = 'Exit fullscreen';
+	}
+
+	const urlParams = new URLSearchParams(window.location.search);
 		const fileParam = urlParams.get("file");
 
 		if (fileParam) {
