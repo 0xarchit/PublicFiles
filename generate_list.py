@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Any
 
 
-SKIP_DIRS = {".git", ".github", ".vscode", "node_modules", "__pycache__", ".netlify", "styles"}
+SKIP_DIRS = {".git", ".github", ".vscode", "node_modules", "__pycache__", ".netlify", "styles", "model"}
 SKIP_FILES = {"_redirects", "list.html", "generate_list.py", "netlify.toml", "view.html", "codathon2.html", "package-lock.json", "package.json", "tailwind.config.js", "README.md"}
 
 
